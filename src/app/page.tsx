@@ -166,17 +166,15 @@ export default function HomePage() {
   return (
     <div className="page-wrapper">
       <header className="site-header">
-        <div className="logo">
-          <span>✨</span> Luz Creator
-        </div>
-        <p>מחולל לו״ז שבועי חכם ללמידה מרחוק</p>
+        <div className="logo">✦ Luz Creator</div>
+        <p>מחולל לו״ז שבועי חכם ומקצועי ללמידה מרחוק</p>
       </header>
 
       <form onSubmit={handleSubmit}>
         {/* Basic info */}
         <div className="card">
           <div className="card-title">
-            <span>📋</span> פרטי ההדרכה
+            <span className="icon">📋</span> פרטי ההדרכה
           </div>
           <div className="form-grid">
             <div className="field full">
@@ -228,7 +226,7 @@ export default function HomePage() {
         {/* Advanced */}
         <div className="card">
           <div className="card-title">
-            <span>⚙️</span> הגדרות מתקדמות (אופציונלי)
+            <span className="icon">⚙️</span> הגדרות מתקדמות <span style={{ fontWeight: 400, color: "var(--text-muted)", fontSize: ".85rem" }}>(אופציונלי)</span>
           </div>
           <div className="form-grid">
             <div className="field full">
@@ -292,8 +290,12 @@ export default function HomePage() {
       {result && (
         <div ref={resultRef} style={{ marginTop: "2.5rem" }}>
           <div className="card">
-            <div className="card-title">
-              <span>💡</span> נימוק פדגוגי
+            <div className="result-header">
+              <div className="result-header-icon">💡</div>
+              <div className="result-header-text">
+                <h3>נימוק פדגוגי</h3>
+                <p>ההסבר מאחורי מבנה הלו״ז</p>
+              </div>
             </div>
             <div className="rationale-box">{result.rationale}</div>
           </div>
