@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useMemo } from "react";
 
 interface SlotData {
   time: string;
@@ -157,6 +157,8 @@ export default function HomePage() {
 </html>`;
   }
 
+  const htmlContent = useMemo(() => (result ? generateHtml(result) : ""), [result]);
+
   const tabs = [
     { id: "table", label: "לו״ז בטבלה" },
     { id: "html", label: "HTML מעוצב" },
@@ -172,7 +174,7 @@ export default function HomePage() {
           <span className="logo-mark">✦</span>
           Luz Creator
         </div>
-        <p>מחולל לו״ז הדרכה מקצועי — 4 שיעורים כפולים ביום</p>
+        <p>מחולל לו״ז הדרכה מקצועי</p>
       </header>
 
       <form onSubmit={handleSubmit}>
@@ -355,22 +357,22 @@ export default function HomePage() {
                         </tr>
                         {day.slots.map((slot, si) => (
                           <tr key={`slot-${day.day}-${si}`}>
-                            <td style={{ whiteSpace: "nowrap", color: "var(--text-muted)", fontSize: ".83rem" }}>
+                            <td data-label="שעה" style={{ whiteSpace: "nowrap", color: "var(--text-muted)", fontSize: ".83rem" }}>
                               {slot.time}
                             </td>
-                            <td style={{ fontWeight: 700 }}>
+                            <td data-label="נושא" style={{ fontWeight: 700 }}>
                               {slot.lesson_number && (
                                 <span className="lesson-pair">ש״כ {slot.lesson_number}</span>
                               )}
                               {slot.topic}
                             </td>
-                            <td>
+                            <td data-label="סוג">
                               <span className={`activity-badge ${getBadgeClass(slot.activity_type)}`}>
                                 {slot.activity_type}
                               </span>
                             </td>
-                            <td style={{ fontSize: ".83rem" }}>{slot.equipment}</td>
-                            <td style={{ fontSize: ".83rem", color: "var(--text-muted)" }}>
+                            <td data-label="ציוד" style={{ fontSize: ".83rem" }}>{slot.equipment}</td>
+                            <td data-label="דגשים" style={{ fontSize: ".83rem", color: "var(--text-muted)" }}>
                               {slot.instructor_notes}
                             </td>
                           </tr>
@@ -388,17 +390,19 @@ export default function HomePage() {
                 <button
                   className="copy-btn"
                   type="button"
-                  onClick={(e) => copyText(generateHtml(result), e.currentTarget)}
+                  onClick={(e) => copyText(htmlContent, e.currentTarget)}
                 >
                   העתק HTML
                 </button>
               </div>
               <div className="html-preview">
-                <iframe
-                  srcDoc={generateHtml(result)}
-                  title="תצוגה מקדימה"
-                  sandbox="allow-same-origin"
-                />
+                {activeTab === "html" && (
+                  <iframe
+                    srcDoc={htmlContent}
+                    title="תצוגה מקדימה"
+                    sandbox="allow-same-origin"
+                  />
+                )}
               </div>
             </div>
 

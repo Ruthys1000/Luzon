@@ -421,7 +421,6 @@ textarea.links-field {
   width: 100%;
   border-collapse: collapse;
   font-size: .875rem;
-  min-width: 600px;
 }
 
 .schedule-table th {
@@ -662,7 +661,7 @@ textarea.links-field {
 /* ── Responsive ── */
 @media (max-width: 600px) {
   .site-header {
-    padding: 2.75rem 1.5rem 2.5rem;
+    padding: 2.25rem 1.25rem 2rem;
   }
 
   .site-header .logo {
@@ -674,7 +673,7 @@ textarea.links-field {
   }
 
   .card {
-    padding: 1.35rem;
+    padding: 1.25rem;
   }
 
   .btn-row {
@@ -682,7 +681,77 @@ textarea.links-field {
   }
 
   .tab {
-    padding: .55rem .8rem;
-    font-size: .83rem;
+    padding: .5rem .7rem;
+    font-size: .8rem;
+  }
+
+  /* ── Mobile Table → Card Layout ── */
+  .schedule-table-wrap {
+    border: none;
+    border-radius: 0;
+  }
+
+  .schedule-table thead {
+    display: none;
+  }
+
+  .schedule-table,
+  .schedule-table tbody {
+    display: block;
+    width: 100%;
+  }
+
+  .schedule-table tbody tr.day-row {
+    display: block;
+  }
+
+  .schedule-table tbody tr.day-row td {
+    display: block;
+    padding: .6rem 1rem;
+  }
+
+  .schedule-table tbody tr:not(.day-row) {
+    display: block;
+    padding: .85rem 1rem;
+    border-bottom: 1px solid var(--border);
+    background: #fff;
+  }
+
+  .schedule-table tbody tr:not(.day-row) td {
+    display: flex;
+    flex-direction: column;
+    border: none;
+    padding: .25rem 0;
+  }
+
+  .schedule-table tbody tr:not(.day-row) td[data-label]::before {
+    content: attr(data-label);
+    font-size: .68rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    margin-bottom: .15rem;
+  }
+
+  /* Hide equipment on mobile — least critical column */
+  .schedule-table tbody tr:not(.day-row) td[data-label="ציוד"] {
+    display: none;
+  }
+
+  /* Time row — compact inline */
+  .schedule-table tbody tr:not(.day-row) td[data-label="שעה"] {
+    flex-direction: row;
+    align-items: center;
+    gap: .4rem;
+    margin-bottom: .2rem;
+  }
+
+  .schedule-table tbody tr:not(.day-row) td[data-label="שעה"]::before {
+    margin-bottom: 0;
+  }
+
+  .schedule-table tbody tr:not(.day-row):hover td {
+    background: transparent;
   }
 }
