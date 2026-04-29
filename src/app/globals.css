@@ -423,7 +423,6 @@ textarea.links-field {
   width: 100%;
   border-collapse: collapse;
   font-size: .89rem;
-  min-width: 600px;
 }
 
 .schedule-table th {
@@ -531,91 +530,95 @@ textarea.links-field {
   border-color: var(--primary);
 }
 
-/* ── HTML Preview ── */
-.html-preview {
+/* ── HTML Editor (distribution tab) ── */
+.html-editor {
+  width: 100%;
+  min-height: 420px;
+  font-family: 'Menlo', 'Consolas', monospace;
+  font-size: .8rem;
+  direction: ltr;
+  text-align: left;
+  background: #1a1917;
+  color: #d5cec4;
+  border-radius: 14px;
+  padding: 1rem 1.15rem;
   border: 1px solid var(--border);
-  border-radius: 18px;
-  overflow: hidden;
-  background: #fffdf9;
+  resize: vertical;
+  line-height: 1.65;
+  outline: none;
 }
 
-.html-preview iframe {
-  width: 100%;
-  min-height: 540px;
-  border: none;
-  display: block;
+.html-editor:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(212, 106, 80, .1);
 }
 
 /* ── WhatsApp ── */
-.whatsapp-box {
+.whatsapp-textarea {
+  width: 100%;
   background: #f2f7ef;
   border: 1px solid #c9dcc0;
   border-radius: 18px;
   padding: 1.5rem 1.7rem;
   font-size: .96rem;
+  font-family: 'Heebo', sans-serif;
   line-height: 1.85;
   white-space: pre-wrap;
   direction: rtl;
   color: #2f5d35;
+  resize: none;
+  min-height: 180px;
+  outline: none;
+  cursor: text;
 }
 
-/* ── Supplementary ── */
-.supp-day {
-  margin-bottom: 1.9rem;
+.whatsapp-textarea:focus {
+  border-color: #86b87c;
+  box-shadow: 0 0 0 3px rgba(134, 184, 124, .15);
 }
 
-.supp-day h4 {
-  font-size: .93rem;
+/* ── Supplementary inline (in table) ── */
+.supp-table-row td {
+  background: #fdf8f4 !important;
+  border-top: 2px dashed var(--border) !important;
+  padding: 1rem 1.15rem !important;
+}
+
+.supp-inline-title {
+  font-size: .75rem;
   font-weight: 900;
   color: var(--primary);
-  margin-bottom: .95rem;
-  padding-bottom: .6rem;
-  border-bottom: 1px solid var(--border);
-  letter-spacing: .02em;
   text-transform: uppercase;
+  letter-spacing: .06em;
+  margin-bottom: .6rem;
 }
 
-.supp-item {
+.supp-inline-items {
   display: flex;
+  flex-direction: column;
+  gap: .45rem;
+}
+
+.supp-inline-item {
+  display: flex;
+  gap: .55rem;
   align-items: flex-start;
-  gap: .95rem;
-  padding: .9rem 0;
-  border-bottom: 1px dashed var(--border);
+  font-size: .83rem;
+  line-height: 1.55;
 }
 
-.supp-item:last-child {
-  border-bottom: none;
-}
-
-.supp-icon {
-  width: 38px;
-  height: 38px;
-  border-radius: 14px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1rem;
+.supp-inline-item span:first-child {
   flex-shrink: 0;
-  background: var(--primary-light);
-  color: var(--primary-dark);
+  margin-top: .05rem;
 }
 
-.supp-text {
-  flex: 1;
-}
-
-.supp-text strong {
-  display: block;
-  font-size: .92rem;
+.supp-inline-item strong {
   font-weight: 800;
   color: var(--text);
-  margin-bottom: .25rem;
 }
 
-.supp-text span {
-  font-size: .84rem;
-  color: var(--text-muted);
-  line-height: 1.6;
+.supp-inline-item span:not(:first-child) {
+  color: var(--text-secondary);
 }
 
 /* ── Questions ── */
@@ -695,7 +698,6 @@ textarea.links-field {
   }
 
   .card {
-    padding: 1.25rem;
     padding: 1.4rem;
     border-radius: 18px;
   }
@@ -707,5 +709,80 @@ textarea.links-field {
   .tab {
     padding: .6rem .1rem;
     font-size: .84rem;
+  }
+
+  /* ── Mobile table: card layout ── */
+  .schedule-table-wrap {
+    overflow-x: visible;
+    border: none;
+    background: transparent;
+  }
+
+  .schedule-table {
+    min-width: 0;
+  }
+
+  .schedule-table thead {
+    display: none;
+  }
+
+  .schedule-table,
+  .schedule-table tbody,
+  .schedule-table tr,
+  .schedule-table td {
+    display: block;
+    width: 100%;
+  }
+
+  /* Slot rows become cards */
+  .schedule-table tr:not(.day-row):not(.supp-table-row) {
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    margin-bottom: .4rem;
+    background: #fffdf9;
+  }
+
+  /* Label + value grid for each cell */
+  .schedule-table td[data-label] {
+    display: grid;
+    grid-template-columns: 68px 1fr;
+    gap: .45rem;
+    padding: .5rem .85rem;
+    border-bottom: 1px solid var(--border);
+    align-items: baseline;
+    font-size: .84rem;
+  }
+
+  .schedule-table td[data-label]:last-child {
+    border-bottom: none;
+  }
+
+  .schedule-table td[data-label]::before {
+    content: attr(data-label);
+    font-weight: 800;
+    font-size: .7rem;
+    color: var(--text-muted);
+    padding-top: .15rem;
+  }
+
+  /* Day header and supp rows: full width, no grid */
+  .schedule-table .day-row td {
+    padding: .7rem .9rem;
+  }
+
+  .schedule-table .supp-table-row td {
+    border-radius: 0;
+    padding: .85rem .9rem !important;
+  }
+
+  /* No hover on touch */
+  .schedule-table tbody tr:not(.day-row):hover td {
+    background: inherit;
+  }
+
+  .html-editor {
+    min-height: 300px;
+    font-size: .75rem;
   }
 }

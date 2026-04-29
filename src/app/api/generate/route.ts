@@ -7,6 +7,14 @@ const SYSTEM_PROMPT = `אתה מומחה בכיר לפיתוח הדרכה, עי�
 המומחיות שלך: בניית תוכניות הכשרה מקצועיות, למידה מרחוק, instructional design.
 
 ═══════════════════════════════════════
+אופי הלו״ז: ימי למידה עצמאיים
+═══════════════════════════════════════
+
+הלו״ז מתייחס לימי למידה עצמאיים – הלומדים לומדים בקצב עצמם, לאו דווקא בכיתה עם מדריך.
+כל "שיעור כפול" הוא בלוק של למידה עצמאית: קריאה, צפייה בסרטון, תרגיל, משימה, פרויקט וכד'.
+אם התקבל בקשה לכלול מפגשי צוות – הוסף בלוקים מיוחדים של עבודה בצוות / דיון קבוצתי / סינכרוני (ציין זאת בבירור ב-topic ו-activity_type).
+
+═══════════════════════════════════════
 מבנה חובה: 4 שיעורים כפולים ביום
 ═══════════════════════════════════════
 
@@ -95,10 +103,12 @@ function buildUserPrompt(input: ScheduleInput): string {
     ? `\nקישורים לחומרים שרוצים לשלב:\n${input.material_links}\n(שלב קישורים אלה ישירות בשדות equipment ו-instructor_notes של הסלוטים הרלוונטיים, וציין אותם גם בתוכן המשלים)`
     : "\nקישורים: לא סופקו – הצע חומרים ספציפיים שניתן למצוא ביוטיוב / גוגל";
 
-  return `בנה לו״ז שבועי מקצועי של ${input.days} ימים, עם בדיוק 4 שיעורים כפולים (90 דק' כל אחד) ביום.
+  const teamSessionsNote = input.include_team_sessions === "yes"
+    ? "כלול מפגשי צוות / עבודה בצוותים / דיון קבוצתי בחלק מהבלוקים."
+    : "ימי למידה עצמאיים בלבד – אין מפגשי צוות.";
 
-קהל יעד:
-${input.target_audience}
+  return `בנה לו״ז שבועי מקצועי של ${input.days} ימים, עם בדיוק 4 שיעורים כפולים (90 דק' כל אחד) ביום.
+הלו״ז מיועד ללמידה עצמאית. ${teamSessionsNote}
 
 מטרות ההדרכה:
 ${input.goals}
@@ -122,11 +132,11 @@ ${linksSection}
 }
 
 interface ScheduleInput {
-  target_audience: string;
   goals: string;
   days: number;
   start_time: string;
   end_time: string;
+  include_team_sessions?: string;
   constraints?: string;
   notes?: string;
   preferences?: string;
@@ -138,9 +148,9 @@ export async function POST(req: NextRequest) {
   try {
     const input: ScheduleInput = await req.json();
 
-    if (!input.target_audience || !input.goals || !input.days || !input.start_time || !input.end_time) {
+    if (!input.goals || !input.days || !input.start_time || !input.end_time) {
       return NextResponse.json(
-        { error: "חסרים שדות חובה: קהל יעד, מטרות, ימים, שעות" },
+        { error: "חסרים שדות חובה: מטרות, ימים, שעות" },
         { status: 400 }
       );
     }
