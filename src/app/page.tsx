@@ -4,6 +4,7 @@ import { useState, useRef } from "react";
 
 interface SlotData {
   time: string;
+  lesson_number?: number;
   topic: string;
   activity_type: string;
   equipment: string;
@@ -59,6 +60,7 @@ export default function HomePage() {
     notes: "",
     preferences: "",
     most_important: "",
+    material_links: "",
   });
 
   const [loading, setLoading] = useState(false);
@@ -166,8 +168,11 @@ export default function HomePage() {
   return (
     <div className="page-wrapper">
       <header className="site-header">
-        <div className="logo">✦ Luz Creator</div>
-        <p>מחולל לו״ז שבועי חכם ומקצועי ללמידה מרחוק</p>
+        <div className="logo">
+          <span className="logo-mark">✦</span>
+          Luz Creator
+        </div>
+        <p>מחולל לו״ז הדרכה מקצועי — 4 שיעורים כפולים ביום</p>
       </header>
 
       <form onSubmit={handleSubmit}>
@@ -269,6 +274,21 @@ export default function HomePage() {
                 placeholder="לדוגמה: שהלומדים ירגישו מוצלחים ביום הראשון"
               />
             </div>
+            <div className="field full">
+              <label>
+                קישורים לחומרים שלך <span className="hint">סרטונים, מצגות, מאמרים — שורה אחת לכל קישור</span>
+              </label>
+              <textarea
+                className="links-field"
+                name="material_links"
+                value={form.material_links}
+                onChange={handleChange}
+                placeholder={"https://www.youtube.com/watch?v=...\nhttps://docs.google.com/..."}
+              />
+              <div className="links-hint">
+                💡 אם אין לך קישורים — השאר ריק. הכלי ימצא ויציע תכנים רלוונטיים לפי הנושא.
+              </div>
+            </div>
           </div>
         </div>
 
@@ -335,17 +355,22 @@ export default function HomePage() {
                         </tr>
                         {day.slots.map((slot, si) => (
                           <tr key={`slot-${day.day}-${si}`}>
-                            <td style={{ whiteSpace: "nowrap", color: "var(--text-muted)", fontSize: ".85rem" }}>
+                            <td style={{ whiteSpace: "nowrap", color: "var(--text-muted)", fontSize: ".83rem" }}>
                               {slot.time}
                             </td>
-                            <td style={{ fontWeight: 600 }}>{slot.topic}</td>
+                            <td style={{ fontWeight: 700 }}>
+                              {slot.lesson_number && (
+                                <span className="lesson-pair">ש״כ {slot.lesson_number}</span>
+                              )}
+                              {slot.topic}
+                            </td>
                             <td>
                               <span className={`activity-badge ${getBadgeClass(slot.activity_type)}`}>
                                 {slot.activity_type}
                               </span>
                             </td>
-                            <td style={{ fontSize: ".85rem" }}>{slot.equipment}</td>
-                            <td style={{ fontSize: ".85rem", color: "var(--text-muted)" }}>
+                            <td style={{ fontSize: ".83rem" }}>{slot.equipment}</td>
+                            <td style={{ fontSize: ".83rem", color: "var(--text-muted)" }}>
                               {slot.instructor_notes}
                             </td>
                           </tr>
