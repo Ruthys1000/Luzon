@@ -695,6 +695,7 @@ textarea.links-field {
   }
 
   .card {
+    padding: 1.25rem;
     padding: 1.4rem;
     border-radius: 18px;
   }

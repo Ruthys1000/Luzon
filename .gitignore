@@ -16,3 +16,6 @@ out/
 
 # debug
 npm-debug.log*
+
+# typescript
+*.tsbuildinfo
