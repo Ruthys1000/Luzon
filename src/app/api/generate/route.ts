@@ -138,61 +138,68 @@ ${linksSection}
 }
 
 export async function POST(req: NextRequest) {
+  let input: ScheduleInput;
   try {
-    const input: ScheduleInput = await req.json();
-
-    if (!input.goals || !input.days || !input.start_time || !input.end_time) {
-      return NextResponse.json(
-        { error: "חסרים שדות חובה: מטרות, ימים, שעות" },
-        { status: 400 }
-      );
-    }
-
-    if (input.days < 1 || input.days > 30) {
-      return NextResponse.json(
-        { error: "מספר הימים חייב להיות בין 1 ל-30" },
-        { status: 400 }
-      );
-    }
-
-    const message = await client.messages.create({
-      model: "claude-sonnet-4-6",
-      max_tokens: 12000,
-      system: [
-        {
-          type: "text",
-          text: SYSTEM_PROMPT,
-          cache_control: { type: "ephemeral" },
-        },
-      ],
-      messages: [
-        {
-          role: "user",
-          content: buildUserPrompt(input),
-        },
-      ],
-    });
-
-    const usage = message.usage as Record<string, number>;
-    const cacheHit = (usage.cache_read_input_tokens ?? 0) > 0;
-    console.log(
-      `[generate] tokens – input: ${usage.input_tokens}, cache_read: ${usage.cache_read_input_tokens ?? 0}, cache_create: ${usage.cache_creation_input_tokens ?? 0}, output: ${usage.output_tokens} | cache ${cacheHit ? "HIT" : "MISS"}`
-    );
-
-    const rawText = message.content[0].type === "text" ? message.content[0].text : "";
-
-    const jsonMatch = rawText.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) {
-      return NextResponse.json(
-        { error: "התגובה מהמודל אינה JSON תקין", raw: rawText },
-        { status: 500 }
-      );
-    }
-
-    const scheduleData = JSON.parse(jsonMatch[0]);
-    return NextResponse.json(scheduleData);
-  } catch (err) {
-    const message = err instanceof Error ? err.message : "שגיאה לא ידועה";
-    return NextResponse.json({ error: message }, { status: 500 });
+    input = await req.json();
+  } catch {
+    return NextResponse.json({ error: "בקשה לא תקינה" }, { status: 400 });
   }
+
+  if (!input.goals?.trim() || !input.days || !input.start_time || !input.end_time) {
+    return NextResponse.json(
+      { error: "חסרים שדות חובה: מטרות, ימים, שעות" },
+      { status: 400 }
+    );
+  }
+
+  if (input.days < 1 || input.days > 7) {
+    return NextResponse.json(
+      { error: "מספר הימים חייב להיות בין 1 ל-7" },
+      { status: 400 }
+    );
+  }
+
+  const encoder = new TextEncoder();
+
+  const stream = new ReadableStream({
+    async start(controller) {
+      try {
+        const anthropicStream = client.messages.stream({
+          model: "claude-sonnet-4-6",
+          max_tokens: 12000,
+          system: [
+            {
+              type: "text",
+              text: SYSTEM_PROMPT,
+              cache_control: { type: "ephemeral" },
+            },
+          ],
+          messages: [{ role: "user", content: buildUserPrompt(input) }],
+        });
+
+        anthropicStream.on("text", (text) => {
+          controller.enqueue(encoder.encode(text));
+        });
+
+        const finalMsg = await anthropicStream.finalMessage();
+        const u = finalMsg.usage as Record<string, number>;
+        const hit = (u.cache_read_input_tokens ?? 0) > 0;
+        console.log(
+          `[generate] input: ${u.input_tokens}, cache_read: ${u.cache_read_input_tokens ?? 0}, cache_create: ${u.cache_creation_input_tokens ?? 0}, output: ${u.output_tokens} | cache ${hit ? "HIT" : "MISS"}`
+        );
+      } catch (err) {
+        console.error("[generate] stream error:", err);
+      } finally {
+        controller.close();
+      }
+    },
+  });
+
+  return new Response(stream, {
+    headers: {
+      "Content-Type": "text/plain; charset=utf-8",
+      "Cache-Control": "no-cache",
+      "X-Accel-Buffering": "no",
+    },
+  });
 }

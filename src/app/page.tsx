@@ -22,6 +22,7 @@ export default function HomePage() {
   });
 
   const [loading, setLoading] = useState(false);
+  const [streamingText, setStreamingText] = useState("");
   const [error, setError] = useState("");
   const [result, setResult] = useState<ScheduleResult | null>(SAMPLE_RESULT);
   const [isSample, setIsSample] = useState(true);
@@ -51,6 +52,7 @@ export default function HomePage() {
     setResult(null);
     setIsEditing(false);
     setDraftResult(null);
+    setStreamingText("");
     setLoading(true);
 
     try {
@@ -60,14 +62,36 @@ export default function HomePage() {
         body: JSON.stringify({ ...form, days: Number(form.days) }),
       });
 
-      const data = await res.json();
-
       if (!res.ok) {
+        const data = await res.json();
         setError(data.error || "שגיאה ביצירת הלו״ז");
         return;
       }
 
-      setResult(data);
+      if (!res.body) {
+        setError("שגיאת רשת – אנא נסה שוב");
+        return;
+      }
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let accumulated = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        accumulated += decoder.decode(value, { stream: true });
+        setStreamingText(accumulated);
+      }
+
+      const jsonMatch = accumulated.match(/\{[\s\S]*\}/);
+      if (!jsonMatch) {
+        setError("שגיאה ביצירת הלו״ז – אנא נסה שוב");
+        return;
+      }
+
+      const scheduleData = JSON.parse(jsonMatch[0]);
+      setResult(scheduleData);
       setIsSample(false);
       setActiveTab("distribution");
       setTimeout(() => {
@@ -77,6 +101,7 @@ export default function HomePage() {
       setError("שגיאת רשת – אנא נסה שוב");
     } finally {
       setLoading(false);
+      setStreamingText("");
     }
   }
 
@@ -343,7 +368,11 @@ export default function HomePage() {
           <span className="spinner spinner-brand" />
           <div className="loading-text">
             <strong>מחוללת לו״ז...</strong>
-            <span>הבינה המלאכותית בונה לו״ז מותאם אישית עבורך</span>
+            <span>
+              {streamingText
+                ? `מקבלת תגובה... ${streamingText.length.toLocaleString("he-IL")} תווים`
+                : "הבינה המלאכותית בונה לו״ז מותאם אישית עבורך"}
+            </span>
           </div>
         </div>
       )}
