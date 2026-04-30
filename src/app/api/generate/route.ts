@@ -187,7 +187,7 @@ export async function POST(req: NextRequest) {
         }
 
         const finalMsg = await anthropicStream.finalMessage();
-        const u = finalMsg.usage as Record<string, number>;
+        const u = finalMsg.usage as unknown as Record<string, number>;
         const hit = (u.cache_read_input_tokens ?? 0) > 0;
         console.log(
           `[generate] input: ${u.input_tokens}, cache_read: ${u.cache_read_input_tokens ?? 0}, cache_create: ${u.cache_creation_input_tokens ?? 0}, output: ${u.output_tokens} | cache ${hit ? "HIT" : "MISS"}`
