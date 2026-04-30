@@ -169,17 +169,22 @@ export async function POST(req: NextRequest) {
           max_tokens: 12000,
           system: [
             {
-              type: "text",
+              type: "text" as const,
               text: SYSTEM_PROMPT,
-              cache_control: { type: "ephemeral" },
+              cache_control: { type: "ephemeral" as const },
             },
           ],
           messages: [{ role: "user", content: buildUserPrompt(input) }],
         });
 
-        anthropicStream.on("text", (text) => {
-          controller.enqueue(encoder.encode(text));
-        });
+        for await (const chunk of anthropicStream) {
+          if (
+            chunk.type === "content_block_delta" &&
+            chunk.delta.type === "text_delta"
+          ) {
+            controller.enqueue(encoder.encode(chunk.delta.text));
+          }
+        }
 
         const finalMsg = await anthropicStream.finalMessage();
         const u = finalMsg.usage as Record<string, number>;

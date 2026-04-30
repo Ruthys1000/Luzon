@@ -3,7 +3,7 @@ import { Heebo } from "next/font/google";
 import "./globals.css";
 
 const heebo = Heebo({
-  subsets: ["hebrew", "latin"],
+  subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700", "800", "900"],
   display: "swap",
   variable: "--font-heebo",
