@@ -818,6 +818,8 @@ input.editor-day-name:focus {
 }
 
 .supp-inline-item > div {
+  flex: 1;
+  min-width: 0;
   text-align: right;
 }
 
