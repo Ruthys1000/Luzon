@@ -607,6 +607,29 @@ textarea.links-field {
   }
 }
 
+.copy-btn-share {
+  background: #25d366;
+  color: #fff;
+  border-color: #25d366;
+}
+
+.copy-btn-share:hover {
+  background: #1ebe5d;
+  border-color: #1ebe5d;
+  color: #fff;
+}
+
+.share-notice {
+  background: #f0fdf4;
+  border: 1px solid #86efac;
+  border-radius: var(--radius-sm);
+  padding: .65rem 1rem;
+  font-size: .85rem;
+  color: #166534;
+  font-weight: 600;
+  margin-bottom: .9rem;
+}
+
 /* ── Copy button – save variant ── */
 .copy-btn-save {
   background: var(--text);

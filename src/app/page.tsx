@@ -182,6 +182,7 @@ export default function HomePage() {
   const [draftResult, setDraftResult] = useState<ScheduleResult | null>(null);
   const [editableHtml, setEditableHtml] = useState(() => generateHtml(SAMPLE_RESULT));
   const [whatsappCopied, setWhatsappCopied] = useState(false);
+  const [shareNotice, setShareNotice] = useState("");
   const resultRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -241,6 +242,30 @@ export default function HomePage() {
     await navigator.clipboard.writeText(result.whatsapp_message);
     setWhatsappCopied(true);
     setTimeout(() => setWhatsappCopied(false), 1500);
+  }
+
+  async function shareSchedule() {
+    if (!result) return;
+    const blob = new Blob([editableHtml], { type: "text/html;charset=utf-8" });
+    const file = new File([blob], "luz-schedule.html", { type: "text/html" });
+
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      try {
+        await navigator.share({ files: [file], text: result.whatsapp_message });
+      } catch {
+        // user cancelled – do nothing
+      }
+    } else {
+      // desktop fallback: download + copy message
+      downloadHtml();
+      try {
+        await navigator.clipboard.writeText(result.whatsapp_message);
+        setShareNotice("הקובץ הורד והודעת הווטסאפ הועתקה ללוח");
+      } catch {
+        setShareNotice("הקובץ הורד — העתק את הודעת הווטסאפ מהטאב המתאים");
+      }
+      setTimeout(() => setShareNotice(""), 3500);
+    }
   }
 
   function downloadHtml() {
@@ -642,9 +667,16 @@ export default function HomePage() {
                     <button className="copy-btn" type="button" onClick={downloadHtml}>
                       ⬇️ הורד HTML
                     </button>
+                    <button className="copy-btn copy-btn-share" type="button" onClick={shareSchedule}>
+                      📤 שתף
+                    </button>
                   </>
                 )}
               </div>
+
+              {shareNotice && (
+                <div className="share-notice">{shareNotice}</div>
+              )}
 
               {isEditing && draftResult ? (
                 <div className="structured-editor">
