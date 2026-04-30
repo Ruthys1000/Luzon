@@ -158,7 +158,13 @@ export async function POST(req: NextRequest) {
     const message = await client.messages.create({
       model: "claude-sonnet-4-6",
       max_tokens: 12000,
-      system: SYSTEM_PROMPT,
+      system: [
+        {
+          type: "text",
+          text: SYSTEM_PROMPT,
+          cache_control: { type: "ephemeral" },
+        },
+      ],
       messages: [
         {
           role: "user",
@@ -166,6 +172,12 @@ export async function POST(req: NextRequest) {
         },
       ],
     });
+
+    const usage = message.usage as Record<string, number>;
+    const cacheHit = (usage.cache_read_input_tokens ?? 0) > 0;
+    console.log(
+      `[generate] tokens – input: ${usage.input_tokens}, cache_read: ${usage.cache_read_input_tokens ?? 0}, cache_create: ${usage.cache_creation_input_tokens ?? 0}, output: ${usage.output_tokens} | cache ${cacheHit ? "HIT" : "MISS"}`
+    );
 
     const rawText = message.content[0].type === "text" ? message.content[0].text : "";
 
