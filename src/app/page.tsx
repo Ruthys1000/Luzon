@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, Fragment } from "react";
 
 interface SlotData {
   time: string;
@@ -50,7 +50,7 @@ function getBadgeClass(type: string): string {
 }
 
 function generateHtml(result: ScheduleResult): string {
-  const rows = result.days.flatMap((day) => {
+  const rows = result.days.map((day) => {
     const dayHeader = `<tr style="background:#f3e4dc"><td colspan="5" style="padding:10px 14px;font-weight:700;color:#7f2f22;font-size:14px">${day.day}</td></tr>`;
     const slotRows = day.slots.map((s) => `
       <tr>
@@ -165,6 +165,7 @@ export default function HomePage() {
   const [result, setResult] = useState<ScheduleResult | null>(SAMPLE_RESULT);
   const [activeTab, setActiveTab] = useState("distribution");
   const [editableHtml, setEditableHtml] = useState(() => generateHtml(SAMPLE_RESULT));
+  const [whatsappCopied, setWhatsappCopied] = useState(false);
   const resultRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -177,8 +178,7 @@ export default function HomePage() {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   }
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
+  async function runGenerate() {
     setError("");
     setResult(null);
     setLoading(true);
@@ -209,11 +209,16 @@ export default function HomePage() {
     }
   }
 
-  async function copyText(text: string, btn: HTMLButtonElement) {
-    await navigator.clipboard.writeText(text);
-    const orig = btn.textContent;
-    btn.textContent = "הועתק!";
-    setTimeout(() => { btn.textContent = orig; }, 1500);
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    await runGenerate();
+  }
+
+  async function copyWhatsapp() {
+    if (!result) return;
+    await navigator.clipboard.writeText(result.whatsapp_message);
+    setWhatsappCopied(true);
+    setTimeout(() => setWhatsappCopied(false), 1500);
   }
 
   function downloadHtml() {
@@ -404,8 +409,8 @@ export default function HomePage() {
                 </thead>
                 <tbody>
                   {result.days.map((day) => (
-                    <>
-                      <tr key={`hdr-${day.day}`} className="day-row">
+                    <Fragment key={day.day}>
+                      <tr className="day-row">
                         <td colSpan={5}>{day.day}</td>
                       </tr>
                       {day.slots.map((slot, si) => (
@@ -461,7 +466,7 @@ export default function HomePage() {
                           </div>
                         </td>
                       </tr>
-                    </>
+                    </Fragment>
                   ))}
                 </tbody>
               </table>
@@ -509,9 +514,9 @@ export default function HomePage() {
                 <button
                   className="copy-btn"
                   type="button"
-                  onClick={(e) => copyText(result.whatsapp_message, e.currentTarget)}
+                  onClick={copyWhatsapp}
                 >
-                  העתק הודעה
+                  {whatsappCopied ? "הועתק!" : "העתק הודעה"}
                 </button>
               </div>
               <textarea
@@ -546,14 +551,7 @@ export default function HomePage() {
                 <button
                   className="btn btn-ghost"
                   type="button"
-                  onClick={() => {
-                    setResult(null);
-                    setTimeout(() => {
-                      document.querySelector("form")?.dispatchEvent(
-                        new Event("submit", { cancelable: true, bubbles: true })
-                      );
-                    }, 100);
-                  }}
+                  onClick={runGenerate}
                 >
                   🔄 חולל מחדש
                 </button>
