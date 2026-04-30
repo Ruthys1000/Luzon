@@ -312,6 +312,45 @@ textarea.links-field {
   flex-shrink: 0;
 }
 
+.spinner-brand {
+  width: 30px;
+  height: 30px;
+  border: 3px solid var(--border);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+  flex-shrink: 0;
+}
+
+/* ── Loading card ── */
+.loading-card {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.8rem 2rem;
+  margin-top: 1.4rem;
+}
+
+.loading-text {
+  display: flex;
+  flex-direction: column;
+  gap: .25rem;
+}
+
+.loading-text strong {
+  font-size: .98rem;
+  color: var(--text);
+  font-weight: 800;
+}
+
+.loading-text span {
+  font-size: .84rem;
+  color: var(--text-muted);
+}
+
 @keyframes spin {
   to { transform: rotate(360deg); }
 }

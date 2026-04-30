@@ -420,6 +420,17 @@ export default function HomePage() {
         </button>
       </form>
 
+      {/* Loading state */}
+      {loading && (
+        <div className="loading-card">
+          <span className="spinner spinner-brand" />
+          <div className="loading-text">
+            <strong>מחוללת לו״ז...</strong>
+            <span>הבינה המלאכותית בונה לו״ז מותאם אישית עבורך</span>
+          </div>
+        </div>
+      )}
+
       {/* Results */}
       {result && (
         <div ref={resultRef} style={{ marginTop: "2.5rem" }}>
