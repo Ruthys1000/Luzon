@@ -155,6 +155,13 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    if (input.days < 1 || input.days > 30) {
+      return NextResponse.json(
+        { error: "מספר הימים חייב להיות בין 1 ל-30" },
+        { status: 400 }
+      );
+    }
+
     const message = await client.messages.create({
       model: "claude-sonnet-4-6",
       max_tokens: 12000,
