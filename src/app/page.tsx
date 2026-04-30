@@ -54,6 +54,11 @@ export default function HomePage() {
   const [whatsappCopied, setWhatsappCopied] = useState(false);
   const [shareNotice, setShareNotice] = useState("");
   const resultRef = useRef<HTMLDivElement>(null);
+  const loadingRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (loading) loadingRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, [loading]);
 
   useEffect(() => {
     if (result) {
@@ -359,19 +364,27 @@ export default function HomePage() {
       </form>
 
       {/* Loading state */}
-      {loading && (
-        <div className="loading-card">
-          <span className="spinner spinner-brand" />
-          <div className="loading-text">
-            <strong>מחוללת לו״ז...</strong>
-            <span>
-              {streamingText
-                ? `מקבלת תגובה... ${streamingText.length.toLocaleString("he-IL")} תווים`
-                : "הבינה המלאכותית בונה לו״ז מותאם אישית עבורך"}
-            </span>
+      {loading && (() => {
+        const len = streamingText.length;
+        const stageLabel = len === 0
+          ? "מתחברת לבינה המלאכותית..."
+          : len < 3000
+            ? "בונה מבנה הלו״ז..."
+            : `מקבלת תגובה — ${len.toLocaleString("he-IL")} תווים`;
+        const progress = len === 0 ? 5 : Math.min(95, Math.round((len / 10000) * 100));
+        return (
+          <div ref={loadingRef} className="loading-card">
+            <span className="spinner spinner-brand" />
+            <div className="loading-text">
+              <strong>מחוללת לו״ז...</strong>
+              <span>{stageLabel}</span>
+              <div className="loading-progress">
+                <div className="loading-progress-bar" style={{ width: `${progress}%` }} />
+              </div>
+            </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
 
       {/* Results */}
       {result && (

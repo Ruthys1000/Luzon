@@ -265,9 +265,17 @@ textarea.links-field {
 }
 
 .btn-primary:disabled {
-  opacity: .55;
+  opacity: 1;
   cursor: not-allowed;
   transform: none;
+  background: linear-gradient(90deg, #1f1c18 0%, #3a3530 50%, #1f1c18 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.6s ease infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: 100% 0; }
+  100% { background-position: -100% 0; }
 }
 
 .btn-secondary {
@@ -325,13 +333,30 @@ textarea.links-field {
 /* ── Loading card ── */
 .loading-card {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 1.2rem;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 1.8rem 2rem;
   margin-top: 1.4rem;
+}
+
+.loading-progress {
+  height: 4px;
+  background: var(--border);
+  border-radius: 999px;
+  margin-top: .75rem;
+  overflow: hidden;
+  width: 100%;
+}
+
+.loading-progress-bar {
+  height: 100%;
+  background: var(--primary);
+  border-radius: 999px;
+  transition: width .4s ease;
+  min-width: 8px;
 }
 
 .loading-text {
