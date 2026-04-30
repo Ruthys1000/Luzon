@@ -1,5 +1,6 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { NextRequest, NextResponse } from "next/server";
+import type { ScheduleInput } from "@/types/schedule";
 
 const client = new Anthropic();
 
@@ -134,21 +135,6 @@ ${zoomSection}
 ${linksSection}
 
 זכור: בדיוק 4 שיעורים כפולים (lesson_number: 1–4) ביום + הפסקות. החזר JSON בלבד.`;
-}
-
-interface ScheduleInput {
-  goals: string;
-  days: number;
-  start_time: string;
-  end_time: string;
-  include_team_sessions?: string;
-  zoom_morning?: string;
-  zoom_end?: string;
-  constraints?: string;
-  notes?: string;
-  preferences?: string;
-  most_important?: string;
-  material_links?: string;
 }
 
 export async function POST(req: NextRequest) {
