@@ -328,6 +328,19 @@ textarea.links-field {
   font-weight: 600;
 }
 
+/* ── Sample result banner ── */
+.sample-banner {
+  background: #fffbeb;
+  border: 1px solid #fcd34d;
+  border-right: 4px solid #f59e0b;
+  border-radius: var(--radius-sm);
+  padding: .85rem 1.2rem;
+  font-size: .88rem;
+  color: #78350f;
+  margin-bottom: 1.4rem;
+  line-height: 1.55;
+}
+
 /* ── Result action buttons row ── */
 .result-actions {
   display: flex;

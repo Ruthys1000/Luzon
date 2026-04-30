@@ -176,6 +176,7 @@ export default function HomePage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [result, setResult] = useState<ScheduleResult | null>(SAMPLE_RESULT);
+  const [isSample, setIsSample] = useState(true);
   const [activeTab, setActiveTab] = useState("distribution");
   const [showHtmlSource, setShowHtmlSource] = useState(false);
   const [editableHtml, setEditableHtml] = useState(() => generateHtml(SAMPLE_RESULT));
@@ -216,6 +217,7 @@ export default function HomePage() {
       }
 
       setResult(data);
+      setIsSample(false);
       setActiveTab("distribution");
       setTimeout(() => {
         resultRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -421,6 +423,13 @@ export default function HomePage() {
       {/* Results */}
       {result && (
         <div ref={resultRef} style={{ marginTop: "2.5rem" }}>
+          {/* Sample banner */}
+          {isSample && (
+            <div className="sample-banner">
+              👁 זוהי תוצאת <strong>דוגמה בלבד</strong> — מלא את הפרטים ולחץ &ldquo;צור לו״ז שבועי&rdquo; כדי לקבל לו״ז אמיתי
+            </div>
+          )}
+
           {/* Action buttons */}
           <div className="result-actions">
             <button
