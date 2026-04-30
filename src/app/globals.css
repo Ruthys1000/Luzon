@@ -44,7 +44,7 @@ html {
 }
 
 body {
-  font-family: 'Heebo', sans-serif;
+  font-family: var(--font-heebo), sans-serif;
   background: var(--bg);
   color: var(--text);
   min-height: 100vh;
@@ -190,7 +190,7 @@ select {
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   font-size: .95rem;
-  font-family: 'Heebo', sans-serif;
+  font-family: var(--font-heebo), sans-serif;
   color: var(--text);
   background: #fffdf9;
   transition: border-color .15s, box-shadow .15s, background .15s;
@@ -221,7 +221,7 @@ textarea {
 textarea.links-field {
   min-height: 76px;
   font-size: .84rem;
-  font-family: monospace, 'Heebo', sans-serif;
+  font-family: monospace, var(--font-heebo), sans-serif;
   direction: ltr;
   text-align: left;
 }
@@ -239,7 +239,7 @@ textarea.links-field {
   cursor: pointer;
   border: none;
   transition: all .18s;
-  font-family: 'Heebo', sans-serif;
+  font-family: var(--font-heebo), sans-serif;
   letter-spacing: .01em;
 }
 
@@ -443,7 +443,7 @@ textarea.links-field {
   border-bottom: 2px solid transparent;
   margin-bottom: -1px;
   transition: color .15s, border-color .15s;
-  font-family: 'Heebo', sans-serif;
+  font-family: var(--font-heebo), sans-serif;
   white-space: nowrap;
 }
 
@@ -580,7 +580,7 @@ textarea.links-field {
   border-radius: 999px;
   cursor: pointer;
   color: var(--text-muted);
-  font-family: 'Heebo', sans-serif;
+  font-family: var(--font-heebo), sans-serif;
   font-weight: 800;
   transition: all .15s;
 }
@@ -669,7 +669,7 @@ input.editor-day-name {
   font-weight: 900;
   font-size: .95rem;
   color: var(--primary-dark);
-  font-family: 'Heebo', sans-serif;
+  font-family: var(--font-heebo), sans-serif;
   width: 100%;
 }
 
@@ -780,7 +780,7 @@ input.editor-day-name:focus {
   border-radius: 18px;
   padding: 1.5rem 1.7rem;
   font-size: .96rem;
-  font-family: 'Heebo', sans-serif;
+  font-family: var(--font-heebo), sans-serif;
   line-height: 1.85;
   white-space: pre-wrap;
   direction: rtl;
