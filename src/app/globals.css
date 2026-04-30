@@ -539,20 +539,6 @@ textarea.links-field {
   border-bottom: 1px solid #dec8bd !important;
 }
 
-/* ── Double-lesson label ── */
-.lesson-pair {
-  display: inline-block;
-  font-size: .7rem;
-  font-weight: 800;
-  background: var(--text);
-  color: #fff;
-  border-radius: 999px;
-  padding: .08rem .45rem;
-  margin-left: .45rem;
-  vertical-align: middle;
-  letter-spacing: .02em;
-}
-
 /* ── Rationale box ── */
 .rationale-box {
   background: #fbf6ee;
@@ -831,6 +817,10 @@ input.editor-day-name:focus {
   margin-top: .05rem;
 }
 
+.supp-inline-item > div {
+  text-align: right;
+}
+
 .supp-inline-item strong {
   font-weight: 800;
   color: var(--text);
@@ -873,6 +863,42 @@ input.editor-day-name:focus {
   flex-shrink: 0;
   margin-top: .1rem;
   color: var(--primary);
+}
+
+/* ── Zoom info bar (on-screen result) ── */
+.zoom-info-bar {
+  background: #eef5fd;
+  border-radius: var(--radius-sm);
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.4rem;
+  font-size: .9rem;
+  line-height: 1.8;
+  border-right: 4px solid #1d7bd4;
+  color: #1f1c18;
+}
+
+.zoom-info-label {
+  font-size: .75rem;
+  font-weight: 900;
+  color: #1d7bd4;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  margin-bottom: .4rem;
+}
+
+/* ── Supplementary search link ── */
+.supp-search-link {
+  display: inline-block;
+  margin-right: .5rem;
+  margin-top: .2rem;
+  font-size: .76rem;
+  color: #1d7bd4;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.supp-search-link:hover {
+  text-decoration: underline;
 }
 
 /* ── Links hint ── */
@@ -958,8 +984,9 @@ input.editor-day-name:focus {
     border: 1px solid var(--border);
     border-radius: 14px;
     overflow: hidden;
-    margin-bottom: .4rem;
+    margin-bottom: .6rem;
     background: #fffdf9;
+    box-shadow: 0 1px 4px rgba(0,0,0,.07);
   }
 
   /* Label + value grid for each cell */
@@ -968,7 +995,7 @@ input.editor-day-name:focus {
     grid-template-columns: 68px 1fr;
     gap: .45rem;
     padding: .5rem .85rem;
-    border-bottom: 1px solid var(--border);
+    border-bottom: 1px solid #cfc5b8;
     align-items: baseline;
     font-size: .84rem;
   }

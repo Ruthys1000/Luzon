@@ -12,6 +12,23 @@ function linkify(text: string): string {
   });
 }
 
+function hasLink(html: string): boolean {
+  return html.includes("<a ");
+}
+
+function suppLink(title: string, type: "video" | "article" | "activity"): string {
+  const q = encodeURIComponent(title);
+  return type === "video"
+    ? `https://www.youtube.com/results?search_query=${q}`
+    : `https://www.google.com/search?q=${q}`;
+}
+
+function scheduleFilename(): string {
+  const now = new Date();
+  const ts = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, "0")}${String(now.getDate()).padStart(2, "0")}-${String(now.getHours()).padStart(2, "0")}${String(now.getMinutes()).padStart(2, "0")}`;
+  return `luz-${ts}.html`;
+}
+
 export default function HomePage() {
   const [form, setForm] = useState({
     goals: "",
@@ -123,7 +140,7 @@ export default function HomePage() {
   async function shareSchedule() {
     if (!result) return;
     const blob = new Blob([editableHtml], { type: "text/html;charset=utf-8" });
-    const file = new File([blob], "luz-schedule.html", { type: "text/html" });
+    const file = new File([blob], scheduleFilename(), { type: "text/html" });
 
     if (navigator.canShare && navigator.canShare({ files: [file] })) {
       try {
@@ -145,13 +162,11 @@ export default function HomePage() {
   }
 
   function downloadHtml() {
-    const now = new Date();
-    const ts = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, "0")}${String(now.getDate()).padStart(2, "0")}-${String(now.getHours()).padStart(2, "0")}${String(now.getMinutes()).padStart(2, "0")}`;
     const blob = new Blob([editableHtml], { type: "text/html;charset=utf-8" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `luz-${ts}.html`;
+    a.download = scheduleFilename();
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -389,7 +404,16 @@ export default function HomePage() {
             <div className="rationale-box">{result.rationale}</div>
           </div>
 
-          {/* Schedule table – shown directly, no tab */}
+          {/* Zoom banner */}
+          {(form.zoom_morning || form.zoom_end) && (
+            <div className="zoom-info-bar">
+              <div className="zoom-info-label">פרטי זום</div>
+              {form.zoom_morning && <div>☀️ <strong>מפגש בוקר (שיעור 1):</strong> {form.zoom_morning}</div>}
+              {form.zoom_end && <div>🌙 <strong>מפגש סיום יום (שיעור 4):</strong> {form.zoom_end}</div>}
+            </div>
+          )}
+
+          {/* Schedule table */}
           <div className="card">
             <div className="card-title">לו״ז</div>
             <div className="schedule-table-wrap">
@@ -414,12 +438,7 @@ export default function HomePage() {
                             {slot.time}
                           </td>
                           <td data-label="נושא" style={{ fontWeight: 700 }}>
-                            <span>
-                              {slot.lesson_number && (
-                                <span className="lesson-pair">{slot.lesson_number}</span>
-                              )}
-                              {slot.topic}
-                            </span>
+                            {slot.lesson_number ? `${slot.lesson_number}. ` : ""}{slot.topic}
                           </td>
                           <td data-label="סוג">
                             <span className={`activity-badge ${getBadgeClass(slot.activity_type)}`}>
@@ -431,33 +450,32 @@ export default function HomePage() {
                           />
                         </tr>
                       ))}
-                      {/* Supplementary content at end of each day */}
+                      {/* Supplementary content */}
                       <tr key={`supp-${day.day}`} className="supp-table-row">
                         <td colSpan={4}>
                           <div className="supp-inline">
                             <div className="supp-inline-title">תוכן משלים</div>
                             <div className="supp-inline-items">
-                              <div className="supp-inline-item">
-                                <span>🎬</span>
-                                <div>
-                                  <strong>{day.supplementary.video.title}</strong>
-                                  <span dangerouslySetInnerHTML={{ __html: ` – ${linkify(day.supplementary.video.description)}` }} />
-                                </div>
-                              </div>
-                              <div className="supp-inline-item">
-                                <span>📖</span>
-                                <div>
-                                  <strong>{day.supplementary.article.title}</strong>
-                                  <span dangerouslySetInnerHTML={{ __html: ` – ${linkify(day.supplementary.article.description)}` }} />
-                                </div>
-                              </div>
-                              <div className="supp-inline-item">
-                                <span>🎯</span>
-                                <div>
-                                  <strong>{day.supplementary.activity.title}</strong>
-                                  <span dangerouslySetInnerHTML={{ __html: ` – ${linkify(day.supplementary.activity.description)}` }} />
-                                </div>
-                              </div>
+                              {(["video", "article", "activity"] as const).map((type) => {
+                                const icons = { video: "🎬", article: "📖", activity: "🎯" };
+                                const item = day.supplementary[type];
+                                const descHtml = linkify(item.description);
+                                const searchUrl = suppLink(item.title, type);
+                                return (
+                                  <div key={type} className="supp-inline-item">
+                                    <span>{icons[type]}</span>
+                                    <div style={{ textAlign: "right" }}>
+                                      <strong>{item.title}</strong>
+                                      <span dangerouslySetInnerHTML={{ __html: ` – ${descHtml}` }} />
+                                      {!hasLink(descHtml) && (
+                                        <a href={searchUrl} target="_blank" rel="noopener" className="supp-search-link">
+                                          {type === "video" ? "חפש ביוטיוב" : "חפש בגוגל"} →
+                                        </a>
+                                      )}
+                                    </div>
+                                  </div>
+                                );
+                              })}
                             </div>
                           </div>
                         </td>
