@@ -178,7 +178,8 @@ export default function HomePage() {
   const [result, setResult] = useState<ScheduleResult | null>(SAMPLE_RESULT);
   const [isSample, setIsSample] = useState(true);
   const [activeTab, setActiveTab] = useState("distribution");
-  const [showHtmlSource, setShowHtmlSource] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [draftResult, setDraftResult] = useState<ScheduleResult | null>(null);
   const [editableHtml, setEditableHtml] = useState(() => generateHtml(SAMPLE_RESULT));
   const [whatsappCopied, setWhatsappCopied] = useState(false);
   const resultRef = useRef<HTMLDivElement>(null);
@@ -199,7 +200,8 @@ export default function HomePage() {
   async function runGenerate() {
     setError("");
     setResult(null);
-    setShowHtmlSource(false);
+    setIsEditing(false);
+    setDraftResult(null);
     setLoading(true);
 
     try {
@@ -251,6 +253,54 @@ export default function HomePage() {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
+  }
+
+  function startEditing() {
+    if (!result) return;
+    setDraftResult(JSON.parse(JSON.stringify(result)));
+    setIsEditing(true);
+  }
+
+  function saveEditing() {
+    if (!draftResult) return;
+    setResult(draftResult);
+    setIsEditing(false);
+  }
+
+  function updateDraftSlot(di: number, si: number, field: keyof SlotData, value: string) {
+    if (!draftResult) return;
+    setDraftResult({
+      ...draftResult,
+      days: draftResult.days.map((day, d) =>
+        d !== di ? day : {
+          ...day,
+          slots: day.slots.map((slot, s) =>
+            s !== si ? slot : { ...slot, [field]: value }
+          ),
+        }
+      ),
+    });
+  }
+
+  function updateDraftSupp(
+    di: number,
+    type: "video" | "article" | "activity",
+    field: "title" | "description",
+    value: string
+  ) {
+    if (!draftResult) return;
+    setDraftResult({
+      ...draftResult,
+      days: draftResult.days.map((day, d) =>
+        d !== di ? day : {
+          ...day,
+          supplementary: {
+            ...day.supplementary,
+            [type]: { ...day.supplementary[type], [field]: value },
+          },
+        }
+      ),
+    });
   }
 
   const tabs = [
@@ -572,32 +622,125 @@ export default function HomePage() {
               ))}
             </div>
 
-            {/* לו"ז להפצה – iframe preview + optional source */}
+            {/* לו"ז להפצה */}
             <div className={`tab-panel${activeTab === "distribution" ? " active" : ""}`}>
               <div className="copy-row">
-                <button
-                  className="copy-btn"
-                  type="button"
-                  onClick={() => setShowHtmlSource((v) => !v)}
-                >
-                  {showHtmlSource ? "👁 תצוגה מקדימה" : "✏️ עריכת HTML"}
-                </button>
-                <button
-                  className="copy-btn"
-                  type="button"
-                  onClick={downloadHtml}
-                >
-                  ⬇️ הורד HTML
-                </button>
+                {isEditing ? (
+                  <>
+                    <button className="copy-btn copy-btn-save" type="button" onClick={saveEditing}>
+                      💾 שמור שינויים
+                    </button>
+                    <button className="copy-btn" type="button" onClick={() => setIsEditing(false)}>
+                      ✕ ביטול
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <button className="copy-btn" type="button" onClick={startEditing}>
+                      ✏️ ערוך תוכן
+                    </button>
+                    <button className="copy-btn" type="button" onClick={downloadHtml}>
+                      ⬇️ הורד HTML
+                    </button>
+                  </>
+                )}
               </div>
-              {showHtmlSource ? (
-                <textarea
-                  className="html-editor"
-                  value={editableHtml}
-                  onChange={(e) => setEditableHtml(e.target.value)}
-                  dir="ltr"
-                  spellCheck={false}
-                />
+
+              {isEditing && draftResult ? (
+                <div className="structured-editor">
+                  <div className="field">
+                    <label>נימוק פדגוגי</label>
+                    <textarea
+                      value={draftResult.rationale}
+                      onChange={(e) => setDraftResult({ ...draftResult, rationale: e.target.value })}
+                    />
+                  </div>
+
+                  {draftResult.days.map((day, di) => (
+                    <div key={di} className="editor-day">
+                      <div className="editor-day-header">
+                        <input
+                          className="editor-day-name"
+                          value={day.day}
+                          onChange={(e) =>
+                            setDraftResult({
+                              ...draftResult,
+                              days: draftResult.days.map((d, idx) =>
+                                idx === di ? { ...d, day: e.target.value } : d
+                              ),
+                            })
+                          }
+                        />
+                      </div>
+
+                      {day.slots.map((slot, si) => (
+                        <div key={si} className="editor-slot">
+                          <div className="editor-slot-time">{slot.time}</div>
+                          <div className="editor-slot-fields">
+                            <div className="field">
+                              <label>נושא</label>
+                              <input
+                                value={slot.topic}
+                                onChange={(e) => updateDraftSlot(di, si, "topic", e.target.value)}
+                              />
+                            </div>
+                            <div className="field">
+                              <label>סוג פעילות</label>
+                              <select
+                                value={slot.activity_type}
+                                onChange={(e) => updateDraftSlot(di, si, "activity_type", e.target.value)}
+                              >
+                                {["הרצאה","תרגול","דיון","הפסקה","סיכום","פעילות אינטראקטיבית"].map((t) => (
+                                  <option key={t} value={t}>{t}</option>
+                                ))}
+                              </select>
+                            </div>
+                            <div className="field">
+                              <label>ציוד נדרש</label>
+                              <input
+                                value={slot.equipment}
+                                onChange={(e) => updateDraftSlot(di, si, "equipment", e.target.value)}
+                              />
+                            </div>
+                            <div className="field editor-slot-full">
+                              <label>דגשים למדריך</label>
+                              <input
+                                value={slot.instructor_notes}
+                                onChange={(e) => updateDraftSlot(di, si, "instructor_notes", e.target.value)}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+
+                      <div className="editor-supp">
+                        <div className="editor-supp-title">תוכן משלים</div>
+                        {(["video", "article", "activity"] as const).map((type) => {
+                          const icons = { video: "🎬", article: "📖", activity: "🎯" };
+                          return (
+                            <div key={type} className="editor-supp-row">
+                              <span className="editor-supp-icon">{icons[type]}</span>
+                              <div className="field">
+                                <label>כותרת</label>
+                                <input
+                                  value={day.supplementary[type].title}
+                                  onChange={(e) => updateDraftSupp(di, type, "title", e.target.value)}
+                                />
+                              </div>
+                              <div className="field">
+                                <label>תיאור</label>
+                                <input
+                                  value={day.supplementary[type].description}
+                                  onChange={(e) => updateDraftSupp(di, type, "description", e.target.value)}
+                                />
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  ))}
+                </div>
               ) : (
                 <iframe
                   className="html-preview"
