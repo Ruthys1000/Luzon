@@ -48,7 +48,8 @@ export function generateHtml(result: ScheduleResult, zoom?: ZoomOptions): string
   h1{font-size:1.4rem;color:#d46a50;margin-bottom:4px}
   .sub{color:#6b7280;font-size:.9rem;margin-bottom:24px}
   .rationale{background:linear-gradient(135deg,#fdf0eb,#fdf8f4);border-radius:10px;padding:14px 18px;margin-bottom:24px;font-size:.9rem;line-height:1.7;border-right:4px solid #d46a50}
-  table{width:100%;border-collapse:collapse;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+  .table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:12px}
+  table{width:100%;min-width:560px;border-collapse:collapse;background:#fff;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.08)}
   th{background:#1f1c18;color:#fff;padding:10px 14px;text-align:right;font-size:13px;font-weight:600}
   td{padding:10px 14px;border-bottom:1px solid #e5e7eb;font-size:13px;vertical-align:top}
   tr:last-child td{border-bottom:none}
@@ -69,10 +70,12 @@ export function generateHtml(result: ScheduleResult, zoom?: ZoomOptions): string
 <div class="sub">נוצר בעזרת בינה מלאכותית</div>
 <div class="rationale">${result.rationale}</div>
 ${zoomBanner}
+<div class="table-wrap">
 <table>
-  <thead><tr><th>שעה</th><th>נושא</th><th>סוג פעילות</th><th>ציוד נדרש</th><th>דגשים למדריך</th></tr></thead>
+  <thead><tr><th>שעה</th><th>נושא</th><th>סוג פעילות</th><th>ציוד נדרש</th><th>הנחייה ללומד</th></tr></thead>
   <tbody>${rows}</tbody>
 </table>
+</div>
 <div class="footer">Luz Creator © ${new Date().getFullYear()}</div>
 </body>
 </html>`;

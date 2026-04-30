@@ -214,9 +214,7 @@ export default function HomePage() {
       <form onSubmit={handleSubmit}>
         {/* Basic info */}
         <div className="card">
-          <div className="card-title">
-            <span className="icon">📋</span> פרטי ההדרכה
-          </div>
+          <div className="card-title">פרטי ההדרכה</div>
           <div className="form-grid">
             <div className="field full">
               <label>מטרות ההדרכה <span className="hint">*חובה</span></label>
@@ -256,7 +254,7 @@ export default function HomePage() {
         {/* Advanced */}
         <div className="card">
           <div className="card-title">
-            <span className="icon">⚙️</span> הגדרות מתקדמות <span style={{ fontWeight: 400, color: "var(--text-muted)", fontSize: ".85rem" }}>(אופציונלי)</span>
+            הגדרות מתקדמות <span style={{ fontWeight: 400, color: "var(--text-muted)", fontSize: ".85rem" }}>(אופציונלי)</span>
           </div>
           <div className="form-grid">
             <div className="field full">
@@ -357,8 +355,8 @@ export default function HomePage() {
               מחולל לו״ז...
             </>
           ) : (
-            <>✨ צור לו״ז שבועי</>
-          )}
+            <>צור לו״ז שבועי</>
+)}
         </button>
       </form>
 
@@ -383,7 +381,7 @@ export default function HomePage() {
           {/* Sample banner */}
           {isSample && (
             <div className="sample-banner">
-              👁 זוהי תוצאת <strong>דוגמה בלבד</strong> — מלא את הפרטים ולחץ &ldquo;צור לו״ז שבועי&rdquo; כדי לקבל לו״ז אמיתי
+              זוהי תוצאת <strong>דוגמה בלבד</strong> — מלא את הפרטים ולחץ &ldquo;צור לו״ז שבועי&rdquo; כדי לקבל לו״ז אמיתי
             </div>
           )}
 
@@ -397,7 +395,7 @@ export default function HomePage() {
                 window.scrollTo({ top: 0, behavior: "smooth" });
               }}
             >
-              ✏️ עדכן הנחיות
+              עדכן הנחיות
             </button>
             <button
               className="btn btn-ghost"
@@ -405,14 +403,14 @@ export default function HomePage() {
               onClick={runGenerate}
               disabled={loading}
             >
-              🔄 חולל מחדש
+              חולל מחדש
             </button>
           </div>
 
           {/* Rationale */}
           <div className="card">
             <div className="result-header">
-              <div className="result-header-icon">💡</div>
+              <div className="result-header-icon" />
               <div className="result-header-text">
                 <h3>נימוק פדגוגי</h3>
                 <p>ההסבר מאחורי מבנה הלו״ז</p>
@@ -423,9 +421,7 @@ export default function HomePage() {
 
           {/* Schedule table – shown directly, no tab */}
           <div className="card">
-            <div className="card-title">
-              <span className="icon">📅</span> לו״ז
-            </div>
+            <div className="card-title">לו״ז</div>
             <div className="schedule-table-wrap">
               <table className="schedule-table">
                 <thead>
@@ -434,7 +430,7 @@ export default function HomePage() {
                     <th>נושא</th>
                     <th>סוג פעילות</th>
                     <th>ציוד נדרש</th>
-                    <th>דגשים למדריך</th>
+                    <th>הנחייה ללומד</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -449,10 +445,12 @@ export default function HomePage() {
                             {slot.time}
                           </td>
                           <td data-label="נושא" style={{ fontWeight: 700 }}>
-                            {slot.lesson_number && (
-                              <span className="lesson-pair">{slot.lesson_number}</span>
-                            )}
-                            {slot.topic}
+                            <span>
+                              {slot.lesson_number && (
+                                <span className="lesson-pair">{slot.lesson_number}</span>
+                              )}
+                              {slot.topic}
+                            </span>
                           </td>
                           <td data-label="סוג">
                             <span className={`activity-badge ${getBadgeClass(slot.activity_type)}`}>
@@ -460,7 +458,7 @@ export default function HomePage() {
                             </span>
                           </td>
                           <td data-label="ציוד" style={{ fontSize: ".83rem" }}>{slot.equipment}</td>
-                          <td data-label="דגשים" style={{ fontSize: ".83rem", color: "var(--text-muted)" }}>
+                          <td data-label="הנחייה" style={{ fontSize: ".83rem", color: "var(--text-muted)" }}>
                             {slot.instructor_notes}
                           </td>
                         </tr>
@@ -524,22 +522,22 @@ export default function HomePage() {
                 {isEditing ? (
                   <>
                     <button className="copy-btn copy-btn-save" type="button" onClick={saveEditing}>
-                      💾 שמור שינויים
+                      שמור שינויים
                     </button>
                     <button className="copy-btn" type="button" onClick={() => setIsEditing(false)}>
-                      ✕ ביטול
+                      ביטול
                     </button>
                   </>
                 ) : (
                   <>
                     <button className="copy-btn" type="button" onClick={startEditing}>
-                      ✏️ ערוך תוכן
+                      ערוך תוכן
                     </button>
                     <button className="copy-btn" type="button" onClick={downloadHtml}>
-                      ⬇️ הורד HTML
+                      הורד HTML
                     </button>
                     <button className="copy-btn copy-btn-share" type="button" onClick={shareSchedule}>
-                      📤 שתף
+                      שתף
                     </button>
                   </>
                 )}
