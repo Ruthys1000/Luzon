@@ -48,11 +48,13 @@ export function generateHtml(result: ScheduleResult, zoom?: ZoomOptions): string
     const suppRow = `
       <tr style="background:#fdf8f4">
         <td colspan="4" style="padding:12px 14px;border-top:2px dashed #e3d8ca">
-          <div style="font-size:11px;font-weight:800;color:#d46a50;margin-bottom:8px;text-transform:uppercase;letter-spacing:0.05em">תוכן משלים</div>
-          <div style="display:flex;flex-direction:column;gap:6px;font-size:12px;line-height:1.6;text-align:right">
-            <div>🎬 <strong>${day.supplementary.video.title}</strong> – ${videoDesc}${hasLink(videoDesc) ? "" : suppSearchLinkHtml(day.supplementary.video.title, "video")}</div>
-            <div>📖 <strong>${day.supplementary.article.title}</strong> – ${articleDesc}${hasLink(articleDesc) ? "" : suppSearchLinkHtml(day.supplementary.article.title, "article")}</div>
-            <div>🎯 <strong>${day.supplementary.activity.title}</strong> – ${activityDesc}${hasLink(activityDesc) ? "" : suppSearchLinkHtml(day.supplementary.activity.title, "activity")}</div>
+          <div>
+            <div style="font-size:11px;font-weight:800;color:#d46a50;margin-bottom:8px;text-transform:uppercase;letter-spacing:0.05em">תוכן משלים</div>
+            <div style="display:flex;flex-direction:column;gap:6px;font-size:12px;line-height:1.6;text-align:right">
+              <div>🎬 <strong>${day.supplementary.video.title}</strong> – ${videoDesc}${hasLink(videoDesc) ? "" : suppSearchLinkHtml(day.supplementary.video.title, "video")}</div>
+              <div>📖 <strong>${day.supplementary.article.title}</strong> – ${articleDesc}${hasLink(articleDesc) ? "" : suppSearchLinkHtml(day.supplementary.article.title, "article")}</div>
+              <div>🎯 <strong>${day.supplementary.activity.title}</strong> – ${activityDesc}${hasLink(activityDesc) ? "" : suppSearchLinkHtml(day.supplementary.activity.title, "activity")}</div>
+            </div>
           </div>
         </td>
       </tr>`;
