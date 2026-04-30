@@ -8,7 +8,8 @@ interface ZoomOptions {
 function linkifyHtml(text: string): string {
   return text.replace(/(https?:\/\/[^\s<>"']+)/g, (url) => {
     const clean = url.replace(/[.,!?;)'"]+$/, "");
-    return `<a href="${clean}" target="_blank" rel="noopener" style="color:#1d7bd4">${clean}</a>`;
+    const display = clean.includes("zoom.us") ? "קישור לזום ←" : clean;
+    return `<a href="${clean}" target="_blank" rel="noopener" style="color:#1d7bd4">${display}</a>`;
   });
 }
 

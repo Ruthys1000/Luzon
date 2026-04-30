@@ -8,7 +8,8 @@ import { generateHtml } from "@/lib/generate-html";
 function linkify(text: string): string {
   return text.replace(/(https?:\/\/[^\s<>"']+)/g, (url) => {
     const clean = url.replace(/[.,!?;)'"]+$/, "");
-    return `<a href="${clean}" target="_blank" rel="noopener">${clean}</a>`;
+    const display = clean.includes("zoom.us") ? "קישור לזום ←" : clean;
+    return `<a href="${clean}" target="_blank" rel="noopener">${display}</a>`;
   });
 }
 
