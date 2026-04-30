@@ -49,7 +49,10 @@ function getBadgeClass(type: string): string {
   return "badge-lecture";
 }
 
-function generateHtml(result: ScheduleResult): string {
+function generateHtml(
+  result: ScheduleResult,
+  zoom?: { morning?: string; end?: string }
+): string {
   const rows = result.days.map((day) => {
     const dayHeader = `<tr style="background:#f3e4dc"><td colspan="5" style="padding:10px 14px;font-weight:700;color:#7f2f22;font-size:14px">${day.day}</td></tr>`;
     const slotRows = day.slots.map((s) => `
@@ -73,6 +76,13 @@ function generateHtml(result: ScheduleResult): string {
       </tr>`;
     return [dayHeader, slotRows, suppRow].join("");
   }).join("");
+
+  const zoomBanner = zoom && (zoom.morning || zoom.end) ? `
+<div style="background:#eef5fd;border-radius:10px;padding:12px 16px;margin-bottom:20px;font-size:13px;line-height:1.8;border-right:4px solid #1d7bd4">
+  <div style="font-size:11px;font-weight:800;color:#1d7bd4;text-transform:uppercase;margin-bottom:6px;letter-spacing:.05em">🔵 פרטי זום</div>
+  ${zoom.morning ? `<div>☀️ <strong>מפגש בוקר (שיעור 1):</strong> ${zoom.morning}</div>` : ""}
+  ${zoom.end ? `<div>🌙 <strong>מפגש סיום יום (שיעור 4):</strong> ${zoom.end}</div>` : ""}
+</div>` : "";
 
   return `<!DOCTYPE html>
 <html dir="rtl" lang="he">
@@ -105,6 +115,7 @@ function generateHtml(result: ScheduleResult): string {
 <h1>לו״ז – Luz Creator</h1>
 <div class="sub">נוצר בעזרת בינה מלאכותית</div>
 <div class="rationale">${result.rationale}</div>
+${zoomBanner}
 <table>
   <thead><tr><th>שעה</th><th>נושא</th><th>סוג פעילות</th><th>ציוד נדרש</th><th>דגשים למדריך</th></tr></thead>
   <tbody>${rows}</tbody>
@@ -153,6 +164,8 @@ export default function HomePage() {
     start_time: "09:00",
     end_time: "17:00",
     include_team_sessions: "no",
+    zoom_morning: "",
+    zoom_end: "",
     constraints: "",
     notes: "",
     preferences: "",
@@ -164,15 +177,19 @@ export default function HomePage() {
   const [error, setError] = useState("");
   const [result, setResult] = useState<ScheduleResult | null>(SAMPLE_RESULT);
   const [activeTab, setActiveTab] = useState("distribution");
+  const [showHtmlSource, setShowHtmlSource] = useState(false);
   const [editableHtml, setEditableHtml] = useState(() => generateHtml(SAMPLE_RESULT));
   const [whatsappCopied, setWhatsappCopied] = useState(false);
   const resultRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (result) {
-      setEditableHtml(generateHtml(result));
+      setEditableHtml(generateHtml(result, {
+        morning: form.zoom_morning || undefined,
+        end: form.zoom_end || undefined,
+      }));
     }
-  }, [result]);
+  }, [result, form.zoom_morning, form.zoom_end]);
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -181,6 +198,7 @@ export default function HomePage() {
   async function runGenerate() {
     setError("");
     setResult(null);
+    setShowHtmlSource(false);
     setLoading(true);
 
     try {
@@ -303,6 +321,30 @@ export default function HomePage() {
                 <option value="no">לא – ימי למידה עצמאיים בלבד</option>
                 <option value="yes">כן – לכלול גם מפגשי צוות / עבודה בצוותים</option>
               </select>
+            </div>
+            <div className="field">
+              <label>
+                🔵 זום – מפגש בוקר <span className="hint">קישור או מספר חדר</span>
+              </label>
+              <input
+                type="text"
+                name="zoom_morning"
+                value={form.zoom_morning}
+                onChange={handleChange}
+                placeholder="לדוגמה: 123 456 7890 או https://zoom.us/j/..."
+              />
+            </div>
+            <div className="field">
+              <label>
+                🔵 זום – מפגש סיום יום <span className="hint">קישור או מספר חדר</span>
+              </label>
+              <input
+                type="text"
+                name="zoom_end"
+                value={form.zoom_end}
+                onChange={handleChange}
+                placeholder="לדוגמה: 123 456 7890 או https://zoom.us/j/..."
+              />
             </div>
             <div className="field full">
               <label>אילוצים <span className="hint">הרצאות חובה, מגבלות טכניות וכו׳</span></label>
@@ -488,24 +530,40 @@ export default function HomePage() {
               ))}
             </div>
 
-            {/* לו"ז להפצה – editable HTML + download */}
+            {/* לו"ז להפצה – iframe preview + optional source */}
             <div className={`tab-panel${activeTab === "distribution" ? " active" : ""}`}>
               <div className="copy-row">
                 <button
                   className="copy-btn"
                   type="button"
+                  onClick={() => setShowHtmlSource((v) => !v)}
+                >
+                  {showHtmlSource ? "👁 תצוגה מקדימה" : "✏️ עריכת HTML"}
+                </button>
+                <button
+                  className="copy-btn"
+                  type="button"
                   onClick={downloadHtml}
                 >
-                  הורד HTML
+                  ⬇️ הורד HTML
                 </button>
               </div>
-              <textarea
-                className="html-editor"
-                value={editableHtml}
-                onChange={(e) => setEditableHtml(e.target.value)}
-                dir="ltr"
-                spellCheck={false}
-              />
+              {showHtmlSource ? (
+                <textarea
+                  className="html-editor"
+                  value={editableHtml}
+                  onChange={(e) => setEditableHtml(e.target.value)}
+                  dir="ltr"
+                  spellCheck={false}
+                />
+              ) : (
+                <iframe
+                  className="html-preview"
+                  srcDoc={editableHtml}
+                  title="תצוגה מקדימה של לו״ז"
+                  sandbox="allow-same-origin"
+                />
+              )}
             </div>
 
             {/* WhatsApp */}

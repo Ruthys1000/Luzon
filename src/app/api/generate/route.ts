@@ -99,6 +99,10 @@ const SYSTEM_PROMPT = `אתה מומחה בכיר לפיתוח הדרכה, עי�
 }`;
 
 function buildUserPrompt(input: ScheduleInput): string {
+  const zoomSection = input.zoom_morning || input.zoom_end
+    ? `\nפרטי זום למפגשים סינכרוניים:\n${input.zoom_morning ? `- מפגש בוקר (שיעור כפול 1): ${input.zoom_morning}` : ""}${input.zoom_end ? `\n- מפגש סיום יום (שיעור כפול 4): ${input.zoom_end}` : ""}\nהוסף את פרטי הזום הרלוונטיים בשדה instructor_notes של השיעורים המתאימים.`
+    : "";
+
   const linksSection = input.material_links?.trim()
     ? `\nקישורים לחומרים שרוצים לשלב:\n${input.material_links}\n(שלב קישורים אלה ישירות בשדות equipment ו-instructor_notes של הסלוטים הרלוונטיים, וציין אותם גם בתוכן המשלים)`
     : "\nקישורים: לא סופקו – הצע חומרים ספציפיים שניתן למצוא ביוטיוב / גוגל";
@@ -126,6 +130,7 @@ ${input.preferences || "אין"}
 
 הדבר הכי חשוב בלו״ז הזה:
 ${input.most_important || "לא צוין"}
+${zoomSection}
 ${linksSection}
 
 זכור: בדיוק 4 שיעורים כפולים (lesson_number: 1–4) ביום + הפסקות. החזר JSON בלבד.`;
@@ -137,6 +142,8 @@ interface ScheduleInput {
   start_time: string;
   end_time: string;
   include_team_sessions?: string;
+  zoom_morning?: string;
+  zoom_end?: string;
   constraints?: string;
   notes?: string;
   preferences?: string;
