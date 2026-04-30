@@ -421,6 +421,28 @@ export default function HomePage() {
       {/* Results */}
       {result && (
         <div ref={resultRef} style={{ marginTop: "2.5rem" }}>
+          {/* Action buttons */}
+          <div className="result-actions">
+            <button
+              className="btn btn-secondary"
+              type="button"
+              onClick={() => {
+                setResult(null);
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }}
+            >
+              ✏️ עדכן הנחיות
+            </button>
+            <button
+              className="btn btn-ghost"
+              type="button"
+              onClick={runGenerate}
+              disabled={loading}
+            >
+              🔄 חולל מחדש
+            </button>
+          </div>
+
           {/* Rationale */}
           <div className="card">
             <div className="result-header">
@@ -594,25 +616,6 @@ export default function HomePage() {
                     {q}
                   </div>
                 ))}
-              </div>
-              <div className="btn-row">
-                <button
-                  className="btn btn-secondary"
-                  type="button"
-                  onClick={() => {
-                    setResult(null);
-                    window.scrollTo({ top: 0, behavior: "smooth" });
-                  }}
-                >
-                  ✏️ עדכן הנחיות
-                </button>
-                <button
-                  className="btn btn-ghost"
-                  type="button"
-                  onClick={runGenerate}
-                >
-                  🔄 חולל מחדש
-                </button>
               </div>
             </div>
           </div>

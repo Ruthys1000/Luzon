@@ -328,6 +328,14 @@ textarea.links-field {
   font-weight: 600;
 }
 
+/* ── Result action buttons row ── */
+.result-actions {
+  display: flex;
+  gap: .75rem;
+  margin-bottom: 1.4rem;
+  flex-wrap: wrap;
+}
+
 /* ── Result header block ── */
 .result-header {
   display: flex;
