@@ -78,8 +78,8 @@ function buildUserPrompt(input: ScheduleInput): string {
     : "";
 
   const linksSection = input.material_links?.trim()
-    ? `\nקישורים לחומרים שרוצים לשלב:\n${input.material_links}\n(שלב קישורים אלה ישירות בשדות equipment ו-instructor_notes של הסלוטים הרלוונטיים, וציין אותם גם בתוכן המשלים)`
-    : "\nקישורים: לא סופקו – הצע חומרים ספציפיים שניתן למצוא ביוטיוב / גוגל";
+    ? `\nקישורים לחומרים שרוצים לשלב:\n${input.material_links}\nחשוב: כתוב את כתובת ה-URL המלאה (https://...) ישירות בתוך טקסט instructor_notes של השיעור הרלוונטי, לדוגמה: "צפה בסרטון: https://youtube.com/...". כך הקישור יהיה לחיץ בתצוגת הלו"ז.`
+    : "\nקישורים: לא סופקו – הצע שמות ספציפיים של סרטונים/מאמרים שניתן לחפש ביוטיוב / גוגל.";
 
   const teamSessionsNote = input.include_team_sessions === "yes"
     ? "כלול מפגשי צוות / עבודה בצוותים / דיון קבוצתי בחלק מהבלוקים."

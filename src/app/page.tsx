@@ -6,10 +6,10 @@ import { getBadgeClass, TABS } from "@/constants/sample";
 import { generateHtml } from "@/lib/generate-html";
 
 function linkify(text: string): string {
-  return text.replace(
-    /(https?:\/\/[^\s<>"]+)/g,
-    '<a href="$1" target="_blank" rel="noopener">$1</a>'
-  );
+  return text.replace(/(https?:\/\/[^\s<>"']+)/g, (url) => {
+    const clean = url.replace(/[.,!?;)'"]+$/, "");
+    return `<a href="${clean}" target="_blank" rel="noopener">${clean}</a>`;
+  });
 }
 
 export default function HomePage() {
@@ -145,11 +145,13 @@ export default function HomePage() {
   }
 
   function downloadHtml() {
+    const now = new Date();
+    const ts = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, "0")}${String(now.getDate()).padStart(2, "0")}-${String(now.getHours()).padStart(2, "0")}${String(now.getMinutes()).padStart(2, "0")}`;
     const blob = new Blob([editableHtml], { type: "text/html;charset=utf-8" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = "luz-schedule.html";
+    a.download = `luz-${ts}.html`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -336,7 +338,7 @@ export default function HomePage() {
               מחולל לו״ז...
             </>
           ) : (
-            <>צור לו״ז שבועי</>
+            <>צור לו״ז</>
 )}
         </button>
       </form>

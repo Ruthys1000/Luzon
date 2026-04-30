@@ -6,10 +6,10 @@ interface ZoomOptions {
 }
 
 function linkifyHtml(text: string): string {
-  return text.replace(
-    /(https?:\/\/[^\s<>"]+)/g,
-    '<a href="$1" target="_blank" rel="noopener" style="color:#1d7bd4">$1</a>'
-  );
+  return text.replace(/(https?:\/\/[^\s<>"']+)/g, (url) => {
+    const clean = url.replace(/[.,!?;)'"]+$/, "");
+    return `<a href="${clean}" target="_blank" rel="noopener" style="color:#1d7bd4">${clean}</a>`;
+  });
 }
 
 export function generateHtml(result: ScheduleResult, zoom?: ZoomOptions): string {
@@ -17,10 +17,10 @@ export function generateHtml(result: ScheduleResult, zoom?: ZoomOptions): string
     const dayHeader = `<tr style="background:#f3e4dc"><td colspan="4" style="padding:10px 14px;font-weight:700;color:#7f2f22;font-size:14px">${day.day}</td></tr>`;
     const slotRows = day.slots.map((s) => `
       <tr>
-        <td style="white-space:nowrap;color:#6b7280;font-size:13px">${s.time}</td>
-        <td style="font-weight:600;font-size:13px">${s.lesson_number ? `<span style="display:inline-block;background:#1f1c18;color:#fff;border-radius:999px;padding:0 7px;font-size:11px;margin-left:6px;vertical-align:middle">${s.lesson_number}</span>` : ""}${s.topic}</td>
-        <td style="font-size:12px"><span style="background:#f3e4dc;color:#7f2f22;padding:2px 8px;border-radius:99px;white-space:nowrap">${s.activity_type}</span></td>
-        <td style="font-size:12px;color:#6b7280">${linkifyHtml(s.instructor_notes)}</td>
+        <td data-label="שעה" style="white-space:nowrap;color:#6b7280;font-size:13px">${s.time}</td>
+        <td data-label="נושא" style="font-weight:600;font-size:13px">${s.lesson_number ? `<span style="display:inline-block;background:#1f1c18;color:#fff;border-radius:999px;padding:0 7px;font-size:11px;margin-left:8px;vertical-align:middle">${s.lesson_number}</span>` : ""}${s.topic}</td>
+        <td data-label="סוג" style="font-size:12px"><span style="background:#f3e4dc;color:#7f2f22;padding:2px 8px;border-radius:99px;white-space:nowrap">${s.activity_type}</span></td>
+        <td data-label="הנחייה" style="font-size:12px;color:#6b7280;overflow-wrap:break-word">${linkifyHtml(s.instructor_notes)}</td>
       </tr>`).join("");
     const suppRow = `
       <tr style="background:#fdf8f4">
@@ -55,19 +55,20 @@ export function generateHtml(result: ScheduleResult, zoom?: ZoomOptions): string
   .sub{color:#6b7280;font-size:.9rem;margin-bottom:24px}
   .rationale{background:linear-gradient(135deg,#fdf0eb,#fdf8f4);border-radius:10px;padding:14px 18px;margin-bottom:24px;font-size:.9rem;line-height:1.7;border-right:4px solid #d46a50}
   .table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:12px}
-  table{width:100%;min-width:560px;border-collapse:collapse;background:#fff;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+  table{width:100%;border-collapse:collapse;background:#fff;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.08)}
   th{background:#1f1c18;color:#fff;padding:10px 14px;text-align:right;font-size:13px;font-weight:600}
-  td{padding:10px 14px;border-bottom:1px solid #e5e7eb;font-size:13px;vertical-align:top}
+  td{padding:10px 14px;border-bottom:1px solid #e5e7eb;font-size:13px;vertical-align:top;overflow-wrap:break-word;word-break:break-word}
   tr:last-child td{border-bottom:none}
   .footer{margin-top:24px;font-size:.8rem;color:#9ca3af;text-align:center}
-  @media(max-width:600px){
-    body{padding:12px}
-    table,thead,tbody,th,td,tr{display:block;width:100%}
+  @media(max-width:640px){
+    body{padding:10px}
+    .table-wrap{border-radius:0}
+    table,thead,tbody,tr{display:block;width:100%}
     thead tr{display:none}
-    tr:not([style*="background:#f3e4dc"]):not([style*="background:#fdf8f4"]){margin-bottom:.5rem;border:1px solid #e3d8ca;border-radius:12px;overflow:hidden}
-    td[data-label]{display:grid;grid-template-columns:72px 1fr;gap:.4rem;padding:7px 10px;border-bottom:1px solid #e5e7eb;font-size:12px}
-    td[data-label]::before{content:attr(data-label);font-weight:800;font-size:.7rem;color:#aaa197}
-    td[data-label]:last-child{border-bottom:none}
+    td{display:grid;grid-template-columns:68px 1fr;gap:.4rem;padding:8px 12px;border-bottom:1px solid #e5e7eb;font-size:12px;width:100%;box-sizing:border-box}
+    td::before{content:attr(data-label);font-weight:800;font-size:.7rem;color:#aaa197;padding-top:.15rem}
+    td:last-child{border-bottom:none}
+    tr:not([style*="background:#f3e4dc"]):not([style*="background:#fdf8f4"]){margin-bottom:.5rem;border:1px solid #e3d8ca;border-radius:12px;overflow:hidden;display:block}
   }
 </style>
 </head>
