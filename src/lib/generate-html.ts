@@ -5,25 +5,31 @@ interface ZoomOptions {
   end?: string;
 }
 
+function linkifyHtml(text: string): string {
+  return text.replace(
+    /(https?:\/\/[^\s<>"]+)/g,
+    '<a href="$1" target="_blank" rel="noopener" style="color:#1d7bd4">$1</a>'
+  );
+}
+
 export function generateHtml(result: ScheduleResult, zoom?: ZoomOptions): string {
   const rows = result.days.map((day) => {
-    const dayHeader = `<tr style="background:#f3e4dc"><td colspan="5" style="padding:10px 14px;font-weight:700;color:#7f2f22;font-size:14px">${day.day}</td></tr>`;
+    const dayHeader = `<tr style="background:#f3e4dc"><td colspan="4" style="padding:10px 14px;font-weight:700;color:#7f2f22;font-size:14px">${day.day}</td></tr>`;
     const slotRows = day.slots.map((s) => `
       <tr>
         <td style="white-space:nowrap;color:#6b7280;font-size:13px">${s.time}</td>
         <td style="font-weight:600;font-size:13px">${s.lesson_number ? `<span style="display:inline-block;background:#1f1c18;color:#fff;border-radius:999px;padding:0 7px;font-size:11px;margin-left:6px;vertical-align:middle">${s.lesson_number}</span>` : ""}${s.topic}</td>
         <td style="font-size:12px"><span style="background:#f3e4dc;color:#7f2f22;padding:2px 8px;border-radius:99px;white-space:nowrap">${s.activity_type}</span></td>
-        <td style="font-size:12px;color:#374151">${s.equipment}</td>
-        <td style="font-size:12px;color:#6b7280">${s.instructor_notes}</td>
+        <td style="font-size:12px;color:#6b7280">${linkifyHtml(s.instructor_notes)}</td>
       </tr>`).join("");
     const suppRow = `
       <tr style="background:#fdf8f4">
-        <td colspan="5" style="padding:12px 14px;border-top:2px dashed #e3d8ca">
+        <td colspan="4" style="padding:12px 14px;border-top:2px dashed #e3d8ca">
           <div style="font-size:11px;font-weight:800;color:#d46a50;margin-bottom:8px;text-transform:uppercase;letter-spacing:0.05em">תוכן משלים</div>
           <div style="display:flex;flex-direction:column;gap:6px;font-size:12px;line-height:1.6">
-            <div>🎬 <strong>${day.supplementary.video.title}</strong> – ${day.supplementary.video.description}</div>
-            <div>📖 <strong>${day.supplementary.article.title}</strong> – ${day.supplementary.article.description}</div>
-            <div>🎯 <strong>${day.supplementary.activity.title}</strong> – ${day.supplementary.activity.description}</div>
+            <div>🎬 <strong>${day.supplementary.video.title}</strong> – ${linkifyHtml(day.supplementary.video.description)}</div>
+            <div>📖 <strong>${day.supplementary.article.title}</strong> – ${linkifyHtml(day.supplementary.article.description)}</div>
+            <div>🎯 <strong>${day.supplementary.activity.title}</strong> – ${linkifyHtml(day.supplementary.activity.description)}</div>
           </div>
         </td>
       </tr>`;
@@ -72,7 +78,7 @@ export function generateHtml(result: ScheduleResult, zoom?: ZoomOptions): string
 ${zoomBanner}
 <div class="table-wrap">
 <table>
-  <thead><tr><th>שעה</th><th>נושא</th><th>סוג פעילות</th><th>ציוד נדרש</th><th>הנחייה ללומד</th></tr></thead>
+  <thead><tr><th>שעה</th><th>נושא</th><th>סוג פעילות</th><th>הנחייה ללומד</th></tr></thead>
   <tbody>${rows}</tbody>
 </table>
 </div>

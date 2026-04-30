@@ -2,13 +2,20 @@
 
 import { useState, useRef, useEffect, Fragment } from "react";
 import type { SlotData, ScheduleResult } from "@/types/schedule";
-import { getBadgeClass, SAMPLE_RESULT, TABS } from "@/constants/sample";
+import { getBadgeClass, TABS } from "@/constants/sample";
 import { generateHtml } from "@/lib/generate-html";
+
+function linkify(text: string): string {
+  return text.replace(
+    /(https?:\/\/[^\s<>"]+)/g,
+    '<a href="$1" target="_blank" rel="noopener">$1</a>'
+  );
+}
 
 export default function HomePage() {
   const [form, setForm] = useState({
     goals: "",
-    days: "3",
+    days: "1",
     start_time: "09:00",
     end_time: "17:00",
     include_team_sessions: "no",
@@ -16,20 +23,17 @@ export default function HomePage() {
     zoom_end: "",
     constraints: "",
     notes: "",
-    preferences: "",
-    most_important: "",
     material_links: "",
   });
 
   const [loading, setLoading] = useState(false);
   const [streamingText, setStreamingText] = useState("");
   const [error, setError] = useState("");
-  const [result, setResult] = useState<ScheduleResult | null>(SAMPLE_RESULT);
-  const [isSample, setIsSample] = useState(true);
+  const [result, setResult] = useState<ScheduleResult | null>(null);
   const [activeTab, setActiveTab] = useState("distribution");
   const [isEditing, setIsEditing] = useState(false);
   const [draftResult, setDraftResult] = useState<ScheduleResult | null>(null);
-  const [editableHtml, setEditableHtml] = useState(() => generateHtml(SAMPLE_RESULT));
+  const [editableHtml, setEditableHtml] = useState("");
   const [whatsappCopied, setWhatsappCopied] = useState(false);
   const [shareNotice, setShareNotice] = useState("");
   const resultRef = useRef<HTMLDivElement>(null);
@@ -92,7 +96,6 @@ export default function HomePage() {
 
       const scheduleData = JSON.parse(jsonMatch[0]);
       setResult(scheduleData);
-      setIsSample(false);
       setActiveTab("distribution");
       setTimeout(() => {
         resultRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -303,29 +306,7 @@ export default function HomePage() {
                 name="notes"
                 value={form.notes}
                 onChange={handleChange}
-                placeholder="לדוגמה: הלומדים רובם מתחום הכספים, אין ניסיון בלמידה מרחוק"
-              />
-            </div>
-            <div className="field">
-              <label>העדפות עיצוב / שיטה</label>
-              <input
-                type="text"
-                name="preferences"
-                value={form.preferences}
-                onChange={handleChange}
-                placeholder="לדוגמה: יותר תרגול, פחות הרצאה"
-              />
-            </div>
-            <div className="field">
-              <label>
-                הדבר הכי חשוב לך בלו״ז הזה <span className="hint">מה יוצר הצלחה?</span>
-              </label>
-              <input
-                type="text"
-                name="most_important"
-                value={form.most_important}
-                onChange={handleChange}
-                placeholder="לדוגמה: שהלומדים ירגישו מוצלחים ביום הראשון"
+                placeholder="לדוגמה: יותר תרגול פחות הרצאה; הלומדים מתחום הכספים ללא ניסיון בלמידה מרחוק; הדבר החשוב ביותר הוא שהלומדים ירגישו מוצלחים ביום הראשון"
               />
             </div>
             <div className="field full">
@@ -378,13 +359,6 @@ export default function HomePage() {
       {/* Results */}
       {result && (
         <div ref={resultRef} style={{ marginTop: "2.5rem" }}>
-          {/* Sample banner */}
-          {isSample && (
-            <div className="sample-banner">
-              זוהי תוצאת <strong>דוגמה בלבד</strong> — מלא את הפרטים ולחץ &ldquo;צור לו״ז שבועי&rdquo; כדי לקבל לו״ז אמיתי
-            </div>
-          )}
-
           {/* Action buttons */}
           <div className="result-actions">
             <button
@@ -409,13 +383,7 @@ export default function HomePage() {
 
           {/* Rationale */}
           <div className="card">
-            <div className="result-header">
-              <div className="result-header-icon" />
-              <div className="result-header-text">
-                <h3>נימוק פדגוגי</h3>
-                <p>ההסבר מאחורי מבנה הלו״ז</p>
-              </div>
-            </div>
+            <div className="card-title">נימוק פדגוגי</div>
             <div className="rationale-box">{result.rationale}</div>
           </div>
 
@@ -429,7 +397,6 @@ export default function HomePage() {
                     <th>שעה</th>
                     <th>נושא</th>
                     <th>סוג פעילות</th>
-                    <th>ציוד נדרש</th>
                     <th>הנחייה ללומד</th>
                   </tr>
                 </thead>
@@ -437,7 +404,7 @@ export default function HomePage() {
                   {result.days.map((day) => (
                     <Fragment key={day.day}>
                       <tr className="day-row">
-                        <td colSpan={5}>{day.day}</td>
+                        <td colSpan={4}>{day.day}</td>
                       </tr>
                       {day.slots.map((slot, si) => (
                         <tr key={`slot-${day.day}-${si}`}>
@@ -457,15 +424,14 @@ export default function HomePage() {
                               {slot.activity_type}
                             </span>
                           </td>
-                          <td data-label="ציוד" style={{ fontSize: ".83rem" }}>{slot.equipment}</td>
-                          <td data-label="הנחייה" style={{ fontSize: ".83rem", color: "var(--text-muted)" }}>
-                            {slot.instructor_notes}
-                          </td>
+                          <td data-label="הנחייה" style={{ fontSize: ".83rem", color: "var(--text-muted)" }}
+                            dangerouslySetInnerHTML={{ __html: linkify(slot.instructor_notes) }}
+                          />
                         </tr>
                       ))}
                       {/* Supplementary content at end of each day */}
                       <tr key={`supp-${day.day}`} className="supp-table-row">
-                        <td colSpan={5}>
+                        <td colSpan={4}>
                           <div className="supp-inline">
                             <div className="supp-inline-title">תוכן משלים</div>
                             <div className="supp-inline-items">
@@ -473,21 +439,21 @@ export default function HomePage() {
                                 <span>🎬</span>
                                 <div>
                                   <strong>{day.supplementary.video.title}</strong>
-                                  <span> – {day.supplementary.video.description}</span>
+                                  <span dangerouslySetInnerHTML={{ __html: ` – ${linkify(day.supplementary.video.description)}` }} />
                                 </div>
                               </div>
                               <div className="supp-inline-item">
                                 <span>📖</span>
                                 <div>
                                   <strong>{day.supplementary.article.title}</strong>
-                                  <span> – {day.supplementary.article.description}</span>
+                                  <span dangerouslySetInnerHTML={{ __html: ` – ${linkify(day.supplementary.article.description)}` }} />
                                 </div>
                               </div>
                               <div className="supp-inline-item">
                                 <span>🎯</span>
                                 <div>
                                   <strong>{day.supplementary.activity.title}</strong>
-                                  <span> – {day.supplementary.activity.description}</span>
+                                  <span dangerouslySetInnerHTML={{ __html: ` – ${linkify(day.supplementary.activity.description)}` }} />
                                 </div>
                               </div>
                             </div>
@@ -596,15 +562,8 @@ export default function HomePage() {
                                 ))}
                               </select>
                             </div>
-                            <div className="field">
-                              <label>ציוד נדרש</label>
-                              <input
-                                value={slot.equipment}
-                                onChange={(e) => updateDraftSlot(di, si, "equipment", e.target.value)}
-                              />
-                            </div>
                             <div className="field editor-slot-full">
-                              <label>דגשים למדריך</label>
+                              <label>הנחייה ללומד</label>
                               <input
                                 value={slot.instructor_notes}
                                 onChange={(e) => updateDraftSlot(di, si, "instructor_notes", e.target.value)}
