@@ -326,7 +326,7 @@ export default function HomePage() {
                 name="previous_days"
                 value={form.previous_days}
                 onChange={handleChange}
-                placeholder="לדוגמה: יום 1 — מבוא לניהול עצמי וזיהוי דפוסים. יום 2 — מטריצת עדיפויות ותרגול."
+                placeholder="לדוגמה: אתמול — מבוא לניהול עצמי וזיהוי דפוסים; שלשום — מטריצת עדיפויות ותרגול"
               />
             </div>
             <div className="field full">
@@ -379,7 +379,7 @@ export default function HomePage() {
                 name="constraints"
                 value={form.constraints}
                 onChange={handleChange}
-                placeholder="לדוגמה: פגישת צוות בשעה 11:00; הרצאת אורח ביום שלישי; יום קצר – מסיימים ב-15:00"
+                placeholder="לדוגמה: פגישת צוות בשעה 11:00; הרצאת אורח בשעה 14:00; יום קצר – מסיימים ב-15:00"
               />
             </div>
             <div className="field full">
