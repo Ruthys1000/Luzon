@@ -210,8 +210,7 @@ export async function POST(req: NextRequest) {
         );
       } catch (err) {
         console.error("[generate] stream error:", err);
-        const msg = err instanceof Error ? err.message : "שגיאה פנימית";
-        controller.enqueue(encoder.encode(`\nERROR:${msg}`));
+        controller.enqueue(encoder.encode(`\nERROR:שגיאה בעיבוד הבקשה`));
       } finally {
         controller.close();
       }

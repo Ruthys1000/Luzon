@@ -67,10 +67,12 @@ export function ScheduleResultPanel({
         <button
           type="button"
           className="rationale-toggle"
+          aria-expanded={rationaleOpen}
+          aria-label="הצג או הסתר: למה הלו״ז בנוי כך?"
           onClick={() => setRationaleOpen((o) => !o)}
         >
           <span>למה הלו״ז בנוי כך?</span>
-          <span className="rationale-toggle-arrow">{rationaleOpen ? "▲" : "▼"}</span>
+          <span className="rationale-toggle-arrow" aria-hidden="true">{rationaleOpen ? "▲" : "▼"}</span>
         </button>
         {rationaleOpen && (
           <div className="rationale-box" style={{ marginTop: "1rem" }}>{result.rationale}</div>
@@ -143,7 +145,7 @@ export function ScheduleResultPanel({
                                   <strong>{item.title}</strong>
                                   <span dangerouslySetInnerHTML={{ __html: ` – ${descHtml}` }} />
                                   {!hasLink(descHtml) && (
-                                    <a href={searchUrl} target="_blank" rel="noopener" className="supp-search-link">
+                                    <a href={searchUrl} target="_blank" rel="noopener noreferrer" className="supp-search-link">
                                       {type === "video" ? "חפש ביוטיוב" : "חפש בגוגל"} →
                                     </a>
                                   )}
@@ -235,10 +237,12 @@ export function ScheduleResultPanel({
         <button
           type="button"
           className="rationale-toggle"
+          aria-expanded={isRefineOpen}
+          aria-label="הצג או הסתר: רוצה לשפר את הלו״ז?"
           onClick={() => setIsRefineOpen((o) => !o)}
         >
           <span>✨ רוצה לשפר את הלו״ז?</span>
-          <span className="rationale-toggle-arrow">{isRefineOpen ? "▲" : "▼"}</span>
+          <span className="rationale-toggle-arrow" aria-hidden="true">{isRefineOpen ? "▲" : "▼"}</span>
         </button>
         {isRefineOpen && (
           <div style={{ marginTop: "1.2rem" }}>
@@ -249,7 +253,7 @@ export function ScheduleResultPanel({
               {result.questions.map((q, i) => (
                 <div key={i} className="question-item question-item-interactive">
                   <div className="question-text">
-                    <span className="question-icon">❓</span>
+                    <span className="question-icon" aria-hidden="true">❓</span>
                     {q}
                   </div>
                   <textarea
