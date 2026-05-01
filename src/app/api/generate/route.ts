@@ -92,6 +92,10 @@ function buildUserPrompt(input: ScheduleInput): string {
       ? "\nסוג תוכן: תוכן מותאם אישית של המדריך (סרטונים / מצגות / מסמכים). הקישורים שסופקו הם חומרי הליבה — בנה כל בלוק סביבם ישירות, ציין אותם ב-instructor_notes."
       : "";
 
+  const previousDaysSection = input.previous_days?.trim()
+    ? `\nהמשכיות — מה כבר למדנו:\n${input.previous_days}\nחשוב: אל תחזור על נושאים שכבר כוסו. המשך מאיפה שעצרנו.`
+    : "";
+
   const refinementSection =
     input.refinement_qa && input.refinement_qa.length > 0
       ? `\n\nשיפורים מבוקשים — ענה על השאלות הבאות בלו״ז החדש:\n${input.refinement_qa
@@ -113,6 +117,7 @@ ${input.constraints || "אין אילוצים מיוחדים"}
 
 דגשים נוספים:
 ${input.notes || "אין"}
+${previousDaysSection}
 ${zoomSection}
 ${linksSection}
 ${refinementSection}

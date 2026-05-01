@@ -37,6 +37,7 @@ export default function HomePage() {
     start_time: "09:00",
     end_time: "17:00",
     content_type: "topic" as "topic" | "course" | "my_content",
+    previous_days: "",
     include_team_sessions: "no",
     zoom_morning: "",
     zoom_end: "",
@@ -50,6 +51,7 @@ export default function HomePage() {
   const [error, setError] = useState("");
   const [result, setResult] = useState<ScheduleResult | null>(null);
   const [activeTab, setActiveTab] = useState("distribution");
+  const [rationaleOpen, setRationaleOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [draftResult, setDraftResult] = useState<ScheduleResult | null>(null);
   const [editableHtml, setEditableHtml] = useState("");
@@ -239,7 +241,7 @@ export default function HomePage() {
           <span className="logo-mark">✦</span>
           Luz Creator
         </div>
-        <p>מחולל לו״ז הדרכה מקצועי</p>
+        <p>תכנן יום למידה עצמאית ללומדים שלך ושלח בווטסאפ — תוך דקות</p>
       </header>
 
       <form onSubmit={handleSubmit}>
@@ -356,6 +358,15 @@ export default function HomePage() {
               </>
             )}
             <div className="field full">
+              <label>מה עסקנו בו עד עכשיו? <span className="hint">רשום בקצרה — הכלי ימשיך מאיפה שעצרתם</span></label>
+              <textarea
+                name="previous_days"
+                value={form.previous_days}
+                onChange={handleChange}
+                placeholder="לדוגמה: יום 1 — מבוא לניהול עצמי וזיהוי דפוסים. יום 2 — מטריצת עדיפויות ותרגול. יום 3 — תקשורת בלחץ."
+              />
+            </div>
+            <div className="field full">
               <label>אילוצים <span className="hint">הרצאות חובה, מגבלות טכניות וכו׳</span></label>
               <textarea
                 name="constraints"
@@ -394,34 +405,27 @@ export default function HomePage() {
         {error && <div className="error-box">⚠️ {error}</div>}
 
         <button type="submit" className="btn btn-primary" disabled={loading}>
-          {loading ? (
-            <>
-              <span className="spinner" />
-              מחולל לו״ז...
-            </>
-          ) : (
-            <>צור לו״ז</>
-)}
+          {loading ? "מחולל לו״ז..." : "צור לו״ז"}
         </button>
       </form>
 
       {/* Loading state */}
       {loading && (() => {
         const len = streamingText.length;
-        const stageLabel = len === 0
-          ? "מתחברת לבינה המלאכותית..."
-          : len < 3000
-            ? "בונה מבנה הלו״ז..."
-            : `מקבלת תגובה — ${len.toLocaleString("he-IL")} תווים`;
-        const progress = len === 0 ? 5 : Math.min(95, Math.round((len / 10000) * 100));
+        const stage =
+          len === 0 ? { label: "מנתחת מטרות ההדרכה...", pct: 5 } :
+          len < 1500 ? { label: "בונה מבנה הלו״ז...", pct: 25 } :
+          len < 4000 ? { label: "מכינה הנחיות ללומדים...", pct: 55 } :
+          len < 7000 ? { label: "מכינה הודעת ווטסאפ...", pct: 78 } :
+          { label: "מסיימת...", pct: 92 };
         return (
           <div ref={loadingRef} className="loading-card">
             <span className="spinner spinner-brand" />
             <div className="loading-text">
               <strong>מחוללת לו״ז...</strong>
-              <span>{stageLabel}</span>
+              <span>{stage.label}</span>
               <div className="loading-progress">
-                <div className="loading-progress-bar" style={{ width: `${progress}%` }} />
+                <div className="loading-progress-bar" style={{ width: `${stage.pct}%` }} />
               </div>
             </div>
           </div>
@@ -443,20 +447,21 @@ export default function HomePage() {
             >
               עדכן הנחיות
             </button>
-            <button
-              className="btn btn-ghost"
-              type="button"
-              onClick={() => runGenerate()}
-              disabled={loading}
-            >
-              חולל מחדש
-            </button>
           </div>
 
           {/* Rationale */}
           <div className="card">
-            <div className="card-title">נימוק פדגוגי</div>
-            <div className="rationale-box">{result.rationale}</div>
+            <button
+              type="button"
+              className="rationale-toggle"
+              onClick={() => setRationaleOpen((o) => !o)}
+            >
+              <span>למה הלו״ז בנוי כך?</span>
+              <span className="rationale-toggle-arrow">{rationaleOpen ? "▲" : "▼"}</span>
+            </button>
+            {rationaleOpen && (
+              <div className="rationale-box" style={{ marginTop: "1rem" }}>{result.rationale}</div>
+            )}
           </div>
 
           {/* Zoom banner */}
@@ -575,7 +580,7 @@ export default function HomePage() {
                       ערוך תוכן
                     </button>
                     <button className="copy-btn" type="button" onClick={downloadHtml}>
-                      הורד HTML
+                      הורד דף ללומדים
                     </button>
                     <button className="copy-btn copy-btn-share" type="button" onClick={shareSchedule}>
                       שתף

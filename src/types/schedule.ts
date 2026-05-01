@@ -38,6 +38,7 @@ export interface ScheduleInput {
   include_team_sessions?: string;
   zoom_morning?: string;
   zoom_end?: string;
+  previous_days?: string;
   constraints?: string;
   notes?: string;
   material_links?: string;

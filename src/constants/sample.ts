@@ -51,7 +51,7 @@ export const SAMPLE_RESULT: ScheduleResult = {
 export const TABS = [
   { id: "distribution", label: 'לו"ז להפצה' },
   { id: "whatsapp", label: "הודעת ווטסאפ" },
-  { id: "questions", label: "שאלות ומשוב" },
+  { id: "questions", label: "דייק את הלו״ז" },
 ] as const;
 
 export const QUICK_STARTERS: { label: string; goals: string }[] = [
