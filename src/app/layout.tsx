@@ -12,6 +12,14 @@ const heebo = Heebo({
 export const metadata: Metadata = {
   title: "Luz Creator – מחולל לו״ז ללמידה מרחוק",
   description: "בנה לו״ז יומי מקצועי ללמידה מרחוק בעזרת בינה מלאכותית",
+  openGraph: {
+    title: "Luz Creator – מחולל לו״ז ללמידה מרחוק",
+    description: "בנה לו״ז יומי מקצועי ללמידה מרחוק בעזרת בינה מלאכותית",
+    url: "https://luzon-ruthys.vercel.app",
+    siteName: "Luz Creator",
+    locale: "he_IL",
+    type: "website",
+  },
 };
 
 export default function RootLayout({
