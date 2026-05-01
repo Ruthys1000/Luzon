@@ -250,7 +250,7 @@ export default function HomePage() {
           <div className="card-title">פרטי ההדרכה</div>
           <div className="form-grid">
             <div className="field full">
-              <label>מטרות ההדרכה <span className="hint">*חובה</span></label>
+              <label>נושא ומטרות יום ההדרכה <span className="hint">*חובה — מה נלמד היום ומה הלומדים יצאו ממנו?</span></label>
               <div className="quick-starters">
                 {QUICK_STARTERS.map((s) => (
                   <button
@@ -267,16 +267,16 @@ export default function HomePage() {
                 name="goals"
                 value={form.goals}
                 onChange={handleChange}
-                placeholder="לדוגמה: פיתוח מיומנויות ניהול, שיפור תקשורת צוותית, הכרת כלים לניהול משימות"
+                placeholder="לדוגמה: ניהול עצמי בלמידה מרחוק — הלומדים יצאו עם כלים מעשיים לתכנון יום עצמאי, זיהוי גורמי הסחה ובניית שגרת למידה"
                 required
               />
             </div>
             <div className="field full">
-              <label>מה סוג התוכן שלך?</label>
+              <label>מה יש לך? <span className="hint">בחר את סוג הבסיס ללו״ז</span></label>
               <div className="content-type-chips">
                 {([
-                  { value: "topic", label: "נושא / מטרות", desc: "אין חומרים ספציפיים – תחולל לפי הנושא" },
-                  { value: "course", label: "קורס ספציפי", desc: "Coursera / Udemy / LinkedIn Learning" },
+                  { value: "topic", label: "נושא בלבד", desc: "אין חומרים – הכלי יבנה הכל לפי הנושא" },
+                  { value: "course", label: "קורס מוכן", desc: "Coursera / Udemy / LinkedIn Learning" },
                   { value: "my_content", label: "תוכן שלי", desc: "הסרטונים / מצגות / מסמכים שלי" },
                 ] as const).map((opt) => (
                   <button
@@ -292,7 +292,7 @@ export default function HomePage() {
               </div>
             </div>
             <div className="field">
-              <label>מספר ימים <span className="hint">*חובה</span></label>
+              <label>מספר ימים <span className="hint">*חובה — בדרך כלל: 1</span></label>
               <input
                 type="number"
                 name="days"
@@ -305,7 +305,7 @@ export default function HomePage() {
             </div>
             <div className="field" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px" }}>
               <div>
-                <label>שעת התחלה</label>
+                <label>שעת התחלה <span className="hint">שעות הלומד בבית</span></label>
                 <input type="time" name="start_time" value={form.start_time} onChange={handleChange} />
               </div>
               <div>
@@ -319,74 +319,74 @@ export default function HomePage() {
         {/* Advanced */}
         <div className="card">
           <div className="card-title">
-            הגדרות מתקדמות <span style={{ fontWeight: 400, color: "var(--text-muted)", fontSize: ".85rem" }}>(אופציונלי)</span>
+            פרטים נוספים <span style={{ fontWeight: 400, color: "var(--text-muted)", fontSize: ".85rem" }}>(אופציונלי — ככל שתמלא יותר, הלו״ז יהיה מדויק יותר)</span>
           </div>
           <div className="form-grid">
             <div className="field full">
-              <label>האם לכלול מפגשי צוות? <span className="hint">הלו״ז מיועד לימי למידה עצמאיים</span></label>
+              <label>מה כיסינו בימים הקודמים? <span className="hint">ביום הראשון? השאר ריק. מיום שני — כתוב בקצרה</span></label>
+              <textarea
+                name="previous_days"
+                value={form.previous_days}
+                onChange={handleChange}
+                placeholder="לדוגמה: יום 1 — מבוא לניהול עצמי וזיהוי דפוסים. יום 2 — מטריצת עדיפויות ותרגול."
+              />
+            </div>
+            <div className="field full">
+              <label>האם יש מפגשי זום עם הלומדים?</label>
               <select name="include_team_sessions" value={form.include_team_sessions} onChange={handleChange}>
-                <option value="no">לא – ימי למידה עצמאיים בלבד</option>
-                <option value="yes">כן – לכלול מפגשי זום (פתיחה וסגירת יום)</option>
+                <option value="yes">כן – יש זום בפתיחה ו/או סגירת יום</option>
+                <option value="no">לא – למידה עצמאית בלבד, ללא פגישות</option>
               </select>
             </div>
             {form.include_team_sessions === "yes" && (
               <>
                 <div className="field">
                   <label>
-                    🔵 זום – מפגש בוקר <span className="hint">קישור או מספר חדר</span>
+                    🔵 זום בוקר <span className="hint">קישור או מספר חדר — השאר ריק אם אין</span>
                   </label>
                   <input
                     type="text"
                     name="zoom_morning"
                     value={form.zoom_morning}
                     onChange={handleChange}
-                    placeholder="לדוגמה: 123 456 7890 או https://zoom.us/j/..."
+                    placeholder="https://zoom.us/j/... או מספר חדר"
                   />
                 </div>
                 <div className="field">
                   <label>
-                    🔵 זום – מפגש סיום יום <span className="hint">קישור או מספר חדר</span>
+                    🔵 זום סיום יום <span className="hint">קישור או מספר חדר — השאר ריק אם אין</span>
                   </label>
                   <input
                     type="text"
                     name="zoom_end"
                     value={form.zoom_end}
                     onChange={handleChange}
-                    placeholder="לדוגמה: 123 456 7890 או https://zoom.us/j/..."
+                    placeholder="https://zoom.us/j/... או מספר חדר"
                   />
                 </div>
               </>
             )}
             <div className="field full">
-              <label>מה עסקנו בו עד עכשיו? <span className="hint">רשום בקצרה — הכלי ימשיך מאיפה שעצרתם</span></label>
-              <textarea
-                name="previous_days"
-                value={form.previous_days}
-                onChange={handleChange}
-                placeholder="לדוגמה: יום 1 — מבוא לניהול עצמי וזיהוי דפוסים. יום 2 — מטריצת עדיפויות ותרגול. יום 3 — תקשורת בלחץ."
-              />
-            </div>
-            <div className="field full">
-              <label>אילוצים <span className="hint">הרצאות חובה, מגבלות טכניות וכו׳</span></label>
-              <textarea
-                name="constraints"
-                value={form.constraints}
-                onChange={handleChange}
-                placeholder="לדוגמה: יש הרצאת אורח ביום ב׳ בשעה 11:00, אין גישה לאינטרנט ביום ג׳"
-              />
-            </div>
-            <div className="field full">
-              <label>דגשים נוספים</label>
+              <label>מה חשוב לדעת על הקבוצה? <span className="hint">רמת ניסיון, תחום, מה שמשפיע על הלמידה</span></label>
               <textarea
                 name="notes"
                 value={form.notes}
                 onChange={handleChange}
-                placeholder="לדוגמה: יותר תרגול פחות הרצאה; הלומדים מתחום הכספים ללא ניסיון בלמידה מרחוק; הדבר החשוב ביותר הוא שהלומדים ירגישו מוצלחים ביום הראשון"
+                placeholder="לדוגמה: הקבוצה ללא ניסיון בלמידה מרחוק ויש חשש מהמעבר; חשוב שירגישו מוצלחים ביום הראשון; רוב הלומדים עובדים מהבית עם ילדים קטנים"
+              />
+            </div>
+            <div className="field full">
+              <label>מגבלות ואילוצים <span className="hint">משהו שהכלי חייב לקחת בחשבון</span></label>
+              <textarea
+                name="constraints"
+                value={form.constraints}
+                onChange={handleChange}
+                placeholder="לדוגמה: יש ישיבת צוות ב-14:00 שחותכת את היום; אין גישה ל-YouTube בארגון; הלומדים עובדים על מובייל בלבד"
               />
             </div>
             <div className="field full">
               <label>
-                קישורים לחומרים שלך <span className="hint">סרטונים, מצגות, מאמרים — שורה אחת לכל קישור</span>
+                קישורים לחומרים שרוצה לשלב <span className="hint">תוכן שהלומדים יצפו / יקראו — שורה אחת לכל קישור</span>
               </label>
               <textarea
                 className="links-field"
@@ -396,7 +396,7 @@ export default function HomePage() {
                 placeholder={"https://www.youtube.com/watch?v=...\nhttps://docs.google.com/..."}
               />
               <div className="links-hint">
-                💡 אם אין לך קישורים — השאר ריק. הכלי ימצא ויציע תכנים רלוונטיים לפי הנושא.
+                💡 אין קישורים? השאר ריק — הכלי יציע תכנים רלוונטיים שהלומדים יוכלו לחפש בעצמם.
               </div>
             </div>
           </div>
