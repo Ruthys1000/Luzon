@@ -8,10 +8,7 @@ export const ACTIVITY_BADGE: Record<string, string> = {
 };
 
 export function getBadgeClass(type: string): string {
-  for (const key of Object.keys(ACTIVITY_BADGE)) {
-    if (type.includes(key)) return ACTIVITY_BADGE[key];
-  }
-  return "badge-lecture";
+  return ACTIVITY_BADGE[type] ?? "badge-lecture";
 }
 
 
