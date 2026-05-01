@@ -4,30 +4,31 @@ import { useState, useRef, useEffect, Fragment } from "react";
 import type { SlotData, ScheduleResult } from "@/types/schedule";
 import { getBadgeClass, TABS, QUICK_STARTERS } from "@/constants/sample";
 import { generateHtml } from "@/lib/generate-html";
-
-function linkify(text: string): string {
-  return text.replace(/(https?:\/\/[^\s<>"']+)/g, (url) => {
-    const clean = url.replace(/[.,!?;)'"]+$/, "");
-    const display = clean.includes("zoom.us") ? "קישור לזום ←" : clean;
-    return `<a href="${clean}" target="_blank" rel="noopener">${display}</a>`;
-  });
-}
-
-function hasLink(html: string): boolean {
-  return html.includes("<a ");
-}
-
-function suppLink(title: string, type: "video" | "article" | "activity"): string {
-  const q = encodeURIComponent(title);
-  return type === "video"
-    ? `https://www.youtube.com/results?search_query=${q}`
-    : `https://www.google.com/search?q=${q}`;
-}
+import { linkify, hasLink, suppSearchUrl } from "@/lib/linkify";
 
 function scheduleFilename(): string {
   const now = new Date();
   const ts = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, "0")}${String(now.getDate()).padStart(2, "0")}-${String(now.getHours()).padStart(2, "0")}${String(now.getMinutes()).padStart(2, "0")}`;
   return `luz-${ts}.html`;
+}
+
+function parseScheduleJson(text: string): ScheduleResult {
+  const trimmed = text.trim();
+
+  if (trimmed.startsWith("ERROR:")) {
+    throw new Error(trimmed.slice(6).trim() || "שגיאה בשרת");
+  }
+
+  try {
+    return JSON.parse(trimmed);
+  } catch {
+    const start = trimmed.indexOf("{");
+    const end = trimmed.lastIndexOf("}");
+    if (start === -1 || end === -1 || end <= start) {
+      throw new Error("תגובה לא תקינה מהשרת");
+    }
+    return JSON.parse(trimmed.slice(start, end + 1));
+  }
 }
 
 export default function HomePage() {
@@ -41,7 +42,6 @@ export default function HomePage() {
     include_team_sessions: "yes",
     zoom_sessions: "",
     constraints: "",
-    notes: "",
     material_links: "",
   });
 
@@ -114,13 +114,14 @@ export default function HomePage() {
         setStreamingText(accumulated);
       }
 
-      const jsonMatch = accumulated.match(/\{[\s\S]*\}/);
-      if (!jsonMatch) {
-        setError("שגיאה ביצירת הלו״ז – אנא נסה שוב");
+      let scheduleData: ScheduleResult;
+      try {
+        scheduleData = parseScheduleJson(accumulated);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "שגיאה ביצירת הלו״ז – אנא נסה שוב");
         return;
       }
 
-      const scheduleData = JSON.parse(jsonMatch[0]);
       setResult(scheduleData);
       setEditableWhatsapp(scheduleData.whatsapp_message || "");
       setQaAnswers({});
@@ -138,6 +139,10 @@ export default function HomePage() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (form.end_time <= form.start_time) {
+      setError("שעת הסיום חייבת להיות אחרי שעת ההתחלה");
+      return;
+    }
     await runGenerate();
   }
 
@@ -255,6 +260,7 @@ export default function HomePage() {
                     key={s.label}
                     type="button"
                     className="quick-starter-chip"
+                    aria-label={`בחר נושא: ${s.label}`}
                     onClick={() => setForm((prev) => ({ ...prev, goals: s.goals }))}
                   >
                     {s.label}
@@ -492,7 +498,7 @@ export default function HomePage() {
                                 const icons = { video: "🎬", article: "📖", activity: "🎯" };
                                 const item = day.supplementary[type];
                                 const descHtml = linkify(item.description);
-                                const searchUrl = suppLink(item.title, type);
+                                const searchUrl = suppSearchUrl(item.title, type);
                                 return (
                                   <div key={type} className="supp-inline-item">
                                     <span>{icons[type]}</span>
@@ -521,10 +527,12 @@ export default function HomePage() {
 
           {/* Tabs */}
           <div className="card">
-            <div className="tab-bar">
+            <div className="tab-bar" role="tablist">
               {TABS.map((t) => (
                 <button
                   key={t.id}
+                  role="tab"
+                  aria-selected={activeTab === t.id}
                   className={`tab${activeTab === t.id ? " active" : ""}`}
                   onClick={() => setActiveTab(t.id)}
                   type="button"

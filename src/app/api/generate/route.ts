@@ -114,9 +114,6 @@ ${input.goals}
 
 אילוצים:
 ${input.constraints || "אין אילוצים מיוחדים"}
-
-דגשים נוספים:
-${input.notes || "אין"}
 ${previousDaysSection}
 ${zoomSection}
 ${linksSection}
@@ -182,6 +179,8 @@ export async function POST(req: NextRequest) {
         );
       } catch (err) {
         console.error("[generate] stream error:", err);
+        const msg = err instanceof Error ? err.message : "שגיאה פנימית";
+        controller.enqueue(encoder.encode(`\nERROR:${msg}`));
       } finally {
         controller.close();
       }
