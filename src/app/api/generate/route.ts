@@ -73,8 +73,8 @@ CRITICAL: שדה זה מכוון ישירות ללומד, לא למדריך.
 }`;
 
 function buildUserPrompt(input: ScheduleInput): string {
-  const zoomSection = input.zoom_morning || input.zoom_end
-    ? `\nפרטי זום למפגשים סינכרוניים:\n${input.zoom_morning ? `- מפגש בוקר (שיעור כפול 1): ${input.zoom_morning}` : ""}${input.zoom_end ? `\n- מפגש סיום יום (שיעור כפול 4): ${input.zoom_end}` : ""}\nהוסף את פרטי הזום הרלוונטיים בשדה instructor_notes של השיעורים המתאימים.`
+  const zoomSection = input.zoom_sessions?.trim()
+    ? `\nמפגשי זום (הוסף לשדה instructor_notes של השיעורים הרלוונטיים לפי השעות):\n${input.zoom_sessions}`
     : "";
 
   const linksSection = input.material_links?.trim()

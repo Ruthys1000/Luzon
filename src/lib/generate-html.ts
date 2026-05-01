@@ -1,8 +1,7 @@
 import type { ScheduleResult } from "@/types/schedule";
 
 interface ZoomOptions {
-  morning?: string;
-  end?: string;
+  sessions?: string;
 }
 
 function linkifyHtml(text: string): string {
@@ -61,11 +60,10 @@ export function generateHtml(result: ScheduleResult, zoom?: ZoomOptions): string
     return [dayHeader, slotRows, suppRow].join("");
   }).join("");
 
-  const zoomBanner = zoom && (zoom.morning || zoom.end) ? `
+  const zoomBanner = zoom?.sessions?.trim() ? `
 <div style="background:#eef5fd;border-radius:10px;padding:12px 16px;margin-bottom:20px;font-size:13px;line-height:1.8;border-right:4px solid #1d7bd4">
-  <div style="font-size:11px;font-weight:800;color:#1d7bd4;text-transform:uppercase;margin-bottom:6px;letter-spacing:.05em">🔵 פרטי זום</div>
-  ${zoom.morning ? `<div>☀️ <strong>מפגש בוקר (שיעור 1):</strong> ${zoom.morning}</div>` : ""}
-  ${zoom.end ? `<div>🌙 <strong>מפגש סיום יום (שיעור 4):</strong> ${zoom.end}</div>` : ""}
+  <div style="font-size:11px;font-weight:800;color:#1d7bd4;text-transform:uppercase;margin-bottom:6px;letter-spacing:.05em">🔵 מפגשי זום</div>
+  ${zoom.sessions.trim().split("\n").filter(l => l.trim()).map(l => `<div>${linkifyHtml(l)}</div>`).join("")}
 </div>` : "";
 
   return `<!DOCTYPE html>
