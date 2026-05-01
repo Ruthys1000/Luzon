@@ -303,15 +303,13 @@ export default function HomePage() {
                 required
               />
             </div>
-            <div className="field" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px" }}>
-              <div>
-                <label>שעת התחלה <span className="hint">שעות הלומד בבית</span></label>
-                <input type="time" name="start_time" value={form.start_time} onChange={handleChange} />
-              </div>
-              <div>
-                <label>שעת סיום</label>
-                <input type="time" name="end_time" value={form.end_time} onChange={handleChange} />
-              </div>
+            <div className="field">
+              <label>שעת התחלה <span className="hint">שעות הלומד בבית</span></label>
+              <input type="time" name="start_time" value={form.start_time} onChange={handleChange} />
+            </div>
+            <div className="field">
+              <label>שעת סיום</label>
+              <input type="time" name="end_time" value={form.end_time} onChange={handleChange} />
             </div>
           </div>
         </div>
@@ -367,21 +365,21 @@ export default function HomePage() {
               </>
             )}
             <div className="field full">
-              <label>מה חשוב לדעת על הקבוצה? <span className="hint">רמת ניסיון, תחום, מה שמשפיע על הלמידה</span></label>
+              <label>מה עסקנו בו עד עכשיו? <span className="hint">רשום בקצרה — הכלי ימשיך מאיפה שעצרתם</span></label>
               <textarea
-                name="notes"
-                value={form.notes}
+                name="previous_days"
+                value={form.previous_days}
                 onChange={handleChange}
-                placeholder="לדוגמה: הקבוצה ללא ניסיון בלמידה מרחוק ויש חשש מהמעבר; חשוב שירגישו מוצלחים ביום הראשון; רוב הלומדים עובדים מהבית עם ילדים קטנים"
+                placeholder="לדוגמה: יום 1 — מבוא לניהול עצמי וזיהוי דפוסים. יום 2 — מטריצת עדיפויות ותרגול. יום 3 — תקשורת בלחץ."
               />
             </div>
             <div className="field full">
-              <label>מגבלות ואילוצים <span className="hint">משהו שהכלי חייב לקחת בחשבון</span></label>
+              <label>אילוצים <span className="hint">הרצאות חובה, מגבלות טכניות וכו׳</span></label>
               <textarea
                 name="constraints"
                 value={form.constraints}
                 onChange={handleChange}
-                placeholder="לדוגמה: יש ישיבת צוות ב-14:00 שחותכת את היום; אין גישה ל-YouTube בארגון; הלומדים עובדים על מובייל בלבד"
+                placeholder="לדוגמה: פגישת צוות בשעה 11:00; הרצאת אורח ביום שלישי; יום קצר – מסיימים ב-15:00"
               />
             </div>
             <div className="field full">
