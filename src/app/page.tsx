@@ -365,15 +365,6 @@ export default function HomePage() {
               </>
             )}
             <div className="field full">
-              <label>מה עסקנו בו עד עכשיו? <span className="hint">רשום בקצרה — הכלי ימשיך מאיפה שעצרתם</span></label>
-              <textarea
-                name="previous_days"
-                value={form.previous_days}
-                onChange={handleChange}
-                placeholder="לדוגמה: יום 1 — מבוא לניהול עצמי וזיהוי דפוסים. יום 2 — מטריצת עדיפויות ותרגול. יום 3 — תקשורת בלחץ."
-              />
-            </div>
-            <div className="field full">
               <label>אילוצים <span className="hint">הרצאות חובה, מגבלות טכניות וכו׳</span></label>
               <textarea
                 name="constraints"
