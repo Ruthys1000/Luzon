@@ -3,7 +3,7 @@
 import { useState, Fragment } from "react";
 import type { ScheduleResult } from "@/types/schedule";
 import { getBadgeClass, TABS } from "@/constants/sample";
-import { linkify, hasLink, suppSearchUrl } from "@/lib/linkify";
+import { escapeHtml, linkify, hasLink, suppSearchUrl } from "@/lib/linkify";
 import { StructuredEditor } from "@/components/StructuredEditor";
 
 interface ScheduleResultProps {
@@ -127,7 +127,7 @@ export function ScheduleResultPanel({
                       <td
                         data-label="הנחייה"
                         style={{ fontSize: ".83rem", color: "var(--text-muted)" }}
-                        dangerouslySetInnerHTML={{ __html: linkify(slot.instructor_notes) }}
+                        dangerouslySetInnerHTML={{ __html: linkify(escapeHtml(slot.instructor_notes)) }}
                       />
                     </tr>
                   ))}
@@ -139,7 +139,7 @@ export function ScheduleResultPanel({
                           {(["video", "article", "activity"] as const).map((type) => {
                             const icons = { video: "🎬", article: "📖", activity: "🎯" };
                             const item = day.supplementary[type];
-                            const descHtml = linkify(item.description);
+                            const descHtml = linkify(escapeHtml(item.description));
                             const searchUrl = suppSearchUrl(item.title, type);
                             return (
                               <div key={type} className="supp-inline-item">

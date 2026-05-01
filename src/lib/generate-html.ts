@@ -1,16 +1,8 @@
 import type { ScheduleResult } from "@/types/schedule";
-import { linkifyStyled, hasLink, suppSearchUrl } from "@/lib/linkify";
+import { escapeHtml, linkifyStyled, hasLink, suppSearchUrl } from "@/lib/linkify";
 
 interface ZoomOptions {
   sessions?: string;
-}
-
-function escapeHtml(s: string): string {
-  return s
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
 }
 
 function suppSearchLinkHtml(title: string, type: "video" | "article" | "activity"): string {
@@ -80,6 +72,7 @@ export function generateHtml(result: ScheduleResult, zoom?: ZoomOptions): string
   @media(max-width:640px){
     body{padding:10px}
     .table-wrap{border-radius:0}
+    thead{display:none}
     table,tbody,tr{display:block;width:100%}
     td{display:grid;grid-template-columns:68px 1fr;gap:.4rem;padding:8px 12px;border-bottom:1px solid #cfc5b8;font-size:12px;width:100%;box-sizing:border-box}
     td::before{content:attr(data-label);font-weight:800;font-size:.7rem;color:#aaa197;padding-top:.15rem}

@@ -11,8 +11,14 @@ const RATE_LIMIT_WINDOW_MS = 60_000;
 
 function checkRateLimit(ip: string): boolean {
   const now = Date.now();
+
+  // Evict expired entries to prevent unbounded memory growth
+  for (const [key, entry] of rateLimit) {
+    if (now >= entry.resetAt) rateLimit.delete(key);
+  }
+
   const entry = rateLimit.get(ip);
-  if (!entry || now >= entry.resetAt) {
+  if (!entry) {
     rateLimit.set(ip, { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS });
     return true;
   }
