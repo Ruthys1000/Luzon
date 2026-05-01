@@ -39,8 +39,7 @@ export default function HomePage() {
     content_type: "topic" as "topic" | "course" | "my_content",
     previous_days: "",
     include_team_sessions: "yes",
-    zoom_morning: "",
-    zoom_end: "",
+    zoom_sessions: "",
     constraints: "",
     notes: "",
     material_links: "",
@@ -69,11 +68,10 @@ export default function HomePage() {
   useEffect(() => {
     if (result) {
       setEditableHtml(generateHtml(result, {
-        morning: form.zoom_morning || undefined,
-        end: form.zoom_end || undefined,
+        sessions: form.zoom_sessions || undefined,
       }));
     }
-  }, [result, form.zoom_morning, form.zoom_end]);
+  }, [result, form.zoom_sessions]);
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -250,7 +248,7 @@ export default function HomePage() {
           <div className="card-title">פרטי ההדרכה</div>
           <div className="form-grid">
             <div className="field full">
-              <label>נושא ומטרות יום ההדרכה <span className="hint">*חובה — מה נלמד היום ומה הלומדים יצאו ממנו?</span></label>
+              <label>נושא ומטרות יום ההדרכה <span className="hint">בחר נושא מהיר למטה, או כתוב בעצמך</span></label>
               <div className="quick-starters">
                 {QUICK_STARTERS.map((s) => (
                   <button
@@ -337,32 +335,15 @@ export default function HomePage() {
               </select>
             </div>
             {form.include_team_sessions === "yes" && (
-              <>
-                <div className="field">
-                  <label>
-                    🔵 זום בוקר <span className="hint">קישור או מספר חדר — השאר ריק אם אין</span>
-                  </label>
-                  <input
-                    type="text"
-                    name="zoom_morning"
-                    value={form.zoom_morning}
-                    onChange={handleChange}
-                    placeholder="https://zoom.us/j/... או מספר חדר"
-                  />
-                </div>
-                <div className="field">
-                  <label>
-                    🔵 זום סיום יום <span className="hint">קישור או מספר חדר — השאר ריק אם אין</span>
-                  </label>
-                  <input
-                    type="text"
-                    name="zoom_end"
-                    value={form.zoom_end}
-                    onChange={handleChange}
-                    placeholder="https://zoom.us/j/... או מספר חדר"
-                  />
-                </div>
-              </>
+              <div className="field full">
+                <label>🔵 מפגשי זום <span className="hint">שורה לכל מפגש — שעה + קישור</span></label>
+                <textarea
+                  name="zoom_sessions"
+                  value={form.zoom_sessions}
+                  onChange={handleChange}
+                  placeholder={"09:00 – https://zoom.us/j/...\n13:00 – https://zoom.us/j/..."}
+                />
+              </div>
             )}
             <div className="field full">
               <label>מה עסקנו בו עד עכשיו? <span className="hint">רשום בקצרה — הכלי ימשיך מאיפה שעצרתם</span></label>
@@ -464,11 +445,12 @@ export default function HomePage() {
           </div>
 
           {/* Zoom banner */}
-          {(form.zoom_morning || form.zoom_end) && (
+          {form.zoom_sessions?.trim() && (
             <div className="zoom-info-bar">
-              <div className="zoom-info-label">פרטי זום</div>
-              {form.zoom_morning && <div>☀️ <strong>מפגש בוקר (שיעור 1):</strong> {form.zoom_morning}</div>}
-              {form.zoom_end && <div>🌙 <strong>מפגש סיום יום (שיעור 4):</strong> {form.zoom_end}</div>}
+              <div className="zoom-info-label">🔵 מפגשי זום</div>
+              {form.zoom_sessions.trim().split("\n").filter(l => l.trim()).map((line, i) => (
+                <div key={i}>{line}</div>
+              ))}
             </div>
           )}
 
