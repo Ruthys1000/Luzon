@@ -3,7 +3,6 @@ export interface SlotData {
   lesson_number?: number;
   topic: string;
   activity_type: string;
-  equipment?: string;
   instructor_notes: string;
 }
 
@@ -39,7 +38,6 @@ export interface ScheduleInput {
   zoom_sessions?: string;
   previous_days?: string;
   constraints?: string;
-  notes?: string;
   material_links?: string;
   refinement_qa?: { question: string; answer: string }[];
 }

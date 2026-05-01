@@ -4,6 +4,29 @@ import type { ScheduleInput } from "@/types/schedule";
 
 const client = new Anthropic();
 
+// Simple in-memory rate limiter: max 5 requests per IP per minute
+const rateLimit = new Map<string, { count: number; resetAt: number }>();
+const RATE_LIMIT_MAX = 5;
+const RATE_LIMIT_WINDOW_MS = 60_000;
+
+function checkRateLimit(ip: string): boolean {
+  const now = Date.now();
+
+  // Evict expired entries to prevent unbounded memory growth
+  for (const [key, entry] of rateLimit) {
+    if (now >= entry.resetAt) rateLimit.delete(key);
+  }
+
+  const entry = rateLimit.get(ip);
+  if (!entry) {
+    rateLimit.set(ip, { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS });
+    return true;
+  }
+  if (entry.count >= RATE_LIMIT_MAX) return false;
+  entry.count++;
+  return true;
+}
+
 const SYSTEM_PROMPT = `אתה מומחה בכיר לפיתוח הדרכה, עיצוב למידה וטכנולוגיות הוראה.
 המומחיות שלך: בניית תוכניות הכשרה מקצועיות, למידה מרחוק, instructional design.
 
@@ -114,9 +137,6 @@ ${input.goals}
 
 אילוצים:
 ${input.constraints || "אין אילוצים מיוחדים"}
-
-דגשים נוספים:
-${input.notes || "אין"}
 ${previousDaysSection}
 ${zoomSection}
 ${linksSection}
@@ -126,6 +146,14 @@ ${refinementSection}
 }
 
 export async function POST(req: NextRequest) {
+  const ip = req.headers.get("x-forwarded-for")?.split(",")[0].trim() ?? "unknown";
+  if (!checkRateLimit(ip)) {
+    return NextResponse.json(
+      { error: "יותר מדי בקשות – אנא המתן דקה ונסה שוב" },
+      { status: 429 }
+    );
+  }
+
   let input: ScheduleInput;
   try {
     input = await req.json();
@@ -182,6 +210,8 @@ export async function POST(req: NextRequest) {
         );
       } catch (err) {
         console.error("[generate] stream error:", err);
+        const msg = err instanceof Error ? err.message : "שגיאה פנימית";
+        controller.enqueue(encoder.encode(`\nERROR:${msg}`));
       } finally {
         controller.close();
       }
