@@ -162,11 +162,37 @@ export function ScheduleResultPanel({
         </div>
       </div>
 
-      {/* Section 1: Edit & distribute schedule */}
+      {/* Section 1: WhatsApp message */}
       <div className="card">
         <div className="section-header">
           <span className="section-number">1</span>
-          <span className="section-title">ערוך והפץ את הלו״ז</span>
+          <span className="section-title">שלח הודעת ווטסאפ</span>
+        </div>
+        <textarea
+          className="whatsapp-textarea"
+          value={editableWhatsapp}
+          onChange={(e) => onWhatsappChange(e.target.value)}
+        />
+        <div className="copy-row" style={{ marginTop: ".9rem" }}>
+          <button className="copy-btn" type="button" onClick={copyWhatsapp}>
+            {whatsappCopied ? "הועתק!" : "העתק הודעה"}
+          </button>
+          <a
+            className="copy-btn copy-btn-share"
+            href={`https://wa.me/?text=${encodeURIComponent(editableWhatsapp)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            שלח בווטסאפ ↗
+          </a>
+        </div>
+      </div>
+
+      {/* Section 2: Share schedule */}
+      <div className="card">
+        <div className="section-header">
+          <span className="section-number">2</span>
+          <span className="section-title">שלח את הלו״ז</span>
         </div>
         <div className="copy-row">
           {isEditing ? (
@@ -180,14 +206,14 @@ export function ScheduleResultPanel({
             </>
           ) : (
             <>
-              <button className="copy-btn" type="button" onClick={startEditing}>
-                ערוך תוכן
+              <button className="copy-btn copy-btn-share" type="button" onClick={onShare}>
+                שלח בווטסאפ ↗
               </button>
               <button className="copy-btn" type="button" onClick={onDownload}>
-                הורד דף ללומדים
+                הורד
               </button>
-              <button className="copy-btn copy-btn-share" type="button" onClick={onShare}>
-                שתף
+              <button className="copy-btn" type="button" onClick={startEditing}>
+                ערוך תוכן
               </button>
             </>
           )}
@@ -196,32 +222,6 @@ export function ScheduleResultPanel({
         {isEditing && draftResult && (
           <StructuredEditor draftResult={draftResult} onChange={setDraftResult} />
         )}
-      </div>
-
-      {/* Section 2: WhatsApp message */}
-      <div className="card">
-        <div className="section-header">
-          <span className="section-number">2</span>
-          <span className="section-title">שלח הודעת ווטסאפ</span>
-        </div>
-        <div className="copy-row">
-          <button className="copy-btn" type="button" onClick={copyWhatsapp}>
-            {whatsappCopied ? "הועתק!" : "העתק הודעה"}
-          </button>
-          <a
-            className="copy-btn copy-btn-share"
-            href={`https://wa.me/?text=${encodeURIComponent(editableWhatsapp)}`}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            שלח בווטסאפ ↗
-          </a>
-        </div>
-        <textarea
-          className="whatsapp-textarea"
-          value={editableWhatsapp}
-          onChange={(e) => onWhatsappChange(e.target.value)}
-        />
       </div>
 
       {/* Section 3: Refine schedule (collapsible) */}
