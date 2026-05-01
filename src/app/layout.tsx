@@ -10,8 +10,8 @@ const heebo = Heebo({
 });
 
 export const metadata: Metadata = {
-  title: "Luz Creator – מחולל לו״ז שבועי",
-  description: "בנה לו״ז שבועי מקצועי ללמידה מרחוק בעזרת בינה מלאכותית",
+  title: "Luz Creator – מחולל לו״ז ללמידה מרחוק",
+  description: "בנה לו״ז יומי מקצועי ללמידה מרחוק בעזרת בינה מלאכותית",
 };
 
 export default function RootLayout({
