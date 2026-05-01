@@ -166,7 +166,10 @@ export function ScheduleResultPanel({
       <div className="card">
         <div className="section-header">
           <span className="section-number">1</span>
-          <span className="section-title">שלח הודעת ווטסאפ</span>
+          <div>
+            <div className="section-title">שלח הודעת ווטסאפ</div>
+            <p className="section-subtitle">הודעה קצרה שמכינה את הלומד ליום שלפניו</p>
+          </div>
         </div>
         <textarea
           className="whatsapp-textarea"
@@ -192,7 +195,10 @@ export function ScheduleResultPanel({
       <div className="card">
         <div className="section-header">
           <span className="section-number">2</span>
-          <span className="section-title">שלח את הלו״ז</span>
+          <div>
+            <div className="section-title">שלח את הלו״ז</div>
+            <p className="section-subtitle">הדף המלא עם כל הפרטים והתוכן המשלים</p>
+          </div>
         </div>
         <div className="copy-row">
           {isEditing ? (
@@ -279,7 +285,7 @@ export function ScheduleResultPanel({
       {/* Reset */}
       <div className="result-actions" style={{ marginTop: "1rem" }}>
         <button className="btn btn-secondary" type="button" onClick={onReset}>
-          עדכן הנחיות
+          התחל מחדש
         </button>
       </div>
 
