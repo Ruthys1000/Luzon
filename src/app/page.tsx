@@ -38,7 +38,7 @@ export default function HomePage() {
     end_time: "17:00",
     content_type: "topic" as "topic" | "course" | "my_content",
     previous_days: "",
-    include_team_sessions: "no",
+    include_team_sessions: "yes",
     zoom_morning: "",
     zoom_end: "",
     constraints: "",
@@ -326,7 +326,7 @@ export default function HomePage() {
               <label>האם לכלול מפגשי צוות? <span className="hint">הלו״ז מיועד לימי למידה עצמאיים</span></label>
               <select name="include_team_sessions" value={form.include_team_sessions} onChange={handleChange}>
                 <option value="no">לא – ימי למידה עצמאיים בלבד</option>
-                <option value="yes">כן – לכלול גם מפגשי צוות / עבודה בצוותים</option>
+                <option value="yes">כן – לכלול מפגשי זום (פתיחה וסגירת יום)</option>
               </select>
             </div>
             {form.include_team_sessions === "yes" && (
@@ -412,12 +412,13 @@ export default function HomePage() {
       {/* Loading state */}
       {loading && (() => {
         const len = streamingText.length;
+        const charCount = len > 0 ? ` — ${len.toLocaleString("he-IL")} תווים` : "";
         const stage =
           len === 0 ? { label: "מנתחת מטרות ההדרכה...", pct: 5 } :
-          len < 1500 ? { label: "בונה מבנה הלו״ז...", pct: 25 } :
-          len < 4000 ? { label: "מכינה הנחיות ללומדים...", pct: 55 } :
-          len < 7000 ? { label: "מכינה הודעת ווטסאפ...", pct: 78 } :
-          { label: "מסיימת...", pct: 92 };
+          len < 1500 ? { label: `בונה מבנה הלו״ז...${charCount}`, pct: 25 } :
+          len < 4000 ? { label: `מכינה הנחיות ללומדים...${charCount}`, pct: 55 } :
+          len < 7000 ? { label: `מכינה הודעת ווטסאפ...${charCount}`, pct: 78 } :
+          { label: `מסיימת...${charCount}`, pct: 92 };
         return (
           <div ref={loadingRef} className="loading-card">
             <span className="spinner spinner-brand" />
@@ -761,6 +762,11 @@ export default function HomePage() {
           </div>
         </div>
       )}
+
+      <footer className="site-footer">
+        <p>פותח על ידי <strong>רותי סלומון</strong></p>
+        <p>תגובות והצעות לשיפור הכלי: <a href="mailto:ruthy.salomon@gmail.com">ruthy.salomon@gmail.com</a></p>
+      </footer>
     </div>
   );
 }
