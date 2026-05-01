@@ -2,7 +2,7 @@
 
 import { useState, Fragment } from "react";
 import type { ScheduleResult } from "@/types/schedule";
-import { getBadgeClass, TABS } from "@/constants/sample";
+import { getBadgeClass } from "@/constants/sample";
 import { escapeHtml, linkify, hasLink, suppSearchUrl } from "@/lib/linkify";
 import { StructuredEditor } from "@/components/StructuredEditor";
 
@@ -35,11 +35,11 @@ export function ScheduleResultPanel({
   onShare,
   shareNotice,
 }: ScheduleResultProps) {
-  const [activeTab, setActiveTab] = useState("distribution");
   const [rationaleOpen, setRationaleOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [draftResult, setDraftResult] = useState<ScheduleResult | null>(null);
   const [whatsappCopied, setWhatsappCopied] = useState(false);
+  const [isRefineOpen, setIsRefineOpen] = useState(false);
   const [qaAnswers, setQaAnswers] = useState<Record<number, string>>({});
 
   function startEditing() {
@@ -61,11 +61,6 @@ export function ScheduleResultPanel({
 
   return (
     <div style={{ marginTop: "2.5rem" }}>
-      <div className="result-actions">
-        <button className="btn btn-secondary" type="button" onClick={onReset}>
-          עדכן הנחיות
-        </button>
-      </div>
 
       {/* Rationale */}
       <div className="card">
@@ -167,129 +162,127 @@ export function ScheduleResultPanel({
         </div>
       </div>
 
-      {/* Tabs */}
+      {/* Section 1: Edit & distribute schedule */}
       <div className="card">
-        <div className="tab-bar" role="tablist">
-          {TABS.map((t) => (
-            <button
-              key={t.id}
-              role="tab"
-              aria-selected={activeTab === t.id}
-              className={`tab${activeTab === t.id ? " active" : ""}`}
-              onClick={() => setActiveTab(t.id)}
-              type="button"
-            >
-              {t.label}
-            </button>
-          ))}
+        <div className="section-header">
+          <span className="section-number">1</span>
+          <span className="section-title">ערוך והפץ את הלו״ז</span>
         </div>
-
-        {/* לו"ז להפצה */}
-        <div className={`tab-panel${activeTab === "distribution" ? " active" : ""}`}>
-          <div className="copy-row">
-            {isEditing ? (
-              <>
-                <button className="copy-btn copy-btn-save" type="button" onClick={saveEditing}>
-                  שמור שינויים
-                </button>
-                <button className="copy-btn" type="button" onClick={() => setIsEditing(false)}>
-                  ביטול
-                </button>
-              </>
-            ) : (
-              <>
-                <button className="copy-btn" type="button" onClick={startEditing}>
-                  ערוך תוכן
-                </button>
-                <button className="copy-btn" type="button" onClick={onDownload}>
-                  הורד דף ללומדים
-                </button>
-                <button className="copy-btn copy-btn-share" type="button" onClick={onShare}>
-                  שתף
-                </button>
-              </>
-            )}
-          </div>
-
-          {shareNotice && <div className="share-notice">{shareNotice}</div>}
-
-          {isEditing && draftResult ? (
-            <StructuredEditor
-              draftResult={draftResult}
-              onChange={setDraftResult}
-            />
+        <div className="copy-row">
+          {isEditing ? (
+            <>
+              <button className="copy-btn copy-btn-save" type="button" onClick={saveEditing}>
+                שמור שינויים
+              </button>
+              <button className="copy-btn" type="button" onClick={() => setIsEditing(false)}>
+                ביטול
+              </button>
+            </>
           ) : (
-            <iframe
-              className="html-preview"
-              srcDoc={editableHtml}
-              title="תצוגה מקדימה של לו״ז"
-              sandbox="allow-same-origin"
-            />
+            <>
+              <button className="copy-btn" type="button" onClick={startEditing}>
+                ערוך תוכן
+              </button>
+              <button className="copy-btn" type="button" onClick={onDownload}>
+                הורד דף ללומדים
+              </button>
+              <button className="copy-btn copy-btn-share" type="button" onClick={onShare}>
+                שתף
+              </button>
+            </>
           )}
         </div>
-
-        {/* WhatsApp */}
-        <div className={`tab-panel${activeTab === "whatsapp" ? " active" : ""}`}>
-          <div className="copy-row">
-            <button className="copy-btn" type="button" onClick={copyWhatsapp}>
-              {whatsappCopied ? "הועתק!" : "העתק הודעה"}
-            </button>
-            <a
-              className="copy-btn copy-btn-share"
-              href={`https://wa.me/?text=${encodeURIComponent(editableWhatsapp)}`}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              שלח בווטסאפ ↗
-            </a>
-          </div>
-          <textarea
-            className="whatsapp-textarea"
-            value={editableWhatsapp}
-            onChange={(e) => onWhatsappChange(e.target.value)}
-          />
-        </div>
-
-        {/* Questions */}
-        <div className={`tab-panel${activeTab === "questions" ? " active" : ""}`}>
-          <p className="questions-intro">
-            ענה על השאלות כדי שהכלי יוכל לשפר את הלו״ז עבורך.
-          </p>
-          <div className="questions-list">
-            {result.questions.map((q, i) => (
-              <div key={i} className="question-item question-item-interactive">
-                <div className="question-text">
-                  <span className="question-icon">❓</span>
-                  {q}
-                </div>
-                <textarea
-                  className="question-answer"
-                  placeholder="הכנס תשובתך כאן..."
-                  value={qaAnswers[i] || ""}
-                  onChange={(e) => setQaAnswers((prev) => ({ ...prev, [i]: e.target.value }))}
-                />
-              </div>
-            ))}
-          </div>
-          <button
-            className="btn btn-primary refine-btn"
-            type="button"
-            disabled={loading || Object.values(qaAnswers).every((a) => !a.trim())}
-            onClick={() => {
-              const qa = result.questions
-                .map((q, i) => ({ question: q, answer: qaAnswers[i] || "" }))
-                .filter((qa) => qa.answer.trim());
-              onRefine(qa);
-            }}
-          >
-            {loading ? (
-              <><span className="spinner" /> משפר לו״ז...</>
-            ) : (
-              "שפר לו״ז לפי התשובות"
-            )}
-          </button>
-        </div>
+        {shareNotice && <div className="share-notice">{shareNotice}</div>}
+        {isEditing && draftResult && (
+          <StructuredEditor draftResult={draftResult} onChange={setDraftResult} />
+        )}
       </div>
+
+      {/* Section 2: WhatsApp message */}
+      <div className="card">
+        <div className="section-header">
+          <span className="section-number">2</span>
+          <span className="section-title">שלח הודעת ווטסאפ</span>
+        </div>
+        <div className="copy-row">
+          <button className="copy-btn" type="button" onClick={copyWhatsapp}>
+            {whatsappCopied ? "הועתק!" : "העתק הודעה"}
+          </button>
+          <a
+            className="copy-btn copy-btn-share"
+            href={`https://wa.me/?text=${encodeURIComponent(editableWhatsapp)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            שלח בווטסאפ ↗
+          </a>
+        </div>
+        <textarea
+          className="whatsapp-textarea"
+          value={editableWhatsapp}
+          onChange={(e) => onWhatsappChange(e.target.value)}
+        />
+      </div>
+
+      {/* Section 3: Refine schedule (collapsible) */}
+      <div className="card">
+        <button
+          type="button"
+          className="rationale-toggle"
+          onClick={() => setIsRefineOpen((o) => !o)}
+        >
+          <span>✨ רוצה לשפר את הלו״ז?</span>
+          <span className="rationale-toggle-arrow">{isRefineOpen ? "▲" : "▼"}</span>
+        </button>
+        {isRefineOpen && (
+          <div style={{ marginTop: "1.2rem" }}>
+            <p className="questions-intro">
+              ענה על השאלות כדי שהכלי יוכל לשפר את הלו״ז עבורך.
+            </p>
+            <div className="questions-list">
+              {result.questions.map((q, i) => (
+                <div key={i} className="question-item question-item-interactive">
+                  <div className="question-text">
+                    <span className="question-icon">❓</span>
+                    {q}
+                  </div>
+                  <textarea
+                    className="question-answer"
+                    placeholder="הכנס תשובתך כאן..."
+                    value={qaAnswers[i] || ""}
+                    onChange={(e) => setQaAnswers((prev) => ({ ...prev, [i]: e.target.value }))}
+                  />
+                </div>
+              ))}
+            </div>
+            <button
+              className="btn btn-primary refine-btn"
+              type="button"
+              disabled={loading || Object.values(qaAnswers).every((a) => !a.trim())}
+              onClick={() => {
+                const qa = result.questions
+                  .map((q, i) => ({ question: q, answer: qaAnswers[i] || "" }))
+                  .filter((qa) => qa.answer.trim());
+                onRefine(qa);
+              }}
+            >
+              {loading ? (
+                <><span className="spinner" /> משפר לו״ז...</>
+              ) : (
+                "שפר לו״ז לפי התשובות"
+              )}
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* Reset */}
+      <div className="result-actions" style={{ marginTop: "1rem" }}>
+        <button className="btn btn-secondary" type="button" onClick={onReset}>
+          עדכן הנחיות
+        </button>
+      </div>
+
     </div>
   );
 }

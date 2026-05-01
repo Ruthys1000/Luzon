@@ -447,48 +447,32 @@ textarea.links-field {
   margin-top: .1rem;
 }
 
-/* ── Tabs ── */
-.tab-bar {
+/* ── Section headers (numbered) ── */
+.section-header {
   display: flex;
-  gap: 1.25rem;
-  border-bottom: 1px solid var(--border);
-  margin-bottom: 1.9rem;
-  flex-wrap: wrap;
-  overflow-x: auto;
+  align-items: center;
+  gap: .75rem;
+  margin-bottom: 1.2rem;
 }
 
-.tab {
-  padding: .75rem .1rem;
-  font-size: .9rem;
+.section-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: #fff;
+  font-size: .85rem;
+  font-weight: 900;
+  flex-shrink: 0;
+}
+
+.section-title {
+  font-size: 1rem;
   font-weight: 800;
-  color: var(--text-muted);
-  cursor: pointer;
-  border: none;
-  background: none;
-  border-bottom: 2px solid transparent;
-  margin-bottom: -1px;
-  transition: color .15s, border-color .15s;
-  font-family: var(--font-heebo), sans-serif;
-  white-space: nowrap;
-}
-
-.tab.active {
   color: var(--text);
-  border-bottom-color: var(--text);
-}
-
-.tab:hover:not(.active) {
-  color: var(--primary);
-}
-
-/* ── Tab Panel ── */
-.tab-panel {
-  display: none;
-}
-
-.tab-panel.active {
-  display: block;
-  animation: fadeIn .2s ease;
 }
 
 @keyframes fadeIn {
@@ -628,21 +612,6 @@ textarea.links-field {
   border-color: var(--primary);
 }
 
-/* ── HTML Preview iframe ── */
-.html-preview {
-  width: 100%;
-  height: 540px;
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  background: #fff;
-  display: block;
-}
-
-@media (max-width: 600px) {
-  .html-preview {
-    height: 420px;
-  }
-}
 
 .copy-btn-share {
   background: #25d366;
@@ -1163,11 +1132,6 @@ input.editor-day-name:focus {
 
   .btn-row {
     flex-direction: column;
-  }
-
-  .tab {
-    padding: .6rem .1rem;
-    font-size: .84rem;
   }
 
   /* ── Mobile table: card layout ── */
