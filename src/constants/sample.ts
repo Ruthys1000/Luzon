@@ -14,11 +14,6 @@ export function getBadgeClass(type: string): string {
   return "badge-lecture";
 }
 
-export const TABS = [
-  { id: "distribution", label: 'לו"ז להפצה' },
-  { id: "whatsapp", label: "הודעת ווטסאפ" },
-  { id: "questions", label: "דייק את הלו״ז" },
-] as const;
 
 export const QUICK_STARTERS: { label: string; goals: string }[] = [
   {
