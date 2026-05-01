@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect, Fragment } from "react";
 import type { SlotData, ScheduleResult } from "@/types/schedule";
-import { getBadgeClass, TABS } from "@/constants/sample";
+import { getBadgeClass, TABS, QUICK_STARTERS } from "@/constants/sample";
 import { generateHtml } from "@/lib/generate-html";
 
 function linkify(text: string): string {
@@ -36,6 +36,7 @@ export default function HomePage() {
     days: "1",
     start_time: "09:00",
     end_time: "17:00",
+    content_type: "topic" as "topic" | "course" | "my_content",
     include_team_sessions: "no",
     zoom_morning: "",
     zoom_end: "",
@@ -53,7 +54,9 @@ export default function HomePage() {
   const [draftResult, setDraftResult] = useState<ScheduleResult | null>(null);
   const [editableHtml, setEditableHtml] = useState("");
   const [whatsappCopied, setWhatsappCopied] = useState(false);
+  const [editableWhatsapp, setEditableWhatsapp] = useState("");
   const [shareNotice, setShareNotice] = useState("");
+  const [qaAnswers, setQaAnswers] = useState<Record<number, string>>({});
   const resultRef = useRef<HTMLDivElement>(null);
   const loadingRef = useRef<HTMLDivElement>(null);
 
@@ -74,7 +77,7 @@ export default function HomePage() {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   }
 
-  async function runGenerate() {
+  async function runGenerate(refinement_qa?: { question: string; answer: string }[]) {
     setError("");
     setResult(null);
     setIsEditing(false);
@@ -86,7 +89,7 @@ export default function HomePage() {
       const res = await fetch("/api/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...form, days: Number(form.days) }),
+        body: JSON.stringify({ ...form, days: Number(form.days), refinement_qa }),
       });
 
       if (!res.ok) {
@@ -119,6 +122,8 @@ export default function HomePage() {
 
       const scheduleData = JSON.parse(jsonMatch[0]);
       setResult(scheduleData);
+      setEditableWhatsapp(scheduleData.whatsapp_message || "");
+      setQaAnswers({});
       setActiveTab("distribution");
       setTimeout(() => {
         resultRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -138,7 +143,7 @@ export default function HomePage() {
 
   async function copyWhatsapp() {
     if (!result) return;
-    await navigator.clipboard.writeText(result.whatsapp_message);
+    await navigator.clipboard.writeText(editableWhatsapp);
     setWhatsappCopied(true);
     setTimeout(() => setWhatsappCopied(false), 1500);
   }
@@ -150,7 +155,7 @@ export default function HomePage() {
 
     if (navigator.canShare && navigator.canShare({ files: [file] })) {
       try {
-        await navigator.share({ files: [file], text: result.whatsapp_message });
+        await navigator.share({ files: [file], text: editableWhatsapp });
       } catch {
         // user cancelled – do nothing
       }
@@ -158,7 +163,7 @@ export default function HomePage() {
       // desktop fallback: download + copy message
       downloadHtml();
       try {
-        await navigator.clipboard.writeText(result.whatsapp_message);
+        await navigator.clipboard.writeText(editableWhatsapp);
         setShareNotice("הקובץ הורד והודעת הווטסאפ הועתקה ללוח");
       } catch {
         setShareNotice("הקובץ הורד — העתק את הודעת הווטסאפ מהטאב המתאים");
@@ -244,6 +249,18 @@ export default function HomePage() {
           <div className="form-grid">
             <div className="field full">
               <label>מטרות ההדרכה <span className="hint">*חובה</span></label>
+              <div className="quick-starters">
+                {QUICK_STARTERS.map((s) => (
+                  <button
+                    key={s.label}
+                    type="button"
+                    className="quick-starter-chip"
+                    onClick={() => setForm((prev) => ({ ...prev, goals: s.goals }))}
+                  >
+                    {s.label}
+                  </button>
+                ))}
+              </div>
               <textarea
                 name="goals"
                 value={form.goals}
@@ -251,6 +268,26 @@ export default function HomePage() {
                 placeholder="לדוגמה: פיתוח מיומנויות ניהול, שיפור תקשורת צוותית, הכרת כלים לניהול משימות"
                 required
               />
+            </div>
+            <div className="field full">
+              <label>מה סוג התוכן שלך?</label>
+              <div className="content-type-chips">
+                {([
+                  { value: "topic", label: "נושא / מטרות", desc: "אין חומרים ספציפיים – תחולל לפי הנושא" },
+                  { value: "course", label: "קורס ספציפי", desc: "Coursera / Udemy / LinkedIn Learning" },
+                  { value: "my_content", label: "תוכן שלי", desc: "הסרטונים / מצגות / מסמכים שלי" },
+                ] as const).map((opt) => (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    className={`content-type-chip${form.content_type === opt.value ? " selected" : ""}`}
+                    onClick={() => setForm((prev) => ({ ...prev, content_type: opt.value }))}
+                  >
+                    <span className="content-type-chip-label">{opt.label}</span>
+                    <span className="content-type-chip-desc">{opt.desc}</span>
+                  </button>
+                ))}
+              </div>
             </div>
             <div className="field">
               <label>מספר ימים <span className="hint">*חובה</span></label>
@@ -290,30 +327,34 @@ export default function HomePage() {
                 <option value="yes">כן – לכלול גם מפגשי צוות / עבודה בצוותים</option>
               </select>
             </div>
-            <div className="field">
-              <label>
-                🔵 זום – מפגש בוקר <span className="hint">קישור או מספר חדר</span>
-              </label>
-              <input
-                type="text"
-                name="zoom_morning"
-                value={form.zoom_morning}
-                onChange={handleChange}
-                placeholder="לדוגמה: 123 456 7890 או https://zoom.us/j/..."
-              />
-            </div>
-            <div className="field">
-              <label>
-                🔵 זום – מפגש סיום יום <span className="hint">קישור או מספר חדר</span>
-              </label>
-              <input
-                type="text"
-                name="zoom_end"
-                value={form.zoom_end}
-                onChange={handleChange}
-                placeholder="לדוגמה: 123 456 7890 או https://zoom.us/j/..."
-              />
-            </div>
+            {form.include_team_sessions === "yes" && (
+              <>
+                <div className="field">
+                  <label>
+                    🔵 זום – מפגש בוקר <span className="hint">קישור או מספר חדר</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="zoom_morning"
+                    value={form.zoom_morning}
+                    onChange={handleChange}
+                    placeholder="לדוגמה: 123 456 7890 או https://zoom.us/j/..."
+                  />
+                </div>
+                <div className="field">
+                  <label>
+                    🔵 זום – מפגש סיום יום <span className="hint">קישור או מספר חדר</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="zoom_end"
+                    value={form.zoom_end}
+                    onChange={handleChange}
+                    placeholder="לדוגמה: 123 456 7890 או https://zoom.us/j/..."
+                  />
+                </div>
+              </>
+            )}
             <div className="field full">
               <label>אילוצים <span className="hint">הרצאות חובה, מגבלות טכניות וכו׳</span></label>
               <textarea
@@ -405,7 +446,7 @@ export default function HomePage() {
             <button
               className="btn btn-ghost"
               type="button"
-              onClick={runGenerate}
+              onClick={() => runGenerate()}
               disabled={loading}
             >
               חולל מחדש
@@ -655,25 +696,62 @@ export default function HomePage() {
                 >
                   {whatsappCopied ? "הועתק!" : "העתק הודעה"}
                 </button>
+                <a
+                  className="copy-btn copy-btn-share"
+                  href={`https://wa.me/?text=${encodeURIComponent(editableWhatsapp)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  שלח בווטסאפ ↗
+                </a>
               </div>
               <textarea
                 className="whatsapp-textarea"
-                readOnly
-                value={result.whatsapp_message}
-                onClick={(e) => (e.target as HTMLTextAreaElement).select()}
+                value={editableWhatsapp}
+                onChange={(e) => setEditableWhatsapp(e.target.value)}
               />
             </div>
 
             {/* Questions */}
             <div className={`tab-panel${activeTab === "questions" ? " active" : ""}`}>
+              <p className="questions-intro">
+                ענה על השאלות כדי שהכלי יוכל לשפר את הלו״ז עבורך.
+              </p>
               <div className="questions-list">
                 {result.questions.map((q, i) => (
-                  <div key={i} className="question-item">
-                    <span>❓</span>
-                    {q}
+                  <div key={i} className="question-item question-item-interactive">
+                    <div className="question-text">
+                      <span className="question-icon">❓</span>
+                      {q}
+                    </div>
+                    <textarea
+                      className="question-answer"
+                      placeholder="הכנס תשובתך כאן..."
+                      value={qaAnswers[i] || ""}
+                      onChange={(e) =>
+                        setQaAnswers((prev) => ({ ...prev, [i]: e.target.value }))
+                      }
+                    />
                   </div>
                 ))}
               </div>
+              <button
+                className="btn btn-primary refine-btn"
+                type="button"
+                disabled={loading || Object.values(qaAnswers).every((a) => !a.trim())}
+                onClick={() => {
+                  const qa = result.questions
+                    .map((q, i) => ({ question: q, answer: qaAnswers[i] || "" }))
+                    .filter((qa) => qa.answer.trim());
+                  runGenerate(qa);
+                }}
+              >
+                {loading ? (
+                  <><span className="spinner" /> משפר לו״ז...</>
+                ) : (
+                  "שפר לו״ז לפי התשובות"
+                )}
+              </button>
             </div>
           </div>
         </div>

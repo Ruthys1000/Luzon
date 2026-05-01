@@ -34,10 +34,12 @@ export interface ScheduleInput {
   days: number;
   start_time: string;
   end_time: string;
+  content_type?: "topic" | "course" | "my_content";
   include_team_sessions?: string;
   zoom_morning?: string;
   zoom_end?: string;
   constraints?: string;
   notes?: string;
   material_links?: string;
+  refinement_qa?: { question: string; answer: string }[];
 }

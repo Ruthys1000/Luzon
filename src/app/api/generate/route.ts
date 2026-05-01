@@ -85,9 +85,24 @@ function buildUserPrompt(input: ScheduleInput): string {
     ? "כלול מפגשי צוות / עבודה בצוותים / דיון קבוצתי בחלק מהבלוקים."
     : "ימי למידה עצמאיים בלבד – אין מפגשי צוות.";
 
+  const contentTypeNote =
+    input.content_type === "course"
+      ? "\nסוג תוכן: קורס ספציפי (Coursera / Udemy / LinkedIn Learning). בנה את הלו״ז סביב מבנה הקורס — לפי פרקים/מודולים. בכל בלוק ציין מה הלומד צופה/קורא בקורס, ובשדה instructor_notes הכוון לפרק/מודול הספציפי."
+      : input.content_type === "my_content"
+      ? "\nסוג תוכן: תוכן מותאם אישית של המדריך (סרטונים / מצגות / מסמכים). הקישורים שסופקו הם חומרי הליבה — בנה כל בלוק סביבם ישירות, ציין אותם ב-instructor_notes."
+      : "";
+
+  const refinementSection =
+    input.refinement_qa && input.refinement_qa.length > 0
+      ? `\n\nשיפורים מבוקשים — ענה על השאלות הבאות בלו״ז החדש:\n${input.refinement_qa
+          .filter((qa) => qa.answer.trim())
+          .map((qa) => `- שאלה: ${qa.question}\n  תשובה: ${qa.answer}`)
+          .join("\n")}\n\nבנה לו״ז חדש ומשופר שמשקף את התשובות לעיל.`
+      : "";
+
   return `בנה לו״ז שבועי מקצועי של ${input.days} ימים, עם בדיוק 4 שיעורים כפולים (90 דק' כל אחד) ביום.
 הלו״ז מיועד ללמידה עצמאית. ${teamSessionsNote}
-
+${contentTypeNote}
 מטרות ההדרכה:
 ${input.goals}
 
@@ -100,6 +115,7 @@ ${input.constraints || "אין אילוצים מיוחדים"}
 ${input.notes || "אין"}
 ${zoomSection}
 ${linksSection}
+${refinementSection}
 
 זכור: בדיוק 4 שיעורים כפולים (lesson_number: 1–4) ביום + הפסקות. החזר JSON בלבד.`;
 }
