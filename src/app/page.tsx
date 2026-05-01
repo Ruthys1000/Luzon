@@ -764,7 +764,7 @@ export default function HomePage() {
       )}
 
       <footer className="site-footer">
-        <p>הכלי עבד לך? יש רעיון שישפר אותו? <a href="mailto:ruthy.salomon@gmail.com">דברו איתי</a></p>
+        <p>הכלי עבד לך? יש רעיון שישפר אותו? <a href="mailto:ruthy.salomon@gmail.com">ruthy.salomon@gmail.com</a></p>
       </footer>
     </div>
   );
