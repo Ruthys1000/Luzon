@@ -450,7 +450,7 @@ textarea.links-field {
 /* ── Section headers (numbered) ── */
 .section-header {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: .75rem;
   margin-bottom: 1.2rem;
 }
@@ -473,6 +473,13 @@ textarea.links-field {
   font-size: 1rem;
   font-weight: 800;
   color: var(--text);
+}
+
+.section-subtitle {
+  font-size: .8rem;
+  color: var(--text-muted);
+  margin-top: .15rem;
+  font-weight: 400;
 }
 
 @keyframes fadeIn {
