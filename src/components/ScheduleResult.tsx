@@ -62,6 +62,11 @@ export function ScheduleResultPanel({
   return (
     <div style={{ marginTop: "2.5rem" }}>
 
+      {/* Orientation */}
+      <p style={{ textAlign: "center", color: "var(--text-secondary)", fontSize: ".92rem", marginBottom: "1.2rem", lineHeight: 1.6 }}>
+        הלו״ז מוכן! עברו על ההודעה לפני שליחתה, ואחר כך שתפו את הלו״ז המלא.
+      </p>
+
       {/* Rationale */}
       <div className="card">
         <button
@@ -199,7 +204,7 @@ export function ScheduleResultPanel({
           <span className="section-number">2</span>
           <div>
             <div className="section-title">שלח את הלו״ז</div>
-            <p className="section-subtitle">הדף המלא עם כל הפרטים והתוכן המשלים</p>
+            <p className="section-subtitle">קובץ HTML עם כל הפרטים — שתפו בווטסאפ או הורידו</p>
           </div>
         </div>
         <div className="copy-row">
