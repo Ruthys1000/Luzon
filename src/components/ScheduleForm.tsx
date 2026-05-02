@@ -9,8 +9,9 @@ export interface FormState {
   end_time: string;
   content_type: "topic" | "course" | "my_content";
   previous_days: string;
-  include_team_sessions: string;
-  zoom_sessions: string;
+  zoomEnabled: boolean;
+  zoomMeetingId: string;
+  zoomTimes: string;
   constraints: string;
   material_links: string;
 }
@@ -22,6 +23,7 @@ interface ScheduleFormProps {
   onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void;
   onContentTypeChange: (value: "topic" | "course" | "my_content") => void;
   onGoalsChange: (goals: string) => void;
+  onZoomEnabledChange: (enabled: boolean) => void;
   onSubmit: (e: React.FormEvent) => void;
 }
 
@@ -32,6 +34,7 @@ export function ScheduleForm({
   onChange,
   onContentTypeChange,
   onGoalsChange,
+  onZoomEnabledChange,
   onSubmit,
 }: ScheduleFormProps) {
   return (
@@ -40,7 +43,10 @@ export function ScheduleForm({
         <div className="card-title">פרטי ההדרכה</div>
         <div className="form-grid">
           <div className="field full">
-            <label>נושא ומטרות יום ההדרכה <span className="hint">בחר נושא מהיר למטה, או כתוב בעצמך</span></label>
+            <label>
+              נושא היום, מטרות ורמת הלומדים{" "}
+              <span className="hint">נושא + מה הלומדים ייצאו איתו + רמתם — ככל שתפרט, הלו״ז מדויק יותר</span>
+            </label>
             <div className="quick-starters">
               {QUICK_STARTERS.map((s) => (
                 <button
@@ -58,7 +64,7 @@ export function ScheduleForm({
               name="goals"
               value={form.goals}
               onChange={onChange}
-              placeholder="לדוגמה: ניהול עצמי בלמידה מרחוק — הלומדים יצאו עם כלים מעשיים לתכנון יום עצמאי, זיהוי גורמי הסחה ובניית שגרת למידה"
+              placeholder="לדוגמה: ניהול עצמי בלמידה מרחוק — לומדים מתחילים, ייצאו עם כלים לתכנון יום, זיהוי גורמי הסחה ובניית שגרת למידה"
               required
             />
           </div>
@@ -122,31 +128,56 @@ export function ScheduleForm({
               placeholder="לדוגמה: אתמול — מבוא לניהול עצמי וזיהוי דפוסים; שלשום — מטריצת עדיפויות ותרגול"
             />
           </div>
+
           <div className="field full">
-            <label>האם יש מפגשי זום עם הלומדים?</label>
-            <select name="include_team_sessions" value={form.include_team_sessions} onChange={onChange}>
-              <option value="yes">כן – יש זום בפתיחה ו/או סגירת יום</option>
-              <option value="no">לא – למידה עצמאית בלבד, ללא פגישות</option>
-            </select>
-          </div>
-          {form.include_team_sessions === "yes" && (
-            <div className="field full">
-              <label>🔵 מפגשי זום <span className="hint">שורה לכל מפגש — שעה + קישור</span></label>
-              <textarea
-                name="zoom_sessions"
-                value={form.zoom_sessions}
-                onChange={onChange}
-                placeholder={"09:00 – https://zoom.us/j/...\n13:00 – https://zoom.us/j/..."}
+            <label className="zoom-toggle-label">
+              <input
+                type="checkbox"
+                checked={form.zoomEnabled}
+                onChange={(e) => onZoomEnabledChange(e.target.checked)}
+                className="zoom-toggle-checkbox"
               />
-            </div>
-          )}
+              <span>יש מפגשי זום ביום זה</span>
+            </label>
+            {form.zoomEnabled && (
+              <div className="zoom-fields">
+                <div className="zoom-field-group">
+                  <label className="zoom-sub-label">
+                    מספר חדר <span className="hint">ספרות בלבד, ללא קישור</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="zoomMeetingId"
+                    value={form.zoomMeetingId}
+                    onChange={onChange}
+                    placeholder="123456789"
+                    inputMode="numeric"
+                    autoComplete="off"
+                  />
+                </div>
+                <div className="zoom-field-group">
+                  <label className="zoom-sub-label">
+                    שעות <span className="hint">לדוגמה: 09:00, 17:00</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="zoomTimes"
+                    value={form.zoomTimes}
+                    onChange={onChange}
+                    placeholder="09:00, 17:00"
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+
           <div className="field full">
-            <label>אילוצים <span className="hint">הרצאות חובה, מגבלות טכניות וכו׳</span></label>
+            <label>אילוצים <span className="hint">אירועים קבועים, שעות מחייבות, מגבלות טכניות...</span></label>
             <textarea
               name="constraints"
               value={form.constraints}
               onChange={onChange}
-              placeholder="לדוגמה: פגישת צוות בשעה 11:00; הרצאת אורח בשעה 14:00; יום קצר – מסיימים ב-15:00"
+              placeholder="לדוגמה: פגישת צוות ב-11:00; הרצאת אורח ב-14:00; יום קצר – מסיים ב-15:00; אין גישה לאינטרנט"
             />
           </div>
           <div className="field full">

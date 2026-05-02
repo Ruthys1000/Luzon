@@ -29,6 +29,16 @@ function parseScheduleJson(text: string): ScheduleResult {
   }
 }
 
+function buildZoomSessionsString(meetingId: string, times: string): string {
+  if (!meetingId.trim() || !times.trim()) return "";
+  return times
+    .split(",")
+    .map((t) => t.trim())
+    .filter(Boolean)
+    .map((t) => `${t} – https://zoom.us/j/${meetingId.trim()}`)
+    .join("\n");
+}
+
 const INITIAL_FORM: FormState = {
   goals: "",
   days: "1",
@@ -36,8 +46,9 @@ const INITIAL_FORM: FormState = {
   end_time: "17:00",
   content_type: "topic",
   previous_days: "",
-  include_team_sessions: "yes",
-  zoom_sessions: "",
+  zoomEnabled: false,
+  zoomMeetingId: "",
+  zoomTimes: "",
   constraints: "",
   material_links: "",
 };
@@ -60,9 +71,12 @@ export default function HomePage() {
 
   useEffect(() => {
     if (result) {
-      setEditableHtml(generateHtml(result, { sessions: form.zoom_sessions || undefined }));
+      const zoomStr = form.zoomEnabled
+        ? buildZoomSessionsString(form.zoomMeetingId, form.zoomTimes)
+        : "";
+      setEditableHtml(generateHtml(result, { sessions: zoomStr || undefined }));
     }
-  }, [result, form.zoom_sessions]);
+  }, [result, form.zoomEnabled, form.zoomMeetingId, form.zoomTimes]);
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -75,10 +89,20 @@ export default function HomePage() {
     setLoading(true);
 
     try {
+      const zoomStr = form.zoomEnabled
+        ? buildZoomSessionsString(form.zoomMeetingId, form.zoomTimes)
+        : "";
+
       const res = await fetch("/api/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...form, days: Number(form.days), refinement_qa }),
+        body: JSON.stringify({
+          ...form,
+          days: Number(form.days),
+          include_team_sessions: form.zoomEnabled ? "yes" : "no",
+          zoom_sessions: zoomStr,
+          refinement_qa,
+        }),
       });
 
       if (!res.ok) {
@@ -168,6 +192,10 @@ export default function HomePage() {
     }
   }
 
+  const zoomSessionsString = form.zoomEnabled
+    ? buildZoomSessionsString(form.zoomMeetingId, form.zoomTimes)
+    : "";
+
   return (
     <div className="page-wrapper">
       <header className="site-header">
@@ -185,6 +213,7 @@ export default function HomePage() {
         onChange={handleChange}
         onContentTypeChange={(value) => setForm((prev) => ({ ...prev, content_type: value }))}
         onGoalsChange={(goals) => setForm((prev) => ({ ...prev, goals }))}
+        onZoomEnabledChange={(enabled) => setForm((prev) => ({ ...prev, zoomEnabled: enabled }))}
         onSubmit={handleSubmit}
       />
 
@@ -218,7 +247,7 @@ export default function HomePage() {
             result={result}
             editableHtml={editableHtml}
             editableWhatsapp={editableWhatsapp}
-            zoomSessions={form.zoom_sessions}
+            zoomSessions={zoomSessionsString}
             loading={loading}
             shareNotice={shareNotice}
             onReset={() => {
