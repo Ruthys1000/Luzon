@@ -38,11 +38,11 @@ const SYSTEM_PROMPT = `אתה מומחה בכיר לפיתוח הדרכה, עי�
 כל בלוק הוא פעילות עצמאית: קריאה, צפייה, תרגיל, משימה, פרויקט.
 אם ביקשו מפגשי צוות – הוסף בלוקים סינכרוניים (ציין ב-topic ו-activity_type).
 
-מבנה יום: 4 בלוקים של 90 דקות + הפסקות (לפי שעות שנבחרו):
+מבנה יום: 3–4 בלוקים של 90 דקות לפי הזמן הזמין + הפסקות:
 • בלוק 1 – פתיחה ובסיס | הפסקה 15 דק'
 • בלוק 2 – העמקה ותרגול | הפסקת צהריים 45 דק'
 • בלוק 3 – יישום | הפסקה 15 דק'
-• בלוק 4 – סיכום ורפלקציה
+• בלוק 4 – סיכום ורפלקציה (אם הזמן מאפשר)
 
 ═══════════════════════════════════════
 שדה instructor_notes – הנחייה ללומד
@@ -74,7 +74,7 @@ CRITICAL: שדה זה מכוון ישירות ללומד, לא למדריך.
       "day": "יום 1 – [שם הנושא]",
       "slots": [
         {
-          "time": "09:00–10:30",
+          "time": "[HH:MM–HH:MM לפי מבנה הזמן שסופק]",
           "lesson_number": 1,
           "topic": "שם הנושא",
           "activity_type": "הרצאה|תרגול|דיון|הפסקה|סיכום|פעילות אינטראקטיבית",
@@ -94,6 +94,38 @@ CRITICAL: שדה זה מכוון ישירות ללומד, לא למדריך.
     "שאלה 2 שתעזור לדייק את הלו״ז"
   ]
 }`;
+
+function buildSlotSchedule(startTime: string, endTime: string): string {
+  const toMin = (t: string) => {
+    const [h, m] = t.split(":").map(Number);
+    return h * 60 + m;
+  };
+  const toTime = (min: number) =>
+    `${String(Math.floor(min / 60)).padStart(2, "0")}:${String(min % 60).padStart(2, "0")}`;
+
+  const startMin = toMin(startTime);
+  const endMin = toMin(endTime);
+  const BLOCK = 90;
+  const BREAKS = [15, 45, 15]; // after blocks 1, 2, 3
+
+  const lines: string[] = [];
+  let cur = startMin;
+  let blockNum = 0;
+
+  for (let i = 0; i < 4; i++) {
+    if (cur + BLOCK > endMin) break;
+    blockNum++;
+    lines.push(`${toTime(cur)}–${toTime(cur + BLOCK)}: בלוק ${blockNum} (lesson_number: ${blockNum})`);
+    cur += BLOCK;
+    if (i < 3 && cur + BREAKS[i] < endMin) {
+      const label = i === 1 ? "הפסקת צהריים" : "הפסקה";
+      lines.push(`${toTime(cur)}–${toTime(cur + BREAKS[i])}: ${label}`);
+      cur += BREAKS[i];
+    }
+  }
+
+  return lines.join("\n");
+}
 
 function buildUserPrompt(input: ScheduleInput): string {
   const zoomSection = input.zoom_sessions?.trim()
@@ -135,6 +167,9 @@ ${input.goals}
 
 שעות פעילות: ${input.start_time}–${input.end_time}
 
+מבנה הזמן המחושב — השתמש בשעות האלה בדיוק בשדה "time":
+${buildSlotSchedule(input.start_time, input.end_time)}
+
 אילוצים:
 ${input.constraints || "אין אילוצים מיוחדים"}
 ${previousDaysSection}
@@ -142,7 +177,7 @@ ${zoomSection}
 ${linksSection}
 ${refinementSection}
 
-זכור: בדיוק 4 שיעורים כפולים (lesson_number: 1–4) ביום + הפסקות. החזר JSON בלבד.`;
+זכור: השתמש בשעות המחושבות למעלה בדיוק. מספר הבלוקים נקבע לפי הזמן הזמין. החזר JSON בלבד.`;
 }
 
 export async function POST(req: NextRequest) {
