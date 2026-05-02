@@ -56,6 +56,7 @@ export function StructuredEditor({ draftResult, onChange }: StructuredEditorProp
         <div key={di} className="editor-day">
           <div className="editor-day-header">
             <input
+              type="text"
               className="editor-day-name"
               value={day.day}
               onChange={(e) =>
@@ -76,6 +77,7 @@ export function StructuredEditor({ draftResult, onChange }: StructuredEditorProp
                 <div className="field">
                   <label>נושא</label>
                   <input
+                    type="text"
                     value={slot.topic}
                     onChange={(e) => updateSlot(di, si, "topic", e.target.value)}
                   />
@@ -94,6 +96,7 @@ export function StructuredEditor({ draftResult, onChange }: StructuredEditorProp
                 <div className="field editor-slot-full">
                   <label>הנחייה ללומד</label>
                   <input
+                    type="text"
                     value={slot.instructor_notes}
                     onChange={(e) => updateSlot(di, si, "instructor_notes", e.target.value)}
                   />
@@ -112,6 +115,7 @@ export function StructuredEditor({ draftResult, onChange }: StructuredEditorProp
                   <div className="field">
                     <label>כותרת</label>
                     <input
+                      type="text"
                       value={day.supplementary[type].title}
                       onChange={(e) => updateSupp(di, type, "title", e.target.value)}
                     />
@@ -119,6 +123,7 @@ export function StructuredEditor({ draftResult, onChange }: StructuredEditorProp
                   <div className="field">
                     <label>תיאור</label>
                     <input
+                      type="text"
                       value={day.supplementary[type].description}
                       onChange={(e) => updateSupp(di, type, "description", e.target.value)}
                     />
