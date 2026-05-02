@@ -183,6 +183,7 @@ label .hint {
 input[type="text"],
 input[type="time"],
 input[type="number"],
+input[type="url"],
 textarea,
 select {
   width: 100%;
