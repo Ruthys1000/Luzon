@@ -34,6 +34,8 @@ export interface ScheduleInput {
   start_time: string;
   end_time: string;
   content_type?: "topic" | "course" | "my_content";
+  course_url?: string;
+  my_content_description?: string;
   include_team_sessions?: string;
   zoom_sessions?: string;
   previous_days?: string;

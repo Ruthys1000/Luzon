@@ -8,6 +8,8 @@ export interface FormState {
   start_time: string;
   end_time: string;
   content_type: "topic" | "course" | "my_content";
+  courseUrl: string;
+  myContentDescription: string;
   previous_days: string;
   zoomEnabled: boolean;
   zoomMeetingId: string;
@@ -88,6 +90,38 @@ export function ScheduleForm({
               ))}
             </div>
           </div>
+          {form.content_type === "course" && (
+            <div className="field full">
+              <label>
+                קישור לקורס{" "}
+                <span className="hint">*חובה — הדבק את כתובת הקורס מ-Coursera / Udemy / LinkedIn Learning</span>
+              </label>
+              <input
+                type="url"
+                name="courseUrl"
+                value={form.courseUrl}
+                onChange={onChange}
+                placeholder="https://www.coursera.org/learn/..."
+                required
+              />
+            </div>
+          )}
+          {form.content_type === "my_content" && (
+            <div className="field full">
+              <label>
+                החומרים שלי{" "}
+                <span className="hint">*חובה — תאר מה יש לך, הלו״ז יתבסס ישירות עליהם</span>
+              </label>
+              <textarea
+                name="myContentDescription"
+                value={form.myContentDescription}
+                onChange={onChange}
+                placeholder={"לדוגמה: סרטון הסבר 20 דק' על pivot tables; מצגת 30 שקפים על ניהול זמן; קובץ PDF עם תרגילים"}
+                required
+              />
+            </div>
+          )}
+
           <div className="field">
             <label>מספר ימים <span className="hint">*חובה — בדרך כלל: 1</span></label>
             <input

@@ -45,6 +45,8 @@ const INITIAL_FORM: FormState = {
   start_time: "09:00",
   end_time: "17:00",
   content_type: "topic",
+  courseUrl: "",
+  myContentDescription: "",
   previous_days: "",
   zoomEnabled: false,
   zoomMeetingId: "",
@@ -101,6 +103,8 @@ export default function HomePage() {
           days: Number(form.days),
           include_team_sessions: form.zoomEnabled ? "yes" : "no",
           zoom_sessions: zoomStr,
+          course_url: form.content_type === "course" ? form.courseUrl : undefined,
+          my_content_description: form.content_type === "my_content" ? form.myContentDescription : undefined,
           refinement_qa,
         }),
       });

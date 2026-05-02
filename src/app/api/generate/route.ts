@@ -110,9 +110,9 @@ function buildUserPrompt(input: ScheduleInput): string {
 
   const contentTypeNote =
     input.content_type === "course"
-      ? "\nסוג תוכן: קורס ספציפי (Coursera / Udemy / LinkedIn Learning). בנה את הלו״ז סביב מבנה הקורס — לפי פרקים/מודולים. בכל בלוק ציין מה הלומד צופה/קורא בקורס, ובשדה instructor_notes הכוון לפרק/מודול הספציפי."
+      ? `\nסוג תוכן: קורס ספציפי (Coursera / Udemy / LinkedIn Learning). בנה את הלו״ז סביב מבנה הקורס — לפי פרקים/מודולים. בכל בלוק ציין מה הלומד צופה/קורא בקורס, ובשדה instructor_notes הכוון לפרק/מודול הספציפי.${input.course_url?.trim() ? `\nקישור לקורס: ${input.course_url}` : ""}`
       : input.content_type === "my_content"
-      ? "\nסוג תוכן: תוכן מותאם אישית של המדריך (סרטונים / מצגות / מסמכים). הקישורים שסופקו הם חומרי הליבה — בנה כל בלוק סביבם ישירות, ציין אותם ב-instructor_notes."
+      ? `\nסוג תוכן: תוכן מותאם אישית של המדריך (סרטונים / מצגות / מסמכים). בנה כל בלוק סביב החומרים שמפורטים להלן, ציין אותם ישירות ב-instructor_notes.${input.my_content_description?.trim() ? `\nהחומרים הזמינים:\n${input.my_content_description}` : ""}`
       : "";
 
   const previousDaysSection = input.previous_days?.trim()
