@@ -207,7 +207,7 @@ export default function HomePage() {
           <span className="logo-mark">✦</span>
           Luz Creator
         </div>
-        <p className="hero-tagline">בונה יום הדרכה?</p>
+        <p className="hero-tagline">בונה יום למידה מרחוק?</p>
         <p className="hero-sub">
           מלא נושא, שעות ואילוצים — וקבל תוך דקות:<br />
           לו״ז יומי מלא ללמידה עצמאית + הודעת WhatsApp מוכנה לשליחה
