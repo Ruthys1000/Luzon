@@ -142,26 +142,6 @@ export function ScheduleForm({
             <label>שעת סיום</label>
             <input type="time" name="end_time" value={form.end_time} onChange={onChange} />
           </div>
-        </div>
-      </div>
-
-      <div className="card">
-        <div className="card-title">
-          פרטים נוספים{" "}
-          <span style={{ fontWeight: 400, color: "var(--text-muted)", fontSize: ".85rem" }}>
-            (אופציונלי — ככל שתמלא יותר, הלו״ז יהיה מדויק יותר)
-          </span>
-        </div>
-        <div className="form-grid">
-          <div className="field full">
-            <label>מה כיסינו בימים הקודמים? <span className="hint">ביום הראשון? השאר ריק. מיום שני — כתוב בקצרה</span></label>
-            <textarea
-              name="previous_days"
-              value={form.previous_days}
-              onChange={onChange}
-              placeholder="לדוגמה: אתמול — מבוא לניהול עצמי וזיהוי דפוסים; שלשום — מטריצת עדיפויות ותרגול"
-            />
-          </div>
 
           <div className="field full">
             <label className="zoom-toggle-label">
@@ -204,7 +184,26 @@ export function ScheduleForm({
               </div>
             )}
           </div>
+        </div>
+      </div>
 
+      <div className="card">
+        <div className="card-title">
+          פרטים נוספים{" "}
+          <span style={{ fontWeight: 400, color: "var(--text-muted)", fontSize: ".85rem" }}>
+            (אופציונלי — ככל שתמלא יותר, הלו״ז יהיה מדויק יותר)
+          </span>
+        </div>
+        <div className="form-grid">
+          <div className="field full">
+            <label>מה כיסינו בימים הקודמים? <span className="hint">ביום הראשון? השאר ריק. מיום שני — כתוב בקצרה</span></label>
+            <textarea
+              name="previous_days"
+              value={form.previous_days}
+              onChange={onChange}
+              placeholder="לדוגמה: אתמול — מבוא לניהול עצמי וזיהוי דפוסים; שלשום — מטריצת עדיפויות ותרגול"
+            />
+          </div>
           <div className="field full">
             <label>אילוצים <span className="hint">אירועים קבועים, שעות מחייבות, מגבלות טכניות...</span></label>
             <textarea
