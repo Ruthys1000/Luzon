@@ -213,9 +213,9 @@ export default function HomePage() {
           לו״ז יומי מלא ללמידה עצמאית + הודעת WhatsApp מוכנה לשליחה
         </p>
         <ul className="hero-bullets">
-          <li>✓ מבוסס עקרונות פדגוגיים</li>
-          <li>✓ כולל הנחיות ברורות ללומדים</li>
-          <li>✓ מוכן לשיתוף מיידי</li>
+          <li>✔ מבוסס עקרונות פדגוגיים</li>
+          <li>✔ כולל הנחיות ברורות ללומדים</li>
+          <li>✔ מוכן לשליחה ב-WhatsApp</li>
         </ul>
       </header>
 
