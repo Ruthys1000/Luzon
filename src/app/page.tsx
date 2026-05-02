@@ -207,7 +207,16 @@ export default function HomePage() {
           <span className="logo-mark">✦</span>
           Luz Creator
         </div>
-        <p>תכנן יום למידה עצמאית ללומדים שלך ושלח בווטסאפ — תוך דקות</p>
+        <p className="hero-tagline">בונה יום הדרכה?</p>
+        <p className="hero-sub">
+          מלא נושא, שעות ואילוצים — וקבל תוך דקות:<br />
+          לו״ז יומי מלא ללמידה עצמאית + הודעת WhatsApp מוכנה לשליחה
+        </p>
+        <ul className="hero-bullets">
+          <li>✓ מבוסס עקרונות פדגוגיים</li>
+          <li>✓ כולל הנחיות ברורות ללומדים</li>
+          <li>✓ מוכן לשיתוף מיידי</li>
+        </ul>
       </header>
 
       <ScheduleForm
