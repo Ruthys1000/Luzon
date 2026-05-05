@@ -69,22 +69,12 @@ export function ScheduleResultPanel({
   return (
     <div style={{ marginTop: "2.5rem" }}>
 
-      {/* Action strip */}
-      <div className="action-strip">
-        <div className="action-strip-headline">
-          <span className="action-strip-check">✓</span>
-          <span>הלו״ז מוכן — מה עכשיו?</span>
-        </div>
-        <div className="action-strip-buttons">
-          <button type="button" className="action-chip" onClick={() => scrollTo("section-whatsapp")}>
-            📱 הודעת WhatsApp
-          </button>
-          <button type="button" className="action-chip" onClick={() => scrollTo("section-share")}>
-            📤 שלח לו״ז מלא
-          </button>
-          <button type="button" className="action-chip" onClick={() => scrollTo("section-refine", true)}>
-            ✨ שפר את הלו״ז
-          </button>
+      {/* Quiet header — no nav links */}
+      <div className="result-intro">
+        <span className="result-intro-check">✓</span>
+        <div>
+          <div className="result-intro-title">הלו״ז מוכן</div>
+          <div className="result-intro-sub">עברו עליו — מתחתיו תמצאו עריכה ושיתוף</div>
         </div>
       </div>
 
@@ -187,6 +177,25 @@ export function ScheduleResultPanel({
               ))}
             </tbody>
           </table>
+        </div>
+      </div>
+
+      {/* What's next — appears after the schedule, before the action sections */}
+      <div className="next-steps-banner">
+        <div className="next-steps-title">מה עכשיו? ↓</div>
+        <div className="next-steps-list">
+          <div className="next-step-item">
+            <span className="next-step-num">1</span>
+            <span>ערכו את הודעת ה-WhatsApp ושלחו ללומד</span>
+          </div>
+          <div className="next-step-item">
+            <span className="next-step-num">2</span>
+            <span>שתפו או הורידו את הלו״ז המלא</span>
+          </div>
+          <div className="next-step-item">
+            <span className="next-step-num">3</span>
+            <span>רוצים לדייק? ענו על השאלות ושפרו</span>
+          </div>
         </div>
       </div>
 

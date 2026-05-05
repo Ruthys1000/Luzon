@@ -346,6 +346,7 @@ textarea.links-field {
   display: flex;
   flex-direction: column;
   gap: .25rem;
+  flex: 1;
 }
 
 .loading-text strong {
@@ -1119,6 +1120,88 @@ input.editor-day-name:focus {
   text-decoration: underline;
 }
 
+/* ── Result intro (quiet header) ── */
+.result-intro {
+  display: flex;
+  align-items: center;
+  gap: .85rem;
+  margin-bottom: 1.4rem;
+}
+
+.result-intro-check {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--success);
+  color: #fff;
+  font-size: .75rem;
+  font-weight: 900;
+  flex-shrink: 0;
+}
+
+.result-intro-title {
+  font-size: 1.05rem;
+  font-weight: 900;
+  color: var(--text);
+  line-height: 1.2;
+}
+
+.result-intro-sub {
+  font-size: .82rem;
+  color: var(--text-muted);
+  margin-top: .1rem;
+}
+
+/* ── Next steps banner (after schedule, before sections) ── */
+.next-steps-banner {
+  background: #fbf6ee;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.2rem 1.8rem;
+  margin-bottom: 1.4rem;
+}
+
+.next-steps-title {
+  font-size: .82rem;
+  font-weight: 900;
+  color: var(--primary-dark);
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  margin-bottom: .75rem;
+}
+
+.next-steps-list {
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+}
+
+.next-step-item {
+  display: flex;
+  align-items: center;
+  gap: .65rem;
+  font-size: .88rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.next-step-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: #fff;
+  font-size: .72rem;
+  font-weight: 900;
+  flex-shrink: 0;
+}
+
 /* ── My-content callout note ── */
 .my-content-note {
   font-size: .82rem;
@@ -1128,6 +1211,23 @@ input.editor-day-name:focus {
   padding: .6rem .9rem;
   margin-top: .4rem;
   border: 1px solid #dec8bd;
+  line-height: 1.55;
+}
+
+/* ── Editor textarea for instructor notes & supp descriptions ── */
+.editor-notes-textarea {
+  min-height: 72px;
+  font-size: .85rem;
+  resize: vertical;
+  padding: .5rem .75rem;
+  line-height: 1.6;
+}
+
+.editor-supp-textarea {
+  min-height: 52px;
+  font-size: .83rem;
+  resize: vertical;
+  padding: .45rem .7rem;
   line-height: 1.55;
 }
 

@@ -95,8 +95,8 @@ export function StructuredEditor({ draftResult, onChange }: StructuredEditorProp
                 </div>
                 <div className="field editor-slot-full">
                   <label>הנחייה ללומד</label>
-                  <input
-                    type="text"
+                  <textarea
+                    className="editor-notes-textarea"
                     value={slot.instructor_notes}
                     onChange={(e) => updateSlot(di, si, "instructor_notes", e.target.value)}
                   />
@@ -122,8 +122,8 @@ export function StructuredEditor({ draftResult, onChange }: StructuredEditorProp
                   </div>
                   <div className="field">
                     <label>תיאור</label>
-                    <input
-                      type="text"
+                    <textarea
+                      className="editor-supp-textarea"
                       value={day.supplementary[type].description}
                       onChange={(e) => updateSupp(di, type, "description", e.target.value)}
                     />

@@ -249,7 +249,7 @@ export default function HomePage() {
           <div ref={loadingRef} className="loading-card">
             <span className="spinner spinner-brand" />
             <div className="loading-text">
-              <strong>Luz Creator בונה את הלו״ז שלך...</strong>
+              <strong>בונה את הלו״ז שלך — שלב {stageIndex + 1} מתוך {steps.length}</strong>
               <div className="loading-steps">
                 {steps.map((label, i) => {
                   const state = i < stageIndex ? "done" : i === stageIndex ? "active" : "pending";
