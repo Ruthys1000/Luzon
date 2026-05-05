@@ -233,21 +233,35 @@ export default function HomePage() {
       {/* Loading state */}
       {loading && (() => {
         const len = streamingText.length;
-        const charCount = len > 0 ? ` — ${len.toLocaleString("he-IL")} תווים` : "";
-        const stage =
-          len === 0 ? { label: "מנתחת מטרות ההדרכה...", pct: 5 } :
-          len < 1500 ? { label: `בונה מבנה הלו״ז...${charCount}`, pct: 25 } :
-          len < 4000 ? { label: `מכינה הנחיות ללומדים...${charCount}`, pct: 55 } :
-          len < 7000 ? { label: `מכינה הודעת ווטסאפ...${charCount}`, pct: 78 } :
-          { label: `מסיימת...${charCount}`, pct: 92 };
+        const stageIndex =
+          len === 0 ? 0 :
+          len < 1500 ? 1 :
+          len < 4000 ? 2 :
+          len < 7000 ? 3 : 4;
+        const steps = [
+          "ניתוח מטרות ההדרכה",
+          "בניית מבנה הלו״ז",
+          "הכנת הנחיות ללומדים",
+          "הכנת הודעת WhatsApp",
+          "עיבוד סופי",
+        ];
         return (
           <div ref={loadingRef} className="loading-card">
             <span className="spinner spinner-brand" />
             <div className="loading-text">
-              <strong>מחוללת לו״ז...</strong>
-              <span>{stage.label}</span>
-              <div className="loading-progress">
-                <div className="loading-progress-bar" style={{ width: `${stage.pct}%` }} />
+              <strong>Luz Creator בונה את הלו״ז שלך...</strong>
+              <div className="loading-steps">
+                {steps.map((label, i) => {
+                  const state = i < stageIndex ? "done" : i === stageIndex ? "active" : "pending";
+                  return (
+                    <div key={i} className={`loading-step loading-step-${state}`}>
+                      <span className="loading-step-icon">
+                        {state === "done" ? "✓" : state === "active" ? <span className="spinner spinner-step" /> : "○"}
+                      </span>
+                      <span>{label}{state === "active" ? "..." : ""}</span>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </div>

@@ -76,7 +76,7 @@ export function ScheduleForm({
               {([
                 { value: "topic", label: "נושא בלבד", desc: "אין חומרים – הכלי יבנה הכל לפי הנושא" },
                 { value: "course", label: "קורס מוכן", desc: "Coursera / Udemy / LinkedIn Learning" },
-                { value: "my_content", label: "תוכן שלי", desc: "הסרטונים / מצגות / מסמכים שלי" },
+                { value: "my_content", label: "תוכן שלי", desc: "יש לי חומרים — אתאר אותם בטקסט" },
               ] as const).map((opt) => (
                 <button
                   key={opt.value}
@@ -109,8 +109,8 @@ export function ScheduleForm({
           {form.content_type === "my_content" && (
             <div className="field full">
               <label>
-                החומרים שלי{" "}
-                <span className="hint">*חובה — תאר מה יש לך, הלו״ז יתבסס ישירות עליהם</span>
+                תאר את החומרים שלך{" "}
+                <span className="hint">*חובה — הלו״ז יתבסס ישירות עליהם</span>
               </label>
               <textarea
                 name="myContentDescription"
@@ -119,6 +119,9 @@ export function ScheduleForm({
                 placeholder={"לדוגמה: סרטון הסבר 20 דק' על pivot tables; מצגת 30 שקפים על ניהול זמן; קובץ PDF עם תרגילים"}
                 required
               />
+              <div className="my-content-note">
+                💡 אין צורך להעלות קבצים — פשוט כתוב מה יש לך (כמות, אורך, נושאים)
+              </div>
             </div>
           )}
 

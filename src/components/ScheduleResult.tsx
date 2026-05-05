@@ -59,13 +59,34 @@ export function ScheduleResultPanel({
     setTimeout(() => setWhatsappCopied(false), 1500);
   }
 
+  function scrollTo(id: string, openRefine?: boolean) {
+    if (openRefine) setIsRefineOpen(true);
+    setTimeout(() => {
+      document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, openRefine ? 50 : 0);
+  }
+
   return (
     <div style={{ marginTop: "2.5rem" }}>
 
-      {/* Orientation */}
-      <p style={{ textAlign: "center", color: "var(--text-secondary)", fontSize: ".92rem", marginBottom: "1.2rem", lineHeight: 1.6 }}>
-        הלו״ז מוכן! עברו על ההודעה לפני שליחתה, ואחר כך שתפו את הלו״ז המלא.
-      </p>
+      {/* Action strip */}
+      <div className="action-strip">
+        <div className="action-strip-headline">
+          <span className="action-strip-check">✓</span>
+          <span>הלו״ז מוכן — מה עכשיו?</span>
+        </div>
+        <div className="action-strip-buttons">
+          <button type="button" className="action-chip" onClick={() => scrollTo("section-whatsapp")}>
+            📱 הודעת WhatsApp
+          </button>
+          <button type="button" className="action-chip" onClick={() => scrollTo("section-share")}>
+            📤 שלח לו״ז מלא
+          </button>
+          <button type="button" className="action-chip" onClick={() => scrollTo("section-refine", true)}>
+            ✨ שפר את הלו״ז
+          </button>
+        </div>
+      </div>
 
       {/* Rationale */}
       <div className="card">
@@ -170,7 +191,7 @@ export function ScheduleResultPanel({
       </div>
 
       {/* Section 1: WhatsApp message */}
-      <div className="card">
+      <div className="card" id="section-whatsapp">
         <div className="section-header">
           <span className="section-number">1</span>
           <div>
@@ -199,7 +220,7 @@ export function ScheduleResultPanel({
       </div>
 
       {/* Section 2: Share schedule */}
-      <div className="card">
+      <div className="card" id="section-share">
         <div className="section-header">
           <span className="section-number">2</span>
           <div>
@@ -238,7 +259,7 @@ export function ScheduleResultPanel({
       </div>
 
       {/* Section 3: Refine schedule (collapsible) */}
-      <div className="card">
+      <div className="card" id="section-refine">
         <button
           type="button"
           className="rationale-toggle"
