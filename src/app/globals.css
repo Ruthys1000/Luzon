@@ -192,13 +192,6 @@ label .hint {
   margin-right: 4px;
 }
 
-.form-legend {
-  font-size: .79rem;
-  color: var(--text-muted);
-  margin-bottom: .75rem;
-  text-align: left;
-}
-
 input[type="text"],
 input[type="time"],
 input[type="number"],
