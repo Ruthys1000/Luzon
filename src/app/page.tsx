@@ -209,7 +209,7 @@ export default function HomePage() {
         </div>
         <p className="hero-tagline">בונה יום למידה מרחוק?</p>
         <p className="hero-sub">
-          מלא נושא, שעות ואילוצים — וקבל תוך דקות:<br />
+          מלאו נושא, שעות ואילוצים — וקבלו תוך דקות:<br />
           לו״ז יומי מלא ללמידה עצמאית + הודעת WhatsApp מוכנה לשליחה
         </p>
         <ul className="hero-bullets">
