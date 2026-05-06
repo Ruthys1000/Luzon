@@ -43,11 +43,10 @@ export function ScheduleForm({
     <form onSubmit={onSubmit}>
       <div className="card">
         <div className="card-title">פרטי ההדרכה</div>
-        <p className="form-legend"><span className="required-mark">*</span> שדה חובה</p>
         <div className="form-grid">
           <div className="field full">
             <label>
-              נושא היום, מטרות ורמת הלומדים/ות <span className="required-mark">*</span>{" "}
+              <span className="required-mark">*</span> נושא היום, מטרות ורמת הלומדים/ות{" "}
               <span className="hint">נושא + מה הלומדים/ות ייצאו עם + רמתם/ן — ככל שתפרטו, הלו״ז מדויק יותר</span>
             </label>
             <div className="quick-starters">
@@ -94,7 +93,7 @@ export function ScheduleForm({
           {form.content_type === "course" && (
             <div className="field full">
               <label>
-                קישור לקורס <span className="required-mark">*</span>{" "}
+                <span className="required-mark">*</span> קישור לקורס{" "}
                 <span className="hint">הדביקו את כתובת הקורס מ-Coursera / Udemy / LinkedIn Learning</span>
               </label>
               <input
@@ -110,7 +109,7 @@ export function ScheduleForm({
           {form.content_type === "my_content" && (
             <div className="field full">
               <label>
-                תארו את החומרים שלכם <span className="required-mark">*</span>{" "}
+                <span className="required-mark">*</span> תארו את החומרים שלכם{" "}
                 <span className="hint">הלו״ז יתבסס ישירות עליהם</span>
               </label>
               <textarea
@@ -127,7 +126,7 @@ export function ScheduleForm({
           )}
 
           <div className="field">
-            <label>מספר ימים <span className="required-mark">*</span> <span className="hint">בדרך כלל: 1</span></label>
+            <label><span className="required-mark">*</span> מספר ימים <span className="hint">בדרך כלל: 1</span></label>
             <input
               type="number"
               name="days"
@@ -139,11 +138,11 @@ export function ScheduleForm({
             />
           </div>
           <div className="field">
-            <label>שעת התחלה <span className="required-mark">*</span> <span className="hint">שעות הלמידה ביום</span></label>
+            <label><span className="required-mark">*</span> שעת התחלה <span className="hint">שעות הלמידה ביום</span></label>
             <input type="time" name="start_time" value={form.start_time} onChange={onChange} />
           </div>
           <div className="field">
-            <label>שעת סיום <span className="required-mark">*</span></label>
+            <label><span className="required-mark">*</span> שעת סיום</label>
             <input type="time" name="end_time" value={form.end_time} onChange={onChange} />
           </div>
 
