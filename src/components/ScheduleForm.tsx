@@ -43,11 +43,12 @@ export function ScheduleForm({
     <form onSubmit={onSubmit}>
       <div className="card">
         <div className="card-title">פרטי ההדרכה</div>
+        <p className="form-legend"><span className="required-mark">*</span> שדה חובה</p>
         <div className="form-grid">
           <div className="field full">
             <label>
-              נושא היום, מטרות ורמת הלומדים{" "}
-              <span className="hint">נושא + מה הלומדים ייצאו איתו + רמתם — ככל שתפרט, הלו״ז מדויק יותר</span>
+              נושא היום, מטרות ורמת הלומדים/ות <span className="required-mark">*</span>{" "}
+              <span className="hint">נושא + מה הלומדים/ות ייצאו עם + רמתם/ן — ככל שתפרטו, הלו״ז מדויק יותר</span>
             </label>
             <div className="quick-starters">
               {QUICK_STARTERS.map((s) => (
@@ -55,7 +56,7 @@ export function ScheduleForm({
                   key={s.label}
                   type="button"
                   className="quick-starter-chip"
-                  aria-label={`בחר נושא: ${s.label}`}
+                  aria-label={`בחרו נושא: ${s.label}`}
                   onClick={() => onGoalsChange(s.goals)}
                 >
                   {s.label}
@@ -71,7 +72,7 @@ export function ScheduleForm({
             />
           </div>
           <div className="field full">
-            <label>מה יש לך? <span className="hint">בחר את סוג הבסיס ללו״ז</span></label>
+            <label>מה יש לך? <span className="hint">בחרו אפשרות אחת — הלו״ז ייבנה לפיה</span></label>
             <div className="content-type-chips">
               {([
                 { value: "topic", label: "נושא בלבד", desc: "אין חומרים – הכלי יבנה הכל לפי הנושא" },
@@ -93,8 +94,8 @@ export function ScheduleForm({
           {form.content_type === "course" && (
             <div className="field full">
               <label>
-                קישור לקורס{" "}
-                <span className="hint">*חובה — הדבק את כתובת הקורס מ-Coursera / Udemy / LinkedIn Learning</span>
+                קישור לקורס <span className="required-mark">*</span>{" "}
+                <span className="hint">הדביקו את כתובת הקורס מ-Coursera / Udemy / LinkedIn Learning</span>
               </label>
               <input
                 type="url"
@@ -109,8 +110,8 @@ export function ScheduleForm({
           {form.content_type === "my_content" && (
             <div className="field full">
               <label>
-                תאר את החומרים שלך{" "}
-                <span className="hint">*חובה — הלו״ז יתבסס ישירות עליהם</span>
+                תארו את החומרים שלכם <span className="required-mark">*</span>{" "}
+                <span className="hint">הלו״ז יתבסס ישירות עליהם</span>
               </label>
               <textarea
                 name="myContentDescription"
@@ -120,13 +121,13 @@ export function ScheduleForm({
                 required
               />
               <div className="my-content-note">
-                💡 אין צורך להעלות קבצים — פשוט כתוב מה יש לך (כמות, אורך, נושאים)
+                💡 אין צורך להעלות קבצים — פשוט כתבו מה יש לכם (כמות, אורך, נושאים)
               </div>
             </div>
           )}
 
           <div className="field">
-            <label>מספר ימים <span className="hint">*חובה — בדרך כלל: 1</span></label>
+            <label>מספר ימים <span className="required-mark">*</span> <span className="hint">בדרך כלל: 1</span></label>
             <input
               type="number"
               name="days"
@@ -138,11 +139,11 @@ export function ScheduleForm({
             />
           </div>
           <div className="field">
-            <label>שעת התחלה <span className="hint">שעות הלומד בבית</span></label>
+            <label>שעת התחלה <span className="required-mark">*</span> <span className="hint">שעות הלמידה ביום</span></label>
             <input type="time" name="start_time" value={form.start_time} onChange={onChange} />
           </div>
           <div className="field">
-            <label>שעת סיום</label>
+            <label>שעת סיום <span className="required-mark">*</span></label>
             <input type="time" name="end_time" value={form.end_time} onChange={onChange} />
           </div>
 
@@ -154,7 +155,7 @@ export function ScheduleForm({
                 onChange={(e) => onZoomEnabledChange(e.target.checked)}
                 className="zoom-toggle-checkbox"
               />
-              <span>יש מפגשי זום ביום זה</span>
+              <span>יש מפגשי זום ביום זה <span className="field-optional">(אופציונלי)</span></span>
             </label>
             {form.zoomEnabled && (
               <div className="zoom-fields">
