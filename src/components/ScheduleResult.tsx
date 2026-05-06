@@ -115,7 +115,7 @@ export function ScheduleResultPanel({
                 <th>שעה</th>
                 <th>נושא</th>
                 <th>סוג פעילות</th>
-                <th>הנחייה ללומד</th>
+                <th>הנחיות</th>
               </tr>
             </thead>
             <tbody>
@@ -186,7 +186,7 @@ export function ScheduleResultPanel({
         <div className="next-steps-list">
           <div className="next-step-item">
             <span className="next-step-num">1</span>
-            <span>ערכו את הודעת ה-WhatsApp ושלחו ללומד</span>
+            <span>ערכו את הודעת ה-WhatsApp ושלחו</span>
           </div>
           <div className="next-step-item">
             <span className="next-step-num">2</span>
@@ -204,8 +204,8 @@ export function ScheduleResultPanel({
         <div className="section-header">
           <span className="section-number">1</span>
           <div>
-            <div className="section-title">שלח הודעת ווטסאפ</div>
-            <p className="section-subtitle">הודעה קצרה שמכינה את הלומד ליום שלפניו</p>
+            <div className="section-title">שליחת הודעת ווטסאפ</div>
+            <p className="section-subtitle">הודעה מכינה ליום שלמחרת</p>
           </div>
         </div>
         <textarea
@@ -233,7 +233,7 @@ export function ScheduleResultPanel({
         <div className="section-header">
           <span className="section-number">2</span>
           <div>
-            <div className="section-title">שלח את הלו״ז</div>
+            <div className="section-title">שיתוף הלו״ז</div>
             <p className="section-subtitle">קובץ HTML עם כל הפרטים — שתפו בווטסאפ או הורידו</p>
           </div>
         </div>
@@ -273,16 +273,16 @@ export function ScheduleResultPanel({
           type="button"
           className="rationale-toggle"
           aria-expanded={isRefineOpen}
-          aria-label="הצג או הסתר: רוצה לשפר את הלו״ז?"
+          aria-label="הצג או הסתר: לשפר את הלו״ז?"
           onClick={() => setIsRefineOpen((o) => !o)}
         >
-          <span>✨ רוצה לשפר את הלו״ז?</span>
+          <span>✨ לשפר את הלו״ז?</span>
           <span className="rationale-toggle-arrow" aria-hidden="true">{isRefineOpen ? "▲" : "▼"}</span>
         </button>
         {isRefineOpen && (
           <div style={{ marginTop: "1.2rem" }}>
             <p className="questions-intro">
-              ענה על השאלות כדי שהכלי יוכל לשפר את הלו״ז עבורך.
+              ענו על השאלות כדי שהכלי יוכל לשפר את הלו״ז.
             </p>
             <div className="questions-list">
               {result.questions.map((q, i) => (
@@ -293,7 +293,7 @@ export function ScheduleResultPanel({
                   </div>
                   <textarea
                     className="question-answer"
-                    placeholder="הכנס תשובתך כאן..."
+                    placeholder="כתבו תשובה כאן..."
                     value={qaAnswers[i] || ""}
                     onChange={(e) => setQaAnswers((prev) => ({ ...prev, [i]: e.target.value }))}
                   />
@@ -324,7 +324,7 @@ export function ScheduleResultPanel({
       {/* Reset */}
       <div className="result-actions" style={{ marginTop: "1rem" }}>
         <button className="btn btn-secondary" type="button" onClick={onReset}>
-          התחל מחדש
+          חזרה להתחלה
         </button>
       </div>
 
