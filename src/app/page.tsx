@@ -221,7 +221,7 @@ export default function HomePage() {
         </div>
         <div className="hero-cards">
           <div className="hero-card"><CalendarDays size={18} strokeWidth={1.8} /><span>לו״ז יומי מלא</span></div>
-          <div className="hero-card"><MessageSquare size={18} strokeWidth={1.8} /><span>הודעת WhatsApp</span></div>
+          <div className="hero-card"><MessageSquare size={18} strokeWidth={1.8} /><span>הודעה מלווה לווטסאפ</span></div>
           <div className="hero-card"><GraduationCap size={18} strokeWidth={1.8} /><span>מבוסס פדגוגיה</span></div>
         </div>
       </header>
