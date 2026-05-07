@@ -1130,13 +1130,13 @@ input.editor-day-name:focus {
   flex-direction: column;
   align-items: center;
   gap: .3rem;
-  background: var(--surface);
-  border: 1px solid var(--border);
+  background: var(--primary-light);
+  border: none;
   border-radius: var(--radius-sm);
   padding: .65rem .5rem;
   font-size: .8rem;
   font-weight: 600;
-  color: var(--text-secondary);
+  color: var(--primary-dark);
   text-align: center;
 }
 
@@ -1198,6 +1198,10 @@ input.editor-day-name:focus {
 
 /* ── Form completion hint ── */
 .form-completion-hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .35rem;
   font-size: .82rem;
   color: var(--text-muted);
   text-align: center;
