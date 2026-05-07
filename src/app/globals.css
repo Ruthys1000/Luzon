@@ -561,6 +561,7 @@ textarea.links-field {
   font-family: var(--font-heebo), sans-serif;
   font-weight: 800;
   transition: all .15s;
+  text-decoration: none;
 }
 
 .copy-btn:hover {
@@ -581,6 +582,7 @@ button:focus-visible {
   background: #25d366;
   color: #fff;
   border-color: #25d366;
+  text-decoration: none;
 }
 
 .copy-btn-share:hover {
