@@ -1107,7 +1107,6 @@ input.editor-day-name:focus {
 .hero-tagline em {
   color: var(--primary);
   font-style: normal;
-  display: block;
 }
 
 .hero-sub {
