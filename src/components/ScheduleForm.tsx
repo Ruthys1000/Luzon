@@ -228,14 +228,15 @@ export function ScheduleForm({
               onChange={onChange}
               placeholder={"https://www.youtube.com/watch?v=...\nhttps://docs.google.com/..."}
             />
-            <div className="links-hint">
-              💡 אין קישורים? השאר ריק — הכלי יציע תכנים רלוונטיים שהלומדים יוכלו לחפש בעצמם.
-            </div>
           </div>
         </div>
       </div>
 
       {error && <div className="error-box">⚠️ {error}</div>}
+
+      <div className="form-completion-hint">
+        💡 אין צורך למלא הכל — הכלי ישלים מה שחסר לפי הנושא שהזנת
+      </div>
 
       <button type="submit" className="btn btn-primary" disabled={loading}>
         {loading ? "מחולל לו״ז..." : "צור לו״ז"}
