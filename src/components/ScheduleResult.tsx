@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, Fragment } from "react";
+import { Sparkles, Pencil } from "lucide-react";
 import type { ScheduleResult } from "@/types/schedule";
 import { getBadgeClass } from "@/constants/sample";
 import { escapeHtml, linkify, hasLink, suppSearchUrl } from "@/lib/linkify";
@@ -40,6 +41,7 @@ export function ScheduleResultPanel({
   const [draftResult, setDraftResult] = useState<ScheduleResult | null>(null);
   const [whatsappCopied, setWhatsappCopied] = useState(false);
   const [isImproveOpen, setIsImproveOpen] = useState(false);
+  const [improveMode, setImproveMode] = useState<'ai'|'manual'>('ai');
   const [isShareOpen, setIsShareOpen] = useState(false);
   const [qaAnswers, setQaAnswers] = useState<Record<number, string>>({});
 
@@ -188,58 +190,72 @@ export function ScheduleResultPanel({
         </button>
         {isImproveOpen && (
           <div style={{ marginTop: "1.2rem" }}>
-            {/* Manual edit */}
-            <div className="improve-sub-section">
-              <div className="improve-sub-title">עריכה ידנית</div>
-              {isEditing && draftResult ? (
-                <>
-                  <StructuredEditor draftResult={draftResult} onChange={setDraftResult} />
-                  <div className="copy-row" style={{ marginTop: ".9rem" }}>
-                    <button className="copy-btn copy-btn-save" type="button" onClick={saveEditing}>שמור שינויים</button>
-                    <button className="copy-btn" type="button" onClick={() => setIsEditing(false)}>ביטול</button>
-                  </div>
-                </>
-              ) : (
-                <button className="copy-btn" type="button" onClick={startEditing}>ערוך ידנית</button>
-              )}
+            {/* Tab selector */}
+            <div className="improve-tabs">
+              <button
+                type="button"
+                className={`improve-tab${improveMode === 'ai' ? ' active' : ''}`}
+                onClick={() => { setImproveMode('ai'); setIsEditing(false); setDraftResult(null); }}
+              ><Sparkles size={14} strokeWidth={1.8} /> שפר עם AI</button>
+              <button
+                type="button"
+                className={`improve-tab${improveMode === 'manual' ? ' active' : ''}`}
+                onClick={() => setImproveMode('manual')}
+              ><Pencil size={14} strokeWidth={1.8} /> ערוך ידנית</button>
             </div>
 
-            <hr className="improve-divider" />
+            {/* Manual edit */}
+            {improveMode === 'manual' && (
+              <div className="improve-sub-section">
+                {isEditing && draftResult ? (
+                  <>
+                    <StructuredEditor draftResult={draftResult} onChange={setDraftResult} />
+                    <div className="copy-row" style={{ marginTop: ".9rem" }}>
+                      <button className="copy-btn copy-btn-save" type="button" onClick={saveEditing}>שמור שינויים</button>
+                      <button className="copy-btn" type="button" onClick={() => setIsEditing(false)}>ביטול</button>
+                    </div>
+                  </>
+                ) : (
+                  <button className="copy-btn" type="button" onClick={startEditing}>ערוך ידנית</button>
+                )}
+              </div>
+            )}
 
             {/* AI refine */}
-            <div className="improve-sub-section">
-              <div className="improve-sub-title">שיפור עם AI</div>
-              <p className="questions-intro">ענו על השאלות כדי שהכלי יוכל לשפר את הלו״ז.</p>
-              <div className="questions-list">
-                {result.questions.map((q, i) => (
-                  <div key={i} className="question-item question-item-interactive">
-                    <div className="question-text">
-                      <span className="question-icon" aria-hidden="true">❓</span>
-                      {q}
+            {improveMode === 'ai' && (
+              <div className="improve-sub-section">
+                <p className="questions-intro">ענו על השאלות כדי שהכלי יוכל לשפר את הלו״ז.</p>
+                <div className="questions-list">
+                  {result.questions.map((q, i) => (
+                    <div key={i} className="question-item question-item-interactive">
+                      <div className="question-text">
+                        <span className="question-icon" aria-hidden="true">❓</span>
+                        {q}
+                      </div>
+                      <textarea
+                        className="question-answer"
+                        placeholder="כתבו תשובה כאן..."
+                        value={qaAnswers[i] || ""}
+                        onChange={(e) => setQaAnswers((prev) => ({ ...prev, [i]: e.target.value }))}
+                      />
                     </div>
-                    <textarea
-                      className="question-answer"
-                      placeholder="כתבו תשובה כאן..."
-                      value={qaAnswers[i] || ""}
-                      onChange={(e) => setQaAnswers((prev) => ({ ...prev, [i]: e.target.value }))}
-                    />
-                  </div>
-                ))}
+                  ))}
+                </div>
+                <button
+                  className="btn btn-primary refine-btn"
+                  type="button"
+                  disabled={loading || Object.values(qaAnswers).every((a) => !a.trim())}
+                  onClick={() => {
+                    const qa = result.questions
+                      .map((q, i) => ({ question: q, answer: qaAnswers[i] || "" }))
+                      .filter((qa) => qa.answer.trim());
+                    onRefine(qa);
+                  }}
+                >
+                  {loading ? <><span className="spinner" /> משפר לו״ז...</> : "שפר לו״ז לפי התשובות"}
+                </button>
               </div>
-              <button
-                className="btn btn-primary refine-btn"
-                type="button"
-                disabled={loading || Object.values(qaAnswers).every((a) => !a.trim())}
-                onClick={() => {
-                  const qa = result.questions
-                    .map((q, i) => ({ question: q, answer: qaAnswers[i] || "" }))
-                    .filter((qa) => qa.answer.trim());
-                  onRefine(qa);
-                }}
-              >
-                {loading ? <><span className="spinner" /> משפר לו״ז...</> : "שפר לו״ז לפי התשובות"}
-              </button>
-            </div>
+            )}
           </div>
         )}
       </div>
