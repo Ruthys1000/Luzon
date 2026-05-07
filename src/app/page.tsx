@@ -213,6 +213,11 @@ export default function HomePage() {
         <p className="hero-tagline">
           תכננו יום למידה מרחוק <em>בלי להשקיע שעות</em>
         </p>
+        <img
+          src="/hero-illustration.png"
+          alt=""
+          className="hero-illustration"
+        />
         <div className="hero-cards">
           <div className="hero-card"><CalendarDays size={18} strokeWidth={1.8} /><span>לו״ז יומי מלא</span></div>
           <div className="hero-card"><MessageSquare size={18} strokeWidth={1.8} /><span>הודעה מלווה</span></div>
