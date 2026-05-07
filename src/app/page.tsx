@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { CalendarDays, MessageSquare, GraduationCap, Zap } from "lucide-react";
 import type { ScheduleResult } from "@/types/schedule";
 import { generateHtml } from "@/lib/generate-html";
 import { ScheduleForm, type FormState } from "@/components/ScheduleForm";
@@ -203,7 +204,7 @@ export default function HomePage() {
   return (
     <div className="page-wrapper">
       <header className="site-header">
-        <div className="hero-badge">⚡ לו״ז מלא תוך 3 דקות</div>
+        <div className="hero-badge"><Zap size={13} strokeWidth={2.5} /> לו״ז מלא תוך 3 דקות</div>
         <div className="logo">
           <span className="logo-mark">✦</span>
           Luz Creator
@@ -216,9 +217,9 @@ export default function HomePage() {
           כתבו נושא ← קבלו לו״ז יומי מלא ← הודעת WhatsApp מוכנה לשליחה
         </p>
         <div className="hero-cards">
-          <div className="hero-card"><span>📋</span><span>לו״ז יומי מלא</span></div>
-          <div className="hero-card"><span>💬</span><span>הודעת WhatsApp</span></div>
-          <div className="hero-card"><span>🧠</span><span>מבוסס פדגוגיה</span></div>
+          <div className="hero-card"><CalendarDays size={18} strokeWidth={1.8} /><span>לו״ז יומי מלא</span></div>
+          <div className="hero-card"><MessageSquare size={18} strokeWidth={1.8} /><span>הודעת WhatsApp</span></div>
+          <div className="hero-card"><GraduationCap size={18} strokeWidth={1.8} /><span>מבוסס פדגוגיה</span></div>
         </div>
         <div className="how-it-works" aria-label="איך זה עובד">
           <span className="how-it-works-pill">מלאו פרטים</span>

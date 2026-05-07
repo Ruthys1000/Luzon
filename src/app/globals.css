@@ -1083,7 +1083,9 @@ input.editor-day-name:focus {
 
 /* ── Hero copy ── */
 .hero-badge {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: .3rem;
   background: var(--primary-light);
   color: var(--primary);
   border-radius: 100px;
