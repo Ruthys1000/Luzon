@@ -213,13 +213,6 @@ export default function HomePage() {
         <p className="hero-tagline">
           תכננו יום למידה מרחוק <em>בלי להשקיע שעות</em>
         </p>
-        <div className="how-it-works" aria-label="איך זה עובד">
-          <span className="how-it-works-pill">מלאו פרטים</span>
-          <span className="how-it-works-sep">←</span>
-          <span className="how-it-works-pill">AI בונה לו״ז</span>
-          <span className="how-it-works-sep">←</span>
-          <span className="how-it-works-pill">שלחו בווטסאפ</span>
-        </div>
         <div className="hero-cards">
           <div className="hero-card"><CalendarDays size={18} strokeWidth={1.8} /><span>לו״ז יומי מלא</span></div>
           <div className="hero-card"><MessageSquare size={18} strokeWidth={1.8} /><span>הודעה מלווה</span></div>

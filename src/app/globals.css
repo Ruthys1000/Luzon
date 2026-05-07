@@ -63,7 +63,7 @@ body {
 .site-header {
   background: transparent;
   margin: 0;
-  padding: 4.5rem 0 4rem;
+  padding: 4.5rem 0 4.5rem;
   text-align: right;
   position: relative;
   overflow: visible;
@@ -1085,22 +1085,23 @@ input.editor-day-name:focus {
 .hero-cta {
   display: inline-flex;
   align-items: center;
-  gap: .4rem;
-  margin-top: 1.6rem;
-  padding: .6rem 1.4rem;
+  gap: .5rem;
+  margin-top: 2rem;
+  padding: .85rem 2rem;
   border-radius: 100px;
-  border: 2px solid var(--primary);
-  background: transparent;
-  color: var(--primary);
-  font-size: .9rem;
+  border: none;
+  background: var(--primary);
+  color: #fff;
+  font-size: 1rem;
   font-weight: 700;
   cursor: pointer;
-  transition: background .15s, color .15s;
+  box-shadow: 0 4px 16px rgba(212, 106, 80, .25);
+  transition: background .15s, box-shadow .15s;
 }
 
 .hero-cta:hover {
-  background: var(--primary);
-  color: #fff;
+  background: var(--primary-hover);
+  box-shadow: 0 6px 20px rgba(212, 106, 80, .35);
 }
 
 .hero-badge {
