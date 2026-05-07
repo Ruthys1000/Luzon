@@ -63,7 +63,7 @@ body {
 .site-header {
   background: transparent;
   margin: 0;
-  padding: 4.5rem 0 3rem;
+  padding: 4.5rem 0 4rem;
   text-align: right;
   position: relative;
   overflow: visible;
@@ -1082,6 +1082,27 @@ input.editor-day-name:focus {
 }
 
 /* ── Hero copy ── */
+.hero-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  margin-top: 1.6rem;
+  padding: .6rem 1.4rem;
+  border-radius: 100px;
+  border: 2px solid var(--primary);
+  background: transparent;
+  color: var(--primary);
+  font-size: .9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background .15s, color .15s;
+}
+
+.hero-cta:hover {
+  background: var(--primary);
+  color: #fff;
+}
+
 .hero-badge {
   display: inline-flex;
   align-items: center;
