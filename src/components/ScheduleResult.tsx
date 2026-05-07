@@ -39,7 +39,8 @@ export function ScheduleResultPanel({
   const [isEditing, setIsEditing] = useState(false);
   const [draftResult, setDraftResult] = useState<ScheduleResult | null>(null);
   const [whatsappCopied, setWhatsappCopied] = useState(false);
-  const [isRefineOpen, setIsRefineOpen] = useState(false);
+  const [isImproveOpen, setIsImproveOpen] = useState(false);
+  const [isShareOpen, setIsShareOpen] = useState(false);
   const [qaAnswers, setQaAnswers] = useState<Record<number, string>>({});
 
   function startEditing() {
@@ -59,13 +60,6 @@ export function ScheduleResultPanel({
     setTimeout(() => setWhatsappCopied(false), 1500);
   }
 
-  function scrollTo(id: string, openRefine?: boolean) {
-    if (openRefine) setIsRefineOpen(true);
-    setTimeout(() => {
-      document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
-    }, openRefine ? 50 : 0);
-  }
-
   return (
     <div style={{ marginTop: "2.5rem" }}>
 
@@ -74,7 +68,7 @@ export function ScheduleResultPanel({
         <span className="result-intro-check">✓</span>
         <div>
           <div className="result-intro-title">הלו״ז מוכן</div>
-          <div className="result-intro-sub">עברו עליו — מתחתיו תמצאו עריכה ושיתוף</div>
+          <div className="result-intro-sub">עברו על הלו״ז — מתחתיו: שיפור ושיתוף</div>
         </div>
       </div>
 
@@ -180,143 +174,126 @@ export function ScheduleResultPanel({
         </div>
       </div>
 
-      {/* What's next — appears after the schedule, before the action sections */}
-      <div className="next-steps-banner">
-        <div className="next-steps-title">מה עכשיו? ↓</div>
-        <div className="next-steps-list">
-          <div className="next-step-item">
-            <span className="next-step-num">1</span>
-            <span>ערכו את הודעת ה-WhatsApp ושלחו</span>
-          </div>
-          <div className="next-step-item">
-            <span className="next-step-num">2</span>
-            <span>שתפו או הורידו את הלו״ז המלא</span>
-          </div>
-          <div className="next-step-item">
-            <span className="next-step-num">3</span>
-            <span>רוצים לדייק? ענו על השאלות ושפרו</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Section 1: WhatsApp message */}
-      <div className="card" id="section-whatsapp">
-        <div className="section-header">
-          <span className="section-number">1</span>
-          <div>
-            <div className="section-title">שליחת הודעת ווטסאפ</div>
-            <p className="section-subtitle">הודעה מכינה ליום שלמחרת</p>
-          </div>
-        </div>
-        <textarea
-          className="whatsapp-textarea"
-          value={editableWhatsapp}
-          onChange={(e) => onWhatsappChange(e.target.value)}
-        />
-        <div className="copy-row" style={{ marginTop: ".9rem" }}>
-          <button className="copy-btn" type="button" onClick={copyWhatsapp}>
-            {whatsappCopied ? "הועתק!" : "העתק הודעה"}
-          </button>
-          <a
-            className="copy-btn copy-btn-share"
-            href={`https://wa.me/?text=${encodeURIComponent(editableWhatsapp)}`}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            שלח בווטסאפ ↗
-          </a>
-        </div>
-      </div>
-
-      {/* Section 2: Share schedule */}
-      <div className="card" id="section-share">
-        <div className="section-header">
-          <span className="section-number">2</span>
-          <div>
-            <div className="section-title">שיתוף הלו״ז</div>
-            <p className="section-subtitle">קובץ HTML עם כל הפרטים — שתפו בווטסאפ או הורידו</p>
-          </div>
-        </div>
-        <div className="copy-row">
-          {isEditing ? (
-            <>
-              <button className="copy-btn copy-btn-save" type="button" onClick={saveEditing}>
-                שמור שינויים
-              </button>
-              <button className="copy-btn" type="button" onClick={() => setIsEditing(false)}>
-                ביטול
-              </button>
-            </>
-          ) : (
-            <>
-              <button className="copy-btn copy-btn-share" type="button" onClick={onShare}>
-                שלח בווטסאפ ↗
-              </button>
-              <button className="copy-btn" type="button" onClick={onDownload}>
-                הורד
-              </button>
-              <button className="copy-btn" type="button" onClick={startEditing}>
-                ערוך תוכן
-              </button>
-            </>
-          )}
-        </div>
-        {shareNotice && <div className="share-notice">{shareNotice}</div>}
-        {isEditing && draftResult && (
-          <StructuredEditor draftResult={draftResult} onChange={setDraftResult} />
-        )}
-      </div>
-
-      {/* Section 3: Refine schedule (collapsible) */}
-      <div className="card" id="section-refine">
+      {/* Accordion: Improve schedule (manual + AI) */}
+      <div className="card" id="section-improve">
         <button
           type="button"
           className="rationale-toggle"
-          aria-expanded={isRefineOpen}
-          aria-label="הצג או הסתר: לשפר את הלו״ז?"
-          onClick={() => setIsRefineOpen((o) => !o)}
+          aria-expanded={isImproveOpen}
+          aria-label="הצג או הסתר: שיפור הלו״ז"
+          onClick={() => setIsImproveOpen((o) => !o)}
         >
-          <span>✨ לשפר את הלו״ז?</span>
-          <span className="rationale-toggle-arrow" aria-hidden="true">{isRefineOpen ? "▲" : "▼"}</span>
+          <span>שפר את הלו״ז</span>
+          <span className="rationale-toggle-arrow" aria-hidden="true">{isImproveOpen ? "▲" : "▼"}</span>
         </button>
-        {isRefineOpen && (
+        {isImproveOpen && (
           <div style={{ marginTop: "1.2rem" }}>
-            <p className="questions-intro">
-              ענו על השאלות כדי שהכלי יוכל לשפר את הלו״ז.
-            </p>
-            <div className="questions-list">
-              {result.questions.map((q, i) => (
-                <div key={i} className="question-item question-item-interactive">
-                  <div className="question-text">
-                    <span className="question-icon" aria-hidden="true">❓</span>
-                    {q}
+            {/* Manual edit */}
+            <div className="improve-sub-section">
+              <div className="improve-sub-title">עריכה ידנית</div>
+              {isEditing && draftResult ? (
+                <>
+                  <StructuredEditor draftResult={draftResult} onChange={setDraftResult} />
+                  <div className="copy-row" style={{ marginTop: ".9rem" }}>
+                    <button className="copy-btn copy-btn-save" type="button" onClick={saveEditing}>שמור שינויים</button>
+                    <button className="copy-btn" type="button" onClick={() => setIsEditing(false)}>ביטול</button>
                   </div>
-                  <textarea
-                    className="question-answer"
-                    placeholder="כתבו תשובה כאן..."
-                    value={qaAnswers[i] || ""}
-                    onChange={(e) => setQaAnswers((prev) => ({ ...prev, [i]: e.target.value }))}
-                  />
-                </div>
-              ))}
-            </div>
-            <button
-              className="btn btn-primary refine-btn"
-              type="button"
-              disabled={loading || Object.values(qaAnswers).every((a) => !a.trim())}
-              onClick={() => {
-                const qa = result.questions
-                  .map((q, i) => ({ question: q, answer: qaAnswers[i] || "" }))
-                  .filter((qa) => qa.answer.trim());
-                onRefine(qa);
-              }}
-            >
-              {loading ? (
-                <><span className="spinner" /> משפר לו״ז...</>
+                </>
               ) : (
-                "שפר לו״ז לפי התשובות"
+                <button className="copy-btn" type="button" onClick={startEditing}>ערוך ידנית</button>
               )}
-            </button>
+            </div>
+
+            <hr className="improve-divider" />
+
+            {/* AI refine */}
+            <div className="improve-sub-section">
+              <div className="improve-sub-title">שיפור עם AI</div>
+              <p className="questions-intro">ענו על השאלות כדי שהכלי יוכל לשפר את הלו״ז.</p>
+              <div className="questions-list">
+                {result.questions.map((q, i) => (
+                  <div key={i} className="question-item question-item-interactive">
+                    <div className="question-text">
+                      <span className="question-icon" aria-hidden="true">❓</span>
+                      {q}
+                    </div>
+                    <textarea
+                      className="question-answer"
+                      placeholder="כתבו תשובה כאן..."
+                      value={qaAnswers[i] || ""}
+                      onChange={(e) => setQaAnswers((prev) => ({ ...prev, [i]: e.target.value }))}
+                    />
+                  </div>
+                ))}
+              </div>
+              <button
+                className="btn btn-primary refine-btn"
+                type="button"
+                disabled={loading || Object.values(qaAnswers).every((a) => !a.trim())}
+                onClick={() => {
+                  const qa = result.questions
+                    .map((q, i) => ({ question: q, answer: qaAnswers[i] || "" }))
+                    .filter((qa) => qa.answer.trim());
+                  onRefine(qa);
+                }}
+              >
+                {loading ? <><span className="spinner" /> משפר לו״ז...</> : "שפר לו״ז לפי התשובות"}
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Accordion: Share & send */}
+      <div className="card" id="section-share">
+        <button
+          type="button"
+          className="rationale-toggle"
+          aria-expanded={isShareOpen}
+          aria-label="הצג או הסתר: שיתוף ושליחה"
+          onClick={() => setIsShareOpen((o) => !o)}
+        >
+          <span>שתף ושלח</span>
+          <span className="rationale-toggle-arrow" aria-hidden="true">{isShareOpen ? "▲" : "▼"}</span>
+        </button>
+        {isShareOpen && (
+          <div style={{ marginTop: "1.2rem" }}>
+            {/* WhatsApp message */}
+            <div className="improve-sub-section">
+              <div className="improve-sub-title">הודעת WhatsApp</div>
+              <p className="section-subtitle" style={{ marginBottom: ".7rem" }}>הודעה מכינה ליום שלמחרת</p>
+              <textarea
+                className="whatsapp-textarea"
+                value={editableWhatsapp}
+                onChange={(e) => onWhatsappChange(e.target.value)}
+              />
+              <div className="copy-row" style={{ marginTop: ".9rem" }}>
+                <button className="copy-btn" type="button" onClick={copyWhatsapp}>
+                  {whatsappCopied ? "הועתק!" : "העתק הודעה"}
+                </button>
+                <a
+                  className="copy-btn copy-btn-share"
+                  href={`https://wa.me/?text=${encodeURIComponent(editableWhatsapp)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  שלח בווטסאפ ↗
+                </a>
+              </div>
+            </div>
+
+            <hr className="improve-divider" />
+
+            {/* Download / share file */}
+            <div className="improve-sub-section">
+              <div className="improve-sub-title">שמור ושתף</div>
+              <p className="section-subtitle" style={{ marginBottom: ".7rem" }}>קובץ HTML עם כל הפרטים — שתפו בווטסאפ או הורידו</p>
+              <div className="copy-row">
+                <button className="copy-btn copy-btn-share" type="button" onClick={onShare}>שלח בווטסאפ ↗</button>
+                <button className="copy-btn" type="button" onClick={onDownload}>הורד</button>
+              </div>
+              {shareNotice && <div className="share-notice">{shareNotice}</div>}
+            </div>
           </div>
         )}
       </div>
