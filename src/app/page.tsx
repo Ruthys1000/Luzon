@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { CalendarDays, MessageSquare, GraduationCap, Zap } from "lucide-react";
+import { CalendarDays, MessageSquare, GraduationCap, Zap, ArrowDown } from "lucide-react";
 import type { ScheduleResult } from "@/types/schedule";
 import { generateHtml } from "@/lib/generate-html";
 import { ScheduleForm, type FormState } from "@/components/ScheduleForm";
@@ -67,6 +67,7 @@ export default function HomePage() {
   const [shareNotice, setShareNotice] = useState("");
   const resultRef = useRef<HTMLDivElement>(null);
   const loadingRef = useRef<HTMLDivElement>(null);
+  const formRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (loading) loadingRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -224,18 +225,27 @@ export default function HomePage() {
           <div className="hero-card"><MessageSquare size={18} strokeWidth={1.8} /><span>הודעה מלווה</span></div>
           <div className="hero-card"><GraduationCap size={18} strokeWidth={1.8} /><span>מבוסס פדגוגיה</span></div>
         </div>
+        <button
+          type="button"
+          className="hero-cta"
+          onClick={() => formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" })}
+        >
+          בואו נתחיל <ArrowDown size={15} strokeWidth={2} />
+        </button>
       </header>
 
-      <ScheduleForm
-        form={form}
-        loading={loading}
-        error={error}
-        onChange={handleChange}
-        onContentTypeChange={(value) => setForm((prev) => ({ ...prev, content_type: value }))}
-        onGoalsChange={(goals) => setForm((prev) => ({ ...prev, goals }))}
-        onZoomEnabledChange={(enabled) => setForm((prev) => ({ ...prev, zoomEnabled: enabled }))}
-        onSubmit={handleSubmit}
-      />
+      <div ref={formRef}>
+        <ScheduleForm
+          form={form}
+          loading={loading}
+          error={error}
+          onChange={handleChange}
+          onContentTypeChange={(value) => setForm((prev) => ({ ...prev, content_type: value }))}
+          onGoalsChange={(goals) => setForm((prev) => ({ ...prev, goals }))}
+          onZoomEnabledChange={(enabled) => setForm((prev) => ({ ...prev, zoomEnabled: enabled }))}
+          onSubmit={handleSubmit}
+        />
+      </div>
 
       {/* Loading state */}
       {loading && (() => {
