@@ -1104,6 +1104,14 @@ input.editor-day-name:focus {
   box-shadow: 0 6px 20px rgba(212, 106, 80, .35);
 }
 
+.hero-illustration {
+  width: 100%;
+  max-width: 480px;
+  margin: 1.8rem auto 0;
+  display: block;
+  border-radius: var(--radius);
+}
+
 .hero-badge {
   display: inline-flex;
   align-items: center;
