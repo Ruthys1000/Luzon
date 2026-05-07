@@ -217,6 +217,22 @@ export default function HomePage() {
           <li>✔ כולל הנחיות ברורות ללומדים</li>
           <li>✔ מוכן לשליחה ב-WhatsApp</li>
         </ul>
+        <div className="how-it-works" aria-label="איך זה עובד">
+          <div className="how-it-works-step">
+            <span className="step-num">①</span>
+            <span>מלאו פרטי ההדרכה</span>
+          </div>
+          <span className="how-it-works-sep">←</span>
+          <div className="how-it-works-step">
+            <span className="step-num">②</span>
+            <span>AI בונה לו״ז תוך דקות</span>
+          </div>
+          <span className="how-it-works-sep">←</span>
+          <div className="how-it-works-step">
+            <span className="step-num">③</span>
+            <span>שלחו ללומדים בווטסאפ</span>
+          </div>
+        </div>
       </header>
 
       <ScheduleForm
