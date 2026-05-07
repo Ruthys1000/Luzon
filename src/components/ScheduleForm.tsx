@@ -121,7 +121,7 @@ export function ScheduleForm({
                 required
               />
               <div className="my-content-note">
-                💡 אין צורך להעלות קבצים — פשוט כתבו מה יש לכם (כמות, אורך, נושאים)
+                <Lightbulb size={14} strokeWidth={1.8} /> אין צורך להעלות קבצים — פשוט כתבו מה יש לכם (כמות, אורך, נושאים)
               </div>
             </div>
           )}

@@ -1365,6 +1365,9 @@ input.editor-day-name:focus {
 
 /* ── My-content callout note ── */
 .my-content-note {
+  display: flex;
+  align-items: flex-start;
+  gap: .35rem;
   font-size: .82rem;
   color: var(--primary-dark);
   background: var(--primary-light);
