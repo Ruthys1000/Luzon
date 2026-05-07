@@ -302,7 +302,7 @@ export function ScheduleResultPanel({
 
             {/* Download / share file */}
             <div className="improve-sub-section">
-              <div className="improve-sub-title">שמור ושתף</div>
+              <div className="improve-sub-title">שתף את קובץ הלו״ז</div>
               <p className="section-subtitle" style={{ marginBottom: ".7rem" }}>קובץ HTML עם כל הפרטים — שתפו בווטסאפ או הורידו</p>
               <div className="copy-row">
                 <button className="copy-btn copy-btn-share" type="button" onClick={onShare}>שלח בווטסאפ ↗</button>
