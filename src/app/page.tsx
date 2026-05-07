@@ -203,35 +203,29 @@ export default function HomePage() {
   return (
     <div className="page-wrapper">
       <header className="site-header">
+        <div className="hero-badge">⚡ לו״ז מלא תוך 3 דקות</div>
         <div className="logo">
           <span className="logo-mark">✦</span>
           Luz Creator
         </div>
-        <p className="hero-tagline">נדרשים/ות לבנות יום למידה מרחוק?</p>
-        <p className="hero-sub">
-          מלאו נושא, שעות ואילוצים — וקבלו תוך דקות:<br />
-          לו״ז יומי מלא ללמידה עצמאית + הודעת WhatsApp מוכנה לשליחה
+        <p className="hero-tagline">
+          תכננו יום למידה מרחוק<br />
+          <em>בלי להשקיע שעות</em>
         </p>
-        <ul className="hero-bullets">
-          <li>✔ מבוסס עקרונות פדגוגיים</li>
-          <li>✔ כולל הנחיות ברורות ללומדים</li>
-          <li>✔ מוכן לשליחה ב-WhatsApp</li>
-        </ul>
+        <p className="hero-sub">
+          כתבו נושא ← קבלו לו״ז יומי מלא ← הודעת WhatsApp מוכנה לשליחה
+        </p>
+        <div className="hero-cards">
+          <div className="hero-card"><span>📋</span><span>לו״ז יומי מלא</span></div>
+          <div className="hero-card"><span>💬</span><span>הודעת WhatsApp</span></div>
+          <div className="hero-card"><span>🧠</span><span>מבוסס פדגוגיה</span></div>
+        </div>
         <div className="how-it-works" aria-label="איך זה עובד">
-          <div className="how-it-works-step">
-            <span className="step-num">①</span>
-            <span>מלאו פרטי ההדרכה</span>
-          </div>
-          <span className="how-it-works-sep">←</span>
-          <div className="how-it-works-step">
-            <span className="step-num">②</span>
-            <span>AI בונה לו״ז תוך דקות</span>
-          </div>
-          <span className="how-it-works-sep">←</span>
-          <div className="how-it-works-step">
-            <span className="step-num">③</span>
-            <span>שלחו ללומדים בווטסאפ</span>
-          </div>
+          <span className="how-it-works-pill">מלאו פרטים</span>
+          <span className="how-it-works-sep">→</span>
+          <span className="how-it-works-pill">AI בונה לו״ז</span>
+          <span className="how-it-works-sep">→</span>
+          <span className="how-it-works-pill">שלחו בווטסאפ</span>
         </div>
       </header>
 
