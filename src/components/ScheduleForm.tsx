@@ -1,5 +1,6 @@
 "use client";
 
+import { Lightbulb } from "lucide-react";
 import { QUICK_STARTERS } from "@/constants/sample";
 
 export interface FormState {
@@ -235,7 +236,7 @@ export function ScheduleForm({
       {error && <div className="error-box">⚠️ {error}</div>}
 
       <div className="form-completion-hint">
-        💡 אין צורך למלא הכל — הכלי ישלים מה שחסר לפי הנושא שהזנת
+        <Lightbulb size={14} strokeWidth={1.8} /> אין צורך למלא הכל — הכלי ישלים מה שחסר לפי הנושא שהזנת
       </div>
 
       <button type="submit" className="btn btn-primary" disabled={loading}>
