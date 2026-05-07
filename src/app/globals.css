@@ -1176,6 +1176,10 @@ input.editor-day-name:focus {
 
 .improve-tab {
   flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .3rem;
   padding: .45rem .6rem;
   border-radius: var(--radius-sm);
   font-size: .82rem;

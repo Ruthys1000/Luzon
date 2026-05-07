@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, Fragment } from "react";
+import { Sparkles, Pencil } from "lucide-react";
 import type { ScheduleResult } from "@/types/schedule";
 import { getBadgeClass } from "@/constants/sample";
 import { escapeHtml, linkify, hasLink, suppSearchUrl } from "@/lib/linkify";
@@ -195,12 +196,12 @@ export function ScheduleResultPanel({
                 type="button"
                 className={`improve-tab${improveMode === 'ai' ? ' active' : ''}`}
                 onClick={() => { setImproveMode('ai'); setIsEditing(false); setDraftResult(null); }}
-              >✨ שפר עם AI</button>
+              ><Sparkles size={14} strokeWidth={1.8} /> שפר עם AI</button>
               <button
                 type="button"
                 className={`improve-tab${improveMode === 'manual' ? ' active' : ''}`}
                 onClick={() => setImproveMode('manual')}
-              >✏️ ערוך ידנית</button>
+              ><Pencil size={14} strokeWidth={1.8} /> ערוך ידנית</button>
             </div>
 
             {/* Manual edit */}
