@@ -1125,6 +1125,7 @@ input.editor-day-name:focus {
 }
 
 .hero-card {
+  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1132,11 +1133,11 @@ input.editor-day-name:focus {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
-  padding: .65rem .9rem;
+  padding: .65rem .5rem;
   font-size: .8rem;
   font-weight: 600;
   color: var(--text-secondary);
-  min-width: 96px;
+  text-align: center;
 }
 
 .how-it-works {
