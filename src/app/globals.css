@@ -1146,6 +1146,7 @@ input.editor-day-name:focus {
   justify-content: center;
   flex-wrap: wrap;
   align-items: center;
+  margin: .9rem 0 .8rem;
 }
 
 .how-it-works-pill {
