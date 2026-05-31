@@ -42,7 +42,6 @@ function buildZoomSessionsString(meetingId: string, times: string): string {
 
 const INITIAL_FORM: FormState = {
   goals: "",
-  days: "1",
   start_time: "09:00",
   end_time: "17:00",
   content_type: "topic",
@@ -97,12 +96,15 @@ export default function HomePage() {
         ? buildZoomSessionsString(form.zoomMeetingId, form.zoomTimes)
         : "";
 
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 90_000);
+
       const res = await fetch("/api/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        signal: controller.signal,
         body: JSON.stringify({
           ...form,
-          days: Number(form.days),
           include_team_sessions: form.zoomEnabled ? "yes" : "no",
           zoom_sessions: zoomStr,
           course_url: form.content_type === "course" ? form.courseUrl : undefined,
@@ -110,6 +112,7 @@ export default function HomePage() {
           refinement_qa,
         }),
       });
+      clearTimeout(timeoutId);
 
       if (!res.ok) {
         const data = await res.json();
@@ -146,8 +149,12 @@ export default function HomePage() {
       setTimeout(() => {
         resultRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
       }, 100);
-    } catch {
-      setError("שגיאת רשת – אנא נסה שוב");
+    } catch (err) {
+      if (err instanceof Error && err.name === "AbortError") {
+        setError("הבקשה לקחה יותר מדי זמן — אנא נסה שוב");
+      } else {
+        setError("שגיאת רשת – אנא נסה שוב");
+      }
     } finally {
       setLoading(false);
       setStreamingText("");
@@ -247,17 +254,16 @@ export default function HomePage() {
 
       {/* Loading state */}
       {loading && (() => {
-        const len = streamingText.length;
         const stageIndex =
-          len === 0 ? 0 :
-          len < 1500 ? 1 :
-          len < 4000 ? 2 :
-          len < 7000 ? 3 : 4;
+          !streamingText ? 0 :
+          streamingText.includes('"supplementary"') ? 3 :
+          streamingText.includes('"slots"') ? 2 :
+          streamingText.includes('"whatsapp') ? 4 : 1;
         const steps = [
           "ניתוח מטרות ההדרכה",
           "בניית מבנה הלו״ז",
           "הכנת הנחיות ללומדים",
-          "הכנת הודעת WhatsApp",
+          "הכנת תוכן משלים והודעת WhatsApp",
           "עיבוד סופי",
         ];
         return (

@@ -5,7 +5,6 @@ import { QUICK_STARTERS } from "@/constants/sample";
 
 export interface FormState {
   goals: string;
-  days: string;
   start_time: string;
   end_time: string;
   content_type: "topic" | "course" | "my_content";
@@ -126,18 +125,6 @@ export function ScheduleForm({
             </div>
           )}
 
-          <div className="field">
-            <label><span className="required-mark">*</span> מספר ימים <span className="hint">בדרך כלל: 1</span></label>
-            <input
-              type="number"
-              name="days"
-              value={form.days}
-              onChange={onChange}
-              min={1}
-              max={7}
-              required
-            />
-          </div>
           <div className="field">
             <label><span className="required-mark">*</span> שעת התחלה <span className="hint">שעות הלמידה ביום</span></label>
             <input type="time" name="start_time" value={form.start_time} onChange={onChange} />
