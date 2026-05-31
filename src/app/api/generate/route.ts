@@ -159,7 +159,7 @@ function buildUserPrompt(input: ScheduleInput): string {
           .join("\n")}\n\nבנה לו״ז חדש ומשופר שמשקף את התשובות לעיל.`
       : "";
 
-  return `בנה לו״ז שבועי מקצועי של ${input.days} ימים, עם בדיוק 4 שיעורים כפולים (90 דק' כל אחד) ביום.
+  return `בנה יום למידה מקצועי אחד (90 דקות לכל בלוק, מספר הבלוקים לפי מבנה הזמן שסופק).
 הלו״ז מיועד ללמידה עצמאית. ${teamSessionsNote}
 ${contentTypeNote}
 מטרות ההדרכה:
@@ -196,16 +196,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "בקשה לא תקינה" }, { status: 400 });
   }
 
-  if (!input.goals?.trim() || !input.days || !input.start_time || !input.end_time) {
+  if (!input.goals?.trim() || !input.start_time || !input.end_time) {
     return NextResponse.json(
-      { error: "חסרים שדות חובה: מטרות, ימים, שעות" },
-      { status: 400 }
-    );
-  }
-
-  if (input.days < 1 || input.days > 7) {
-    return NextResponse.json(
-      { error: "מספר הימים חייב להיות בין 1 ל-7" },
+      { error: "חסרים שדות חובה: מטרות, שעות" },
       { status: 400 }
     );
   }
@@ -217,7 +210,7 @@ export async function POST(req: NextRequest) {
       try {
         const anthropicStream = client.messages.stream({
           model: "claude-sonnet-4-6",
-          max_tokens: 12000,
+          max_tokens: 4000,
           system: [
             {
               type: "text" as const,

@@ -30,7 +30,6 @@ export interface ScheduleResult {
 
 export interface ScheduleInput {
   goals: string;
-  days: number;
   start_time: string;
   end_time: string;
   content_type?: "topic" | "course" | "my_content";
