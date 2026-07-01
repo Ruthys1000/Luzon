@@ -18,6 +18,8 @@ interface ScheduleResultProps {
   onWhatsappChange: (msg: string) => void;
   onRefine: (qa: { question: string; answer: string }[]) => void;
   onDownload: () => void;
+  onDownloadPdf: () => Promise<void>;
+  pdfLoading: boolean;
   onShare: () => void;
   shareNotice: string;
 }
@@ -33,6 +35,8 @@ export function ScheduleResultPanel({
   onWhatsappChange,
   onRefine,
   onDownload,
+  onDownloadPdf,
+  pdfLoading,
   onShare,
   shareNotice,
 }: ScheduleResultProps) {
@@ -306,7 +310,10 @@ export function ScheduleResultPanel({
               <p className="section-subtitle" style={{ marginBottom: ".7rem" }}>קובץ HTML עם כל הפרטים — שתפו בווטסאפ או הורידו</p>
               <div className="copy-row">
                 <button className="copy-btn copy-btn-share" type="button" onClick={onShare}>שלח בווטסאפ ↗</button>
-                <button className="copy-btn" type="button" onClick={onDownload}>הורד</button>
+                <button className="copy-btn" type="button" onClick={onDownload}>הורד HTML</button>
+                <button className="copy-btn" type="button" onClick={onDownloadPdf} disabled={pdfLoading}>
+                  {pdfLoading ? <><span className="spinner" /> מכין PDF...</> : "הורד PDF"}
+                </button>
               </div>
               {shareNotice && <div className="share-notice">{shareNotice}</div>}
             </div>

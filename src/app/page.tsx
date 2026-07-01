@@ -7,10 +7,10 @@ import { generateHtml } from "@/lib/generate-html";
 import { ScheduleForm, type FormState } from "@/components/ScheduleForm";
 import { ScheduleResultPanel } from "@/components/ScheduleResult";
 
-function scheduleFilename(): string {
+function scheduleFilename(ext: string): string {
   const now = new Date();
   const ts = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, "0")}${String(now.getDate()).padStart(2, "0")}-${String(now.getHours()).padStart(2, "0")}${String(now.getMinutes()).padStart(2, "0")}`;
-  return `luz-${ts}.html`;
+  return `luz-${ts}.${ext}`;
 }
 
 function parseScheduleJson(text: string): ScheduleResult {
@@ -64,6 +64,7 @@ export default function HomePage() {
   const [editableHtml, setEditableHtml] = useState("");
   const [editableWhatsapp, setEditableWhatsapp] = useState("");
   const [shareNotice, setShareNotice] = useState("");
+  const [pdfLoading, setPdfLoading] = useState(false);
   const resultRef = useRef<HTMLDivElement>(null);
   const loadingRef = useRef<HTMLDivElement>(null);
   const formRef = useRef<HTMLDivElement>(null);
@@ -175,17 +176,49 @@ export default function HomePage() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = scheduleFilename();
+    a.download = scheduleFilename("html");
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
   }
 
+  async function downloadPdf() {
+    if (!result) return;
+    setPdfLoading(true);
+    try {
+      const filename = scheduleFilename("pdf");
+      const res = await fetch("/api/export-pdf", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ result, zoomSessions: zoomSessionsString, filename }),
+      });
+      if (!res.ok) {
+        setShareNotice("שגיאה ביצירת קובץ ה-PDF — נסה שוב");
+        setTimeout(() => setShareNotice(""), 3500);
+        return;
+      }
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch {
+      setShareNotice("שגיאת רשת — נסה שוב");
+      setTimeout(() => setShareNotice(""), 3500);
+    } finally {
+      setPdfLoading(false);
+    }
+  }
+
   async function shareSchedule() {
     if (!result) return;
     const blob = new Blob([editableHtml], { type: "text/html;charset=utf-8" });
-    const file = new File([blob], scheduleFilename(), { type: "text/html" });
+    const file = new File([blob], scheduleFilename("html"), { type: "text/html" });
 
     if (navigator.canShare && navigator.canShare({ files: [file] })) {
       try {
@@ -308,6 +341,8 @@ export default function HomePage() {
             onWhatsappChange={setEditableWhatsapp}
             onRefine={runGenerate}
             onDownload={downloadHtml}
+            onDownloadPdf={downloadPdf}
+            pdfLoading={pdfLoading}
             onShare={shareSchedule}
           />
         </div>
