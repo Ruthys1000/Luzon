@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { CalendarDays, MessageSquare, GraduationCap, Zap, ArrowDown } from "lucide-react";
 import type { ScheduleResult } from "@/types/schedule";
 import { generateHtml } from "@/lib/generate-html";
+import { stripCatalogIds } from "@/constants/catalog";
 import { ScheduleForm, type FormState } from "@/components/ScheduleForm";
 import { ScheduleResultPanel } from "@/components/ScheduleResult";
 
@@ -18,16 +19,32 @@ function parseScheduleJson(text: string): ScheduleResult {
   if (trimmed.startsWith("ERROR:")) {
     throw new Error(trimmed.slice(6).trim() || "שגיאה בשרת");
   }
+  let parsed: ScheduleResult;
   try {
-    return JSON.parse(trimmed);
+    parsed = JSON.parse(trimmed);
   } catch {
     const start = trimmed.indexOf("{");
     const end = trimmed.lastIndexOf("}");
     if (start === -1 || end === -1 || end <= start) {
       throw new Error("תגובה לא תקינה מהשרת");
     }
-    return JSON.parse(trimmed.slice(start, end + 1));
+    parsed = JSON.parse(trimmed.slice(start, end + 1));
   }
+  return cleanCatalogIds(parsed);
+}
+
+// Catalog IDs belong only in catalog_id — strip any the model wrote into the text
+function cleanCatalogIds(result: ScheduleResult): ScheduleResult {
+  for (const day of result.days ?? []) {
+    for (const slot of day.slots ?? []) {
+      if (slot.instructor_notes) slot.instructor_notes = stripCatalogIds(slot.instructor_notes);
+    }
+    for (const item of Object.values(day.supplementary ?? {})) {
+      if (item?.title) item.title = stripCatalogIds(item.title);
+      if (item?.description) item.description = stripCatalogIds(item.description);
+    }
+  }
+  return result;
 }
 
 function buildZoomSessionsString(meetingId: string, times: string): string {
