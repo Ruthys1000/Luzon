@@ -4,11 +4,14 @@ export interface SlotData {
   topic: string;
   activity_type: string;
   instructor_notes: string;
+  /** ID of a catalog item used in this block (see constants/catalog) */
+  catalog_id?: string;
 }
 
 export interface SupplementaryItem {
   title: string;
   description: string;
+  catalog_id?: string;
 }
 
 export interface DayData {

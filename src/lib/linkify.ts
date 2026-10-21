@@ -1,3 +1,6 @@
+import type { SupplementaryItem } from "@/types/schedule";
+import { getCatalogItem, catalogSearchUrl, catalogSearchLabel } from "@/constants/catalog";
+
 export function escapeHtml(s: string): string {
   return s
     .replace(/&/g, "&amp;")
@@ -68,4 +71,23 @@ export function suppSearchUrl(title: string, type: "video" | "article" | "activi
   return type === "video"
     ? `https://www.youtube.com/results?search_query=${q}`
     : `https://www.google.com/search?q=${q}`;
+}
+
+export interface SearchLink {
+  href: string;
+  label: string;
+  fromCatalog: boolean;
+}
+
+/** Search link for a supplementary item — catalog platform search when it comes from the catalog */
+export function suppSearchLink(item: SupplementaryItem, type: "video" | "article" | "activity"): SearchLink {
+  const catalogItem = getCatalogItem(item.catalog_id);
+  if (catalogItem) {
+    return { href: catalogSearchUrl(catalogItem), label: catalogSearchLabel(catalogItem), fromCatalog: true };
+  }
+  return {
+    href: suppSearchUrl(item.title, type),
+    label: type === "video" ? "חפש ביוטיוב" : "חפש בגוגל",
+    fromCatalog: false,
+  };
 }
