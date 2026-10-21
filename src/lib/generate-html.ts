@@ -72,7 +72,6 @@ export function generateHtml(result: ScheduleResult, zoom?: ZoomOptions): string
 <title>לו״ז – Luz Creator</title>
 <style>
   body{font-family:'Segoe UI',system-ui,sans-serif;background:#f7f3ec;margin:0;padding:20px;direction:rtl;color:#1f1c18}
-  .rationale{background:linear-gradient(135deg,#fdf0eb,#fdf8f4);border-radius:10px;padding:14px 18px;margin-bottom:20px;font-size:.9rem;line-height:1.7;border-right:4px solid #d46a50}
   .table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:12px}
   table{width:100%;border-collapse:collapse;background:#fff;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.08)}
   td{padding:10px 14px;border-bottom:1px solid #e5e7eb;font-size:13px;vertical-align:top;overflow-wrap:break-word;word-break:break-word}
@@ -91,7 +90,6 @@ export function generateHtml(result: ScheduleResult, zoom?: ZoomOptions): string
 </style>
 </head>
 <body>
-<div class="rationale">${escapeHtml(result.rationale)}</div>
 ${zoomBanner}
 <div class="table-wrap">
 <table>

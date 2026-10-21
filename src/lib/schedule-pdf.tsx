@@ -48,21 +48,6 @@ const styles = StyleSheet.create({
     textAlign: "right",
     direction: "rtl",
   },
-  rationale: {
-    backgroundColor: "#fdf8f4",
-    borderRightWidth: 4,
-    borderRightColor: "#d46a50",
-    borderRightStyle: "solid",
-    borderRadius: 6,
-    padding: 10,
-    marginBottom: 14,
-  },
-  rationaleText: {
-    fontSize: 9.5,
-    lineHeight: 1.5,
-    textAlign: "right",
-    direction: "rtl",
-  },
   zoomBanner: {
     backgroundColor: "#eef5fd",
     borderRightWidth: 4,
@@ -322,10 +307,6 @@ export function buildSchedulePdfDocument(rawResult: ScheduleResult, rawZoomSessi
     <Document>
       <Page size="A4" style={styles.page}>
         <Text style={styles.title}>לו״ז – Luz Creator</Text>
-
-        <View style={styles.rationale} wrap={false}>
-          <Text style={styles.rationaleText}>{result.rationale}</Text>
-        </View>
 
         {zoomLines.length > 0 && (
           <View style={styles.zoomBanner} wrap={false}>
