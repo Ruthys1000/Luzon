@@ -4,7 +4,8 @@ import { useState, Fragment } from "react";
 import { Sparkles, Pencil } from "lucide-react";
 import type { ScheduleResult } from "@/types/schedule";
 import { getBadgeClass } from "@/constants/sample";
-import { escapeHtml, linkify, hasLink, suppSearchUrl } from "@/lib/linkify";
+import { escapeHtml, linkify, hasLink, suppSearchLink } from "@/lib/linkify";
+import { getCatalogItem, catalogSearchUrl, catalogSearchLabel } from "@/constants/catalog";
 import { StructuredEditor } from "@/components/StructuredEditor";
 
 interface ScheduleResultProps {
@@ -124,7 +125,9 @@ export function ScheduleResultPanel({
                   <tr className="day-row">
                     <td colSpan={4}>{day.day}</td>
                   </tr>
-                  {day.slots.map((slot, si) => (
+                  {day.slots.map((slot, si) => {
+                    const catalogItem = getCatalogItem(slot.catalog_id);
+                    return (
                     <tr key={`slot-${day.day}-${si}`}>
                       <td data-label="שעה" style={{ whiteSpace: "nowrap", color: "var(--text-muted)", fontSize: ".83rem" }}>
                         {slot.time}
@@ -137,13 +140,20 @@ export function ScheduleResultPanel({
                           {slot.activity_type}
                         </span>
                       </td>
-                      <td
-                        data-label="הנחייה"
-                        style={{ fontSize: ".83rem", color: "var(--text-muted)" }}
-                        dangerouslySetInnerHTML={{ __html: linkify(escapeHtml(slot.instructor_notes)) }}
-                      />
+                      <td data-label="הנחייה" style={{ fontSize: ".83rem", color: "var(--text-muted)" }}>
+                        <span dangerouslySetInnerHTML={{ __html: linkify(escapeHtml(slot.instructor_notes)) }} />
+                        {catalogItem && (
+                          <div className="catalog-ref">
+                            <span className="catalog-tag">מהקטלוג</span>
+                            <a href={catalogSearchUrl(catalogItem)} target="_blank" rel="noopener noreferrer" className="supp-search-link">
+                              {catalogSearchLabel(catalogItem)} →
+                            </a>
+                          </div>
+                        )}
+                      </td>
                     </tr>
-                  ))}
+                    );
+                  })}
                   <tr key={`supp-${day.day}`} className="supp-table-row">
                     <td colSpan={4}>
                       <div className="supp-inline">
@@ -153,16 +163,17 @@ export function ScheduleResultPanel({
                             const icons = { video: "🎬", article: "📖", activity: "🎯" };
                             const item = day.supplementary[type];
                             const descHtml = linkify(escapeHtml(item.description));
-                            const searchUrl = suppSearchUrl(item.title, type);
+                            const link = suppSearchLink(item, type);
                             return (
                               <div key={type} className="supp-inline-item">
                                 <span>{icons[type]}</span>
                                 <div style={{ textAlign: "right" }}>
+                                  {link.fromCatalog && <span className="catalog-tag">מהקטלוג</span>}
                                   <strong>{item.title}</strong>
                                   <span dangerouslySetInnerHTML={{ __html: ` – ${descHtml}` }} />
-                                  {!hasLink(descHtml) && (
-                                    <a href={searchUrl} target="_blank" rel="noopener noreferrer" className="supp-search-link">
-                                      {type === "video" ? "חפש ביוטיוב" : "חפש בגוגל"} →
+                                  {(link.fromCatalog || !hasLink(descHtml)) && (
+                                    <a href={link.href} target="_blank" rel="noopener noreferrer" className="supp-search-link">
+                                      {link.label} →
                                     </a>
                                   )}
                                 </div>

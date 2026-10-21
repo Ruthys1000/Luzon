@@ -993,6 +993,32 @@ input.editor-day-name:focus {
   text-decoration: underline;
 }
 
+/* ── Catalog reference ── */
+.catalog-ref {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: .3rem;
+  margin-top: .35rem;
+}
+
+.catalog-ref .supp-search-link {
+  margin: 0;
+}
+
+.catalog-tag {
+  display: inline-block;
+  margin-left: .4rem;
+  padding: .05rem .5rem;
+  border-radius: 999px;
+  background: #e4efe7;
+  color: #287a52;
+  font-size: .7rem;
+  font-weight: 800;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
 /* ── Content Type Chips ── */
 .content-type-chips {
   display: flex;

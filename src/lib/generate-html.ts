@@ -1,14 +1,23 @@
-import type { ScheduleResult } from "@/types/schedule";
-import { escapeHtml, linkifyStyled, hasLink, suppSearchUrl } from "@/lib/linkify";
+import type { ScheduleResult, SupplementaryItem } from "@/types/schedule";
+import { escapeHtml, linkifyStyled, hasLink, suppSearchLink } from "@/lib/linkify";
+import { getCatalogItem, catalogSearchUrl, catalogSearchLabel } from "@/constants/catalog";
 
 interface ZoomOptions {
   sessions?: string;
 }
 
-function suppSearchLinkHtml(title: string, type: "video" | "article" | "activity"): string {
-  const href = suppSearchUrl(title, type);
-  const label = type === "video" ? "חפש ביוטיוב" : "חפש בגוגל";
-  return ` <a href="${href}" target="_blank" rel="noopener" style="color:#1d7bd4;font-size:11px">${label} →</a>`;
+const CATALOG_TAG_HTML = `<span style="background:#e4efe7;color:#287a52;padding:1px 7px;border-radius:99px;font-size:10px;font-weight:700;margin-left:5px;white-space:nowrap">מהקטלוג</span>`;
+
+function searchLinkHtml(href: string, label: string): string {
+  return ` <a href="${escapeHtml(href)}" target="_blank" rel="noopener" style="color:#1d7bd4;font-size:11px">${label} →</a>`;
+}
+
+function suppLineHtml(icon: string, item: SupplementaryItem, type: "video" | "article" | "activity"): string {
+  const desc = linkifyStyled(escapeHtml(item.description));
+  const link = suppSearchLink(item, type);
+  const tag = link.fromCatalog ? CATALOG_TAG_HTML : "";
+  const search = link.fromCatalog || !hasLink(desc) ? searchLinkHtml(link.href, link.label) : "";
+  return `<div>${icon} ${tag}<strong>${escapeHtml(item.title)}</strong> – ${desc}${search}</div>`;
 }
 
 export function generateHtml(result: ScheduleResult, zoom?: ZoomOptions): string {
@@ -19,7 +28,11 @@ export function generateHtml(result: ScheduleResult, zoom?: ZoomOptions): string
         ? `<strong style="font-size:12px;margin-left:4px">${s.lesson_number}.</strong> `
         : "";
       const topicHtml = `<span>${lessonPrefix}${escapeHtml(s.topic)}</span>`;
-      const notesHtml = linkifyStyled(escapeHtml(s.instructor_notes));
+      const catalogItem = getCatalogItem(s.catalog_id);
+      const catalogHtml = catalogItem
+        ? `<div style="margin-top:4px">${CATALOG_TAG_HTML}${searchLinkHtml(catalogSearchUrl(catalogItem), catalogSearchLabel(catalogItem))}</div>`
+        : "";
+      const notesHtml = linkifyStyled(escapeHtml(s.instructor_notes)) + catalogHtml;
       return `
       <tr>
         <td data-label="שעה" style="white-space:nowrap;color:#6b7280;font-size:13px">${escapeHtml(s.time)}</td>
@@ -29,19 +42,15 @@ export function generateHtml(result: ScheduleResult, zoom?: ZoomOptions): string
       </tr>`;
     }).join("");
 
-    const videoDesc = linkifyStyled(escapeHtml(day.supplementary.video.description));
-    const articleDesc = linkifyStyled(escapeHtml(day.supplementary.article.description));
-    const activityDesc = linkifyStyled(escapeHtml(day.supplementary.activity.description));
-
     const suppRow = `
       <tr style="background:#fdf8f4">
         <td colspan="4" style="padding:12px 14px;border-top:2px dashed #e3d8ca">
           <div>
             <div style="font-size:11px;font-weight:800;color:#d46a50;margin-bottom:8px;text-transform:uppercase;letter-spacing:0.05em">תוכן משלים</div>
             <div style="display:flex;flex-direction:column;gap:6px;font-size:12px;line-height:1.6;text-align:right">
-              <div>🎬 <strong>${escapeHtml(day.supplementary.video.title)}</strong> – ${videoDesc}${hasLink(videoDesc) ? "" : suppSearchLinkHtml(day.supplementary.video.title, "video")}</div>
-              <div>📖 <strong>${escapeHtml(day.supplementary.article.title)}</strong> – ${articleDesc}${hasLink(articleDesc) ? "" : suppSearchLinkHtml(day.supplementary.article.title, "article")}</div>
-              <div>🎯 <strong>${escapeHtml(day.supplementary.activity.title)}</strong> – ${activityDesc}${hasLink(activityDesc) ? "" : suppSearchLinkHtml(day.supplementary.activity.title, "activity")}</div>
+              ${suppLineHtml("🎬", day.supplementary.video, "video")}
+              ${suppLineHtml("📖", day.supplementary.article, "article")}
+              ${suppLineHtml("🎯", day.supplementary.activity, "activity")}
             </div>
           </div>
         </td>

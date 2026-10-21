@@ -2,7 +2,8 @@ import path from "path";
 import type { ComponentProps } from "react";
 import { Document, Page, View, Text, Link, StyleSheet, Font } from "@react-pdf/renderer";
 import type { ScheduleResult, SlotData } from "@/types/schedule";
-import { segmentLinks, suppSearchUrl, type LinkSegment } from "@/lib/linkify";
+import { segmentLinks, suppSearchLink, type LinkSegment } from "@/lib/linkify";
+import { getCatalogItem, catalogSearchUrl, catalogSearchLabel } from "@/constants/catalog";
 
 type TextStyle = ComponentProps<typeof View>["style"];
 
@@ -130,11 +131,12 @@ const styles = StyleSheet.create({
   },
   cellNotes: {
     flexBasis: "42%",
+    flexShrink: 1,
+  },
+  cellNotesText: {
     fontSize: 8.5,
     color: "#6b7280",
     lineHeight: 1.5,
-    flexShrink: 1,
-    flexWrap: "wrap",
     textAlign: "right",
   },
   suppBlock: {
@@ -171,6 +173,20 @@ const styles = StyleSheet.create({
     color: "#1d7bd4",
     textDecoration: "none",
   },
+  catalogRow: {
+    flexDirection: "row-reverse",
+    alignItems: "center",
+    gap: 5,
+  },
+  catalogTag: {
+    fontSize: 7,
+    fontWeight: "bold",
+    color: "#287a52",
+    backgroundColor: "#e4efe7",
+    borderRadius: 6,
+    paddingVertical: 1,
+    paddingHorizontal: 5,
+  },
   footer: {
     position: "absolute",
     bottom: 16,
@@ -201,6 +217,7 @@ function TextWithLinks({ text, style, linkStyle }: { text: string; style?: TextS
 
 function SlotRow({ slot }: { slot: SlotData }) {
   const badgeColors = getBadgeColors(slot.activity_type);
+  const catalogItem = getCatalogItem(slot.catalog_id);
   return (
     <View style={styles.slotRow} wrap={false}>
       <Text style={styles.cellTime}>{slot.time}</Text>
@@ -213,7 +230,17 @@ function SlotRow({ slot }: { slot: SlotData }) {
           {slot.activity_type}
         </Text>
       </View>
-      <TextWithLinks text={slot.instructor_notes} style={styles.cellNotes} />
+      <View style={styles.cellNotes}>
+        <TextWithLinks text={slot.instructor_notes} style={styles.cellNotesText} />
+        {catalogItem && (
+          <View style={[styles.catalogRow, { marginTop: 2 }]}>
+            <Text style={styles.catalogTag}>מהקטלוג</Text>
+            <Link src={catalogSearchUrl(catalogItem)} style={[styles.cellNotesText, styles.link]}>
+              {catalogSearchLabel(catalogItem)}
+            </Link>
+          </View>
+        )}
+      </View>
     </View>
   );
 }
@@ -230,10 +257,14 @@ function SupplementaryBlock({ day }: { day: ScheduleResult["days"][number] }) {
       {items.map(({ label, type }) => {
         const item = day.supplementary[type];
         const segments = segmentLinks(item.description);
-        const hasUrl = segments.some((s) => s.url);
+        const link = suppSearchLink(item, type);
+        const showSearch = link.fromCatalog || !segments.some((s) => s.url);
         return (
           <View key={type} style={styles.suppItem} wrap={false}>
-            <Text style={styles.suppItemLabel}>{`${label}: ${item.title}`}</Text>
+            <View style={styles.catalogRow}>
+              {link.fromCatalog && <Text style={styles.catalogTag}>מהקטלוג</Text>}
+              <Text style={styles.suppItemLabel}>{`${label}: ${item.title}`}</Text>
+            </View>
             <Text style={styles.suppItemDesc}>
               {segments.map((seg, i) =>
                 seg.url ? (
@@ -244,12 +275,12 @@ function SupplementaryBlock({ day }: { day: ScheduleResult["days"][number] }) {
                   <Text key={i}>{seg.text}</Text>
                 )
               )}
-              {!hasUrl && (
-                <Link src={suppSearchUrl(item.title, type)} style={styles.link}>
-                  {type === "video" ? " חפש ביוטיוב →" : " חפש בגוגל →"}
-                </Link>
-              )}
             </Text>
+            {showSearch && (
+              <Link src={link.href} style={[styles.suppItemDesc, styles.link]}>
+                {link.label}
+              </Link>
+            )}
           </View>
         );
       })}
