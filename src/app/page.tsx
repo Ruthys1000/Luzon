@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { CalendarDays, MessageSquare, GraduationCap, Zap, ArrowDown } from "lucide-react";
 import type { ScheduleResult } from "@/types/schedule";
 import { generateHtml } from "@/lib/generate-html";
+import { stripCatalogIds } from "@/constants/catalog";
 import { ScheduleForm, type FormState } from "@/components/ScheduleForm";
 import { ScheduleResultPanel } from "@/components/ScheduleResult";
 
@@ -15,19 +16,44 @@ function scheduleFilename(ext: string): string {
 
 function parseScheduleJson(text: string): ScheduleResult {
   const trimmed = text.trim();
-  if (trimmed.startsWith("ERROR:")) {
-    throw new Error(trimmed.slice(6).trim() || "שגיאה בשרת");
+  // The server appends "ERROR:<message>" — possibly after partial JSON if the stream failed midway
+  const serverError = trimmed.match(/(?:^|\n)ERROR:([^\n]*)$/);
+  if (serverError) {
+    throw new Error(serverError[1].trim() || "שגיאה בשרת");
   }
+  let parsed: ScheduleResult;
   try {
-    return JSON.parse(trimmed);
+    parsed = JSON.parse(trimmed);
   } catch {
     const start = trimmed.indexOf("{");
     const end = trimmed.lastIndexOf("}");
     if (start === -1 || end === -1 || end <= start) {
       throw new Error("תגובה לא תקינה מהשרת");
     }
-    return JSON.parse(trimmed.slice(start, end + 1));
+    parsed = JSON.parse(trimmed.slice(start, end + 1));
   }
+  return normalizeSchedule(parsed);
+}
+
+// Fix recurring model slips: catalog IDs belong only in catalog_id, and breaks aren't numbered lessons
+function normalizeSchedule(result: ScheduleResult): ScheduleResult {
+  for (const day of result.days ?? []) {
+    let lesson = 0;
+    for (const slot of day.slots ?? []) {
+      if (slot.instructor_notes) slot.instructor_notes = stripCatalogIds(slot.instructor_notes);
+      if (slot.activity_type === "הפסקה") {
+        delete slot.lesson_number;
+        delete slot.catalog_id;
+      } else {
+        slot.lesson_number = ++lesson;
+      }
+    }
+    for (const item of Object.values(day.supplementary ?? {})) {
+      if (item?.title) item.title = stripCatalogIds(item.title);
+      if (item?.description) item.description = stripCatalogIds(item.description);
+    }
+  }
+  return result;
 }
 
 function buildZoomSessionsString(meetingId: string, times: string): string {
@@ -87,6 +113,9 @@ export default function HomePage() {
   }
 
   async function runGenerate(refinement_qa?: { question: string; answer: string }[]) {
+    const previous_result = refinement_qa && result
+      ? { rationale: result.rationale, days: result.days }
+      : undefined;
     setError("");
     setResult(null);
     setStreamingText("");
@@ -111,6 +140,7 @@ export default function HomePage() {
           course_url: form.content_type === "course" ? form.courseUrl : undefined,
           my_content_description: form.content_type === "my_content" ? form.myContentDescription : undefined,
           refinement_qa,
+          previous_result,
         }),
       });
       clearTimeout(timeoutId);
@@ -289,9 +319,9 @@ export default function HomePage() {
       {loading && (() => {
         const stageIndex =
           !streamingText ? 0 :
+          streamingText.includes('"whatsapp') ? 4 :
           streamingText.includes('"supplementary"') ? 3 :
-          streamingText.includes('"slots"') ? 2 :
-          streamingText.includes('"whatsapp') ? 4 : 1;
+          streamingText.includes('"slots"') ? 2 : 1;
         const steps = [
           "ניתוח מטרות ההדרכה",
           "בניית מבנה הלו״ז",

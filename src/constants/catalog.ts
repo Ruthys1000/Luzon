@@ -387,6 +387,16 @@ export function catalogSearchLabel(item: CatalogItem): string {
   return PLATFORMS[item.platform].searchLabel;
 }
 
+/** Remove catalog IDs the model leaked into text: "(c25)" → "", "(c26, 14 דק')" → "(14 דק')" */
+export function stripCatalogIds(text: string): string {
+  return text
+    .replace(/\s*[(\[]\s*c\d+(?:\s*,\s*c\d+)*\s*[)\]]/g, "")
+    .replace(/([(\[])\s*c\d+\s*,\s*/g, "$1")
+    .replace(/\s*,\s*c\d+\s*([)\]])/g, "$1")
+    .replace(/ {2,}/g, " ")
+    .trim();
+}
+
 /** Compact catalog listing for the system prompt */
 export function catalogPromptText(): string {
   return Object.entries(CATALOG_CHAPTERS)
