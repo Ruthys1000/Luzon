@@ -168,10 +168,10 @@ export function ScheduleResultPanel({
                               <div key={type} className="supp-inline-item">
                                 <span>{icons[type]}</span>
                                 <div style={{ textAlign: "right" }}>
-                                  {link.fromCatalog && <span className="catalog-tag">מהקטלוג</span>}
+                                  {link?.fromCatalog && <span className="catalog-tag">מהקטלוג</span>}
                                   <strong>{item.title}</strong>
                                   <span dangerouslySetInnerHTML={{ __html: ` – ${descHtml}` }} />
-                                  {(link.fromCatalog || !hasLink(descHtml)) && (
+                                  {link && (link.fromCatalog || !hasLink(descHtml)) && (
                                     <a href={link.href} target="_blank" rel="noopener noreferrer" className="supp-search-link">
                                       {link.label} →
                                     </a>

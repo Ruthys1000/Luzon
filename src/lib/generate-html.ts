@@ -15,8 +15,8 @@ function searchLinkHtml(href: string, label: string): string {
 function suppLineHtml(icon: string, item: SupplementaryItem, type: "video" | "article" | "activity"): string {
   const desc = linkifyStyled(escapeHtml(item.description));
   const link = suppSearchLink(item, type);
-  const tag = link.fromCatalog ? CATALOG_TAG_HTML : "";
-  const search = link.fromCatalog || !hasLink(desc) ? searchLinkHtml(link.href, link.label) : "";
+  const tag = link?.fromCatalog ? CATALOG_TAG_HTML : "";
+  const search = link && (link.fromCatalog || !hasLink(desc)) ? searchLinkHtml(link.href, link.label) : "";
   return `<div>${icon} ${tag}<strong>${escapeHtml(item.title)}</strong> – ${desc}${search}</div>`;
 }
 

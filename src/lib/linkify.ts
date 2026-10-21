@@ -79,12 +79,14 @@ export interface SearchLink {
   fromCatalog: boolean;
 }
 
-/** Search link for a supplementary item — catalog platform search when it comes from the catalog */
-export function suppSearchLink(item: SupplementaryItem, type: "video" | "article" | "activity"): SearchLink {
+/** Search link for a supplementary item — catalog platform search when it comes from the catalog.
+ *  A non-catalog activity is a task to do, not something to look up, so it gets no link. */
+export function suppSearchLink(item: SupplementaryItem, type: "video" | "article" | "activity"): SearchLink | null {
   const catalogItem = getCatalogItem(item.catalog_id);
   if (catalogItem) {
     return { href: catalogSearchUrl(catalogItem), label: catalogSearchLabel(catalogItem), fromCatalog: true };
   }
+  if (type === "activity") return null;
   return {
     href: suppSearchUrl(item.title, type),
     label: type === "video" ? "חפש ביוטיוב" : "חפש בגוגל",

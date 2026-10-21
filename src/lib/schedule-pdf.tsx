@@ -258,11 +258,11 @@ function SupplementaryBlock({ day }: { day: ScheduleResult["days"][number] }) {
         const item = day.supplementary[type];
         const segments = segmentLinks(item.description);
         const link = suppSearchLink(item, type);
-        const showSearch = link.fromCatalog || !segments.some((s) => s.url);
+        const showSearch = link && (link.fromCatalog || !segments.some((s) => s.url));
         return (
           <View key={type} style={styles.suppItem} wrap={false}>
             <View style={styles.catalogRow}>
-              {link.fromCatalog && <Text style={styles.catalogTag}>מהקטלוג</Text>}
+              {link?.fromCatalog && <Text style={styles.catalogTag}>מהקטלוג</Text>}
               <Text style={styles.suppItemLabel}>{`${label}: ${item.title}`}</Text>
             </View>
             <Text style={styles.suppItemDesc}>
@@ -276,7 +276,7 @@ function SupplementaryBlock({ day }: { day: ScheduleResult["days"][number] }) {
                 )
               )}
             </Text>
-            {showSearch && (
+            {link && showSearch && (
               <Link src={link.href} style={[styles.suppItemDesc, styles.link]}>
                 {link.label}
               </Link>

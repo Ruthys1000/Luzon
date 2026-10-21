@@ -16,8 +16,10 @@ function scheduleFilename(ext: string): string {
 
 function parseScheduleJson(text: string): ScheduleResult {
   const trimmed = text.trim();
-  if (trimmed.startsWith("ERROR:")) {
-    throw new Error(trimmed.slice(6).trim() || "שגיאה בשרת");
+  // The server appends "ERROR:<message>" — possibly after partial JSON if the stream failed midway
+  const serverError = trimmed.match(/(?:^|\n)ERROR:([^\n]*)$/);
+  if (serverError) {
+    throw new Error(serverError[1].trim() || "שגיאה בשרת");
   }
   let parsed: ScheduleResult;
   try {
@@ -104,6 +106,9 @@ export default function HomePage() {
   }
 
   async function runGenerate(refinement_qa?: { question: string; answer: string }[]) {
+    const previous_result = refinement_qa && result
+      ? { rationale: result.rationale, days: result.days }
+      : undefined;
     setError("");
     setResult(null);
     setStreamingText("");
@@ -128,6 +133,7 @@ export default function HomePage() {
           course_url: form.content_type === "course" ? form.courseUrl : undefined,
           my_content_description: form.content_type === "my_content" ? form.myContentDescription : undefined,
           refinement_qa,
+          previous_result,
         }),
       });
       clearTimeout(timeoutId);
@@ -306,9 +312,9 @@ export default function HomePage() {
       {loading && (() => {
         const stageIndex =
           !streamingText ? 0 :
+          streamingText.includes('"whatsapp') ? 4 :
           streamingText.includes('"supplementary"') ? 3 :
-          streamingText.includes('"slots"') ? 2 :
-          streamingText.includes('"whatsapp') ? 4 : 1;
+          streamingText.includes('"slots"') ? 2 : 1;
         const steps = [
           "ניתוח מטרות ההדרכה",
           "בניית מבנה הלו״ז",

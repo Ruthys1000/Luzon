@@ -44,4 +44,6 @@ export interface ScheduleInput {
   constraints?: string;
   material_links?: string;
   refinement_qa?: { question: string; answer: string }[];
+  /** The schedule being refined — sent with refinement_qa so the model improves it rather than starting over */
+  previous_result?: Pick<ScheduleResult, "rationale" | "days">;
 }

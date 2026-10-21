@@ -39,7 +39,7 @@ const SYSTEM_PROMPT = `אתה מומחה בכיר לפיתוח הדרכה, עי�
 כל בלוק הוא פעילות עצמאית: קריאה, צפייה, תרגיל, משימה, פרויקט.
 אם ביקשו מפגשי צוות – הוסף בלוקים סינכרוניים (ציין ב-topic ו-activity_type).
 
-מבנה יום: 3–4 בלוקים של 90 דקות לפי הזמן הזמין + הפסקות:
+מבנה יום: עד 4 בלוקים (בדרך כלל 90 דקות) לפי הזמן הזמין + הפסקות:
 • בלוק 1 – פתיחה ובסיס | הפסקה 15 דק'
 • בלוק 2 – העמקה ותרגול | הפסקת צהריים 45 דק'
 • בלוק 3 – יישום | הפסקה 15 דק'
@@ -51,19 +51,22 @@ const SYSTEM_PROMPT = `אתה מומחה בכיר לפיתוח הדרכה, עי�
 
 CRITICAL: שדה זה מכוון ישירות ללומד, לא למדריך.
 כתוב משפט או שניים שמסבירים ללומד מה לעשות בבלוק זה.
+פנה ללומדים בלשון רבים ניטרלית מגדרית ("צפו", "רשמו", "בחרו") — לא "צפה"/"אתה".
 פעילות אחת בכל בלוק: תוכן אחד לצפייה/קריאה + משימת עיבוד אחת. בלי שרשרת משימות, בלי "אם יש לך עוד זמן" ובלי משימות בונוס.
 דוגמאות טובות:
-• "קרא את הפרק ורשום 3 תובנות אישיות"
-• "צפה בסרטון (קישור בציוד) ומלא את דף הרפלקציה"
-• "בחר מקרה מהעבודה שלך ונתח אותו לפי המודל שלמדת"
+• "קראו את הפרק ורשמו 3 תובנות אישיות"
+• "צפו בהרצאה 'ניהול זמן בעידן עמוס' ורשמו 3 גנבי זמן שאתם מזהים אצלכם"
+• "בחרו מקרה מהעבודה שלכם ונתחו אותו לפי המודל שלמדתם"
 אל תכתוב: מה המדריך ישאל, איך לנהל את השיעור, סדר הפגישה.
+בהפסקות: משפט קצר אחד בלבד.
 
 ═══════════════════════════════════════
 תוכן משלים – היה ספציפי
 ═══════════════════════════════════════
 
-סרטונים/מאמרים: ציין שמות ספציפיים (TED, HBR, Coursera וכו') שניתן לחפש בגוגל.
-פעילות: הנחיה אחת ברורה שהלומד יכול לבצע לבד.
+תוכן משלים הוא להעמקה אחרי היום — אל תחזור על תוכן שכבר מופיע באחד הבלוקים.
+סרטונים/מאמרים: ציין שמות ספציפיים וקיימים (TED, HBR, Coursera וכו') שניתן לחפש בגוגל. אם אינך בטוח ששם מדויק קיים — תאר נושא חיפוש ולא כותרת מומצאת.
+פעילות: הנחיה אחת ברורה ליישום בעבודה בימים הקרובים, שהלומד יכול לבצע לבד.
 
 ═══════════════════════════════════════
 קטלוג התכנים הארגוני – עדיפות ראשונה
@@ -105,10 +108,9 @@ ${catalogPromptText()}
       }
     }
   ],
-  "whatsapp_message": "פתח בשלום חם ללומדים (לדוגמה: 'שלום 😊' או 'היי חברים 👋'), המשך עם עיקרי הלו״ז — קצר, ידידותי, לא יותר מ-5 שורות",
+  "whatsapp_message": "פתח בשלום חם ללומדים (לדוגמה: 'שלום 😊' או 'היי לכולם 👋'), המשך עם עיקרי הלו״ז — קצר, ידידותי, לא יותר מ-5 שורות",
   "questions": [
-    "שאלה 1 שתעזור לדייק את הלו״ז",
-    "שאלה 2 שתעזור לדייק את הלו״ז"
+    "2–3 שאלות קצרות למנהל ההדרכה על מה שחסר לך כדי לדייק (קהל, רמה, הקשר ארגוני, כלים זמינים) — לא שאלות כלליות"
   ]
 }`;
 
@@ -123,21 +125,26 @@ function buildSlotSchedule(startTime: string, endTime: string): string {
   const startMin = toMin(startTime);
   const endMin = toMin(endTime);
   const BLOCK = 90;
+  const MIN_BLOCK = 45; // a shorter last block is better than leaving the end of the day empty
   const BREAKS = [15, 45, 15]; // after blocks 1, 2, 3
+  const SHORT_BREAK = 15;
 
   const lines: string[] = [];
   let cur = startMin;
-  let blockNum = 0;
 
   for (let i = 0; i < 4; i++) {
-    if (cur + BLOCK > endMin) break;
-    blockNum++;
-    lines.push(`${toTime(cur)}–${toTime(cur + BLOCK)}: בלוק ${blockNum} (lesson_number: ${blockNum})`);
-    cur += BLOCK;
-    if (i < 3 && cur + BREAKS[i] < endMin) {
-      const label = i === 1 ? "הפסקת צהריים" : "הפסקה";
-      lines.push(`${toTime(cur)}–${toTime(cur + BREAKS[i])}: ${label}`);
-      cur += BREAKS[i];
+    const len = Math.min(BLOCK, endMin - cur);
+    if (len < MIN_BLOCK) break;
+    lines.push(`${toTime(cur)}–${toTime(cur + len)}: בלוק ${i + 1} (lesson_number: ${i + 1})`);
+    cur += len;
+    // Add a break only if another block still fits after it; fall back to a short break when lunch doesn't fit
+    if (i < 3) {
+      const brk = cur + BREAKS[i] + MIN_BLOCK <= endMin ? BREAKS[i] : SHORT_BREAK;
+      if (cur + brk + MIN_BLOCK <= endMin) {
+        const label = brk === 45 ? "הפסקת צהריים" : "הפסקה";
+        lines.push(`${toTime(cur)}–${toTime(cur + brk)}: ${label}`);
+        cur += brk;
+      }
     }
   }
 
@@ -178,10 +185,14 @@ function buildUserPrompt(input: ScheduleInput): string {
       ? `\n\nשיפורים מבוקשים — ענה על השאלות הבאות בלו״ז החדש:\n${input.refinement_qa
           .filter((qa) => qa.answer.trim())
           .map((qa) => `- שאלה: ${qa.question}\n  תשובה: ${qa.answer}`)
-          .join("\n")}\n\nבנה לו״ז חדש ומשופר שמשקף את התשובות לעיל.`
+          .join("\n")}${
+          input.previous_result
+            ? `\n\nהלו״ז הנוכחי (JSON):\n${JSON.stringify(input.previous_result)}\n\nשפר את הלו״ז הנוכחי לפי התשובות: שמור את מה שעובד ושנה רק את מה שהתשובות מחייבות. החזר את הלו״ז המלא.`
+            : "\n\nבנה לו״ז חדש ומשופר שמשקף את התשובות לעיל."
+        }`
       : "";
 
-  return `בנה יום למידה מקצועי אחד (90 דקות לכל בלוק, מספר הבלוקים לפי מבנה הזמן שסופק).
+  return `בנה יום למידה מקצועי אחד (מספר הבלוקים ואורכם לפי מבנה הזמן שסופק).
 הלו״ז מיועד ללמידה עצמאית. ${teamSessionsNote}
 ${contentTypeNote}${catalogNote}
 מטרות ההדרכה:
@@ -232,7 +243,7 @@ export async function POST(req: NextRequest) {
       try {
         const anthropicStream = client.messages.stream({
           model: "claude-sonnet-4-6",
-          max_tokens: 4000,
+          max_tokens: 8000,
           system: [
             {
               type: "text" as const,
@@ -253,6 +264,9 @@ export async function POST(req: NextRequest) {
         }
 
         const finalMsg = await anthropicStream.finalMessage();
+        if (finalMsg.stop_reason === "max_tokens") {
+          controller.enqueue(encoder.encode(`\nERROR:הלו״ז ארוך מדי ונקטע — נסו שוב או קצרו את ההנחיות`));
+        }
         const u = finalMsg.usage as unknown as Record<string, number>;
         const hit = (u.cache_read_input_tokens ?? 0) > 0;
         console.log(
