@@ -32,14 +32,21 @@ function parseScheduleJson(text: string): ScheduleResult {
     }
     parsed = JSON.parse(trimmed.slice(start, end + 1));
   }
-  return cleanCatalogIds(parsed);
+  return normalizeSchedule(parsed);
 }
 
-// Catalog IDs belong only in catalog_id — strip any the model wrote into the text
-function cleanCatalogIds(result: ScheduleResult): ScheduleResult {
+// Fix recurring model slips: catalog IDs belong only in catalog_id, and breaks aren't numbered lessons
+function normalizeSchedule(result: ScheduleResult): ScheduleResult {
   for (const day of result.days ?? []) {
+    let lesson = 0;
     for (const slot of day.slots ?? []) {
       if (slot.instructor_notes) slot.instructor_notes = stripCatalogIds(slot.instructor_notes);
+      if (slot.activity_type === "הפסקה") {
+        delete slot.lesson_number;
+        delete slot.catalog_id;
+      } else {
+        slot.lesson_number = ++lesson;
+      }
     }
     for (const item of Object.values(day.supplementary ?? {})) {
       if (item?.title) item.title = stripCatalogIds(item.title);

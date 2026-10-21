@@ -1,11 +1,9 @@
 import path from "path";
-import type { ComponentProps } from "react";
+import type { Style } from "@react-pdf/types";
 import { Document, Page, View, Text, Link, StyleSheet, Font } from "@react-pdf/renderer";
 import type { ScheduleResult, SlotData } from "@/types/schedule";
 import { segmentLinks, suppSearchLink, type LinkSegment } from "@/lib/linkify";
 import { getCatalogItem, catalogSearchUrl, catalogSearchLabel } from "@/constants/catalog";
-
-type TextStyle = ComponentProps<typeof View>["style"];
 
 let fontsRegistered = false;
 
@@ -48,6 +46,7 @@ const styles = StyleSheet.create({
     color: "#7f2f22",
     marginBottom: 12,
     textAlign: "right",
+    direction: "rtl",
   },
   rationale: {
     backgroundColor: "#fdf8f4",
@@ -62,6 +61,7 @@ const styles = StyleSheet.create({
     fontSize: 9.5,
     lineHeight: 1.5,
     textAlign: "right",
+    direction: "rtl",
   },
   zoomBanner: {
     backgroundColor: "#eef5fd",
@@ -78,11 +78,13 @@ const styles = StyleSheet.create({
     color: "#1d7bd4",
     marginBottom: 4,
     textAlign: "right",
+    direction: "rtl",
   },
   zoomLine: {
     fontSize: 9.5,
     lineHeight: 1.6,
     textAlign: "right",
+    direction: "rtl",
   },
   dayHeader: {
     backgroundColor: "#f3e4dc",
@@ -96,6 +98,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#7f2f22",
     textAlign: "right",
+    direction: "rtl",
   },
   slotRow: {
     flexDirection: "row-reverse",
@@ -110,6 +113,7 @@ const styles = StyleSheet.create({
     fontSize: 8.5,
     color: "#6b7280",
     textAlign: "right",
+    direction: "ltr", // "09:00–10:30" reads left to right
   },
   cellTopic: {
     flexBasis: "30%",
@@ -117,6 +121,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     paddingHorizontal: 4,
     textAlign: "right",
+    direction: "rtl",
   },
   cellBadge: {
     flexBasis: "16%",
@@ -138,6 +143,7 @@ const styles = StyleSheet.create({
     color: "#6b7280",
     lineHeight: 1.5,
     textAlign: "right",
+    direction: "rtl",
   },
   suppBlock: {
     backgroundColor: "#fdf8f4",
@@ -154,6 +160,7 @@ const styles = StyleSheet.create({
     color: "#d46a50",
     marginBottom: 6,
     textAlign: "right",
+    direction: "rtl",
   },
   suppItem: {
     marginBottom: 6,
@@ -163,15 +170,18 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     lineHeight: 1.5,
     textAlign: "right",
+    direction: "rtl",
   },
   suppItemDesc: {
     fontSize: 8.5,
     lineHeight: 1.5,
     textAlign: "right",
+    direction: "rtl",
   },
   link: {
     color: "#1d7bd4",
     textDecoration: "none",
+    direction: "rtl",
   },
   catalogRow: {
     flexDirection: "row-reverse",
@@ -193,25 +203,33 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     textAlign: "center",
+    direction: "rtl",
     fontSize: 7.5,
     color: "#9ca3af",
   },
 });
 
-function TextWithLinks({ text, style, linkStyle }: { text: string; style?: TextStyle; linkStyle?: TextStyle }) {
+// Links get their own line: inline colored runs inside RTL text are recolored over the wrong glyphs
+function TextWithLinks({ text, style, linkStyle }: { text: string; style?: Style; linkStyle?: Style }) {
   const segments: LinkSegment[] = segmentLinks(text);
+  const plain = segments
+    .filter((seg) => !seg.url)
+    .map((seg) => seg.text)
+    .join(" ")
+    .replace(/\s+([.,:;)])/g, "$1")
+    .replace(/[ \t]{2,}/g, " ")
+    .replace(/[\s–—:-]+$/, "")
+    .trim();
+  const links = segments.filter((seg) => seg.url);
   return (
-    <Text style={style}>
-      {segments.map((seg, i) =>
-        seg.url ? (
-          <Link key={i} src={seg.url} style={linkStyle ?? styles.link}>
-            {seg.text}
-          </Link>
-        ) : (
-          <Text key={i}>{seg.text}</Text>
-        )
-      )}
-    </Text>
+    <>
+      {plain && <Text style={style}>{plain}</Text>}
+      {links.map((seg, i) => (
+        <Link key={i} src={seg.url!} style={[style ?? {}, linkStyle ?? styles.link]}>
+          {pdfSafe(seg.text.replace(/\s*[←→]\s*/g, ""))}
+        </Link>
+      ))}
+    </>
   );
 }
 
@@ -256,26 +274,15 @@ function SupplementaryBlock({ day }: { day: ScheduleResult["days"][number] }) {
       <Text style={styles.suppTitle}>תוכן משלים</Text>
       {items.map(({ label, type }) => {
         const item = day.supplementary[type];
-        const segments = segmentLinks(item.description);
         const link = suppSearchLink(item, type);
-        const showSearch = link && (link.fromCatalog || !segments.some((s) => s.url));
+        const showSearch = link && (link.fromCatalog || !segmentLinks(item.description).some((s) => s.url));
         return (
           <View key={type} style={styles.suppItem} wrap={false}>
             <View style={styles.catalogRow}>
               {link?.fromCatalog && <Text style={styles.catalogTag}>מהקטלוג</Text>}
               <Text style={styles.suppItemLabel}>{`${label}: ${item.title}`}</Text>
             </View>
-            <Text style={styles.suppItemDesc}>
-              {segments.map((seg, i) =>
-                seg.url ? (
-                  <Link key={i} src={seg.url} style={styles.link}>
-                    {seg.text}
-                  </Link>
-                ) : (
-                  <Text key={i}>{seg.text}</Text>
-                )
-              )}
-            </Text>
+            <TextWithLinks text={item.description} style={styles.suppItemDesc} />
             {link && showSearch && (
               <Link src={link.href} style={[styles.suppItemDesc, styles.link]}>
                 {link.label}
@@ -288,8 +295,25 @@ function SupplementaryBlock({ day }: { day: ScheduleResult["days"][number] }) {
   );
 }
 
-export function buildSchedulePdfDocument(result: ScheduleResult, zoomSessions?: string) {
+// Glyphs missing from the embedded Heebo subset (arrows, emoji) don't just disappear —
+// they corrupt the letters that follow them. Map arrows to a dash and drop anything else unsupported.
+const PDF_UNSUPPORTED = /[^\n\u0020-\u007E\u00A0-\u00FF\u0590-\u05FF\u200C-\u200F\u2013\u2014\u2018-\u201E\u2022\u2026\u20AA\u20AC\uFB1D-\uFB4F]/gu;
+
+function pdfSafe<T>(value: T): T {
+  if (typeof value === "string") {
+    return value.replace(/[→←⇐⇒➜➔]/g, "–").replace(PDF_UNSUPPORTED, "") as T;
+  }
+  if (Array.isArray(value)) return value.map(pdfSafe) as T;
+  if (value && typeof value === "object") {
+    return Object.fromEntries(Object.entries(value).map(([k, v]) => [k, pdfSafe(v)])) as T;
+  }
+  return value;
+}
+
+export function buildSchedulePdfDocument(rawResult: ScheduleResult, rawZoomSessions?: string) {
   registerFonts();
+  const result = pdfSafe(rawResult);
+  const zoomSessions = pdfSafe(rawZoomSessions);
   const zoomLines = zoomSessions?.trim()
     ? zoomSessions.trim().split("\n").filter((l) => l.trim())
     : [];
